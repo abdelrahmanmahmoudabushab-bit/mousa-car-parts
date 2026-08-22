@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store } from 'lucide-react';
+import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
@@ -23,7 +23,7 @@ export default function App() {
     }
   });
 
-  const [activeTab, setActiveTab] = useState('inventory');
+  const [activeTab, setActiveTab] = useState('portal');
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -45,6 +45,7 @@ export default function App() {
   const handleLoginSuccess = (newToken, newUser) => {
     setToken(newToken);
     setUser(newUser);
+    setActiveTab('portal');
     localStorage.setItem('mousa_pos_token', newToken);
     localStorage.setItem('mousa_pos_user', JSON.stringify(newUser));
   };
@@ -233,6 +234,13 @@ export default function App() {
 
         <div className="sidebar-nav">
           <button
+            className={`nav-item ${activeTab === 'portal' ? 'active' : ''}`}
+            onClick={() => setActiveTab('portal')}
+          >
+            <LayoutDashboard size={18} /> {lang === 'ar' ? 'الرئيسية' : 'Home Portal'}
+          </button>
+
+          <button
             className={`nav-item ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
           >
@@ -343,12 +351,90 @@ export default function App() {
             </div>
           ) : (
             <>
-              {activeTab === 'store' && (
-                <CustomerStore
-                  products={products}
-                  lang={lang}
-                  onPlaceOrder={handleCreateOrder}
-                />
+              {activeTab === 'portal' && (
+                <div style={{ flex: 1, padding: '3rem 2rem', background: '#f4f6f9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', overflowY: 'auto' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '600px' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.35rem 0.95rem', borderRadius: '999px', color: '#047857', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.85rem' }}>
+                      <CheckCircle size={16} /> Welcome, {user?.name || user?.username} ({user?.role})
+                    </div>
+                    <h1 style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>
+                      {lang === 'ar' ? 'اختر وجهة العمل المطلوبة' : 'Select Work Portal'}
+                    </h1>
+                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0.5rem 0 0 0' }}>
+                      {lang === 'ar' ? 'اختر بين نقطة البيع الكاشير أو استعراض دليل المخزون العام' : 'Choose between Counter POS Checkout or Stock Inventory Directory.'}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem', width: '100%', maxWidth: '820px' }}>
+                    
+                    {/* CHOICE 1: POS COUNTER */}
+                    <div
+                      onClick={() => setActiveTab('pos')}
+                      style={{
+                        background: '#ffffff',
+                        border: '2px solid #2563eb',
+                        borderRadius: '24px',
+                        padding: '2.25rem 2rem',
+                        boxShadow: '0 10px 30px rgba(37, 99, 235, 0.1)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                      }}
+                    >
+                      <div>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(37, 99, 235, 0.3)' }}>
+                          <ShoppingCart size={28} />
+                        </div>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                          {lang === 'ar' ? 'نقطة البيع الكاشير' : 'Counter POS Checkout'}
+                        </h2>
+                        <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'إجراء عمليات البيع السريعة، الكاشير، طباعة الفواتير وتأكيد الطلبات' : 'Fast barcode counter sales, cart checkout, and receipt printing.'}
+                        </p>
+                      </div>
+
+                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <ShoppingCart size={18} /> {lang === 'ar' ? 'دخول نقطة البيع' : 'Enter Counter POS'}
+                      </button>
+                    </div>
+
+                    {/* CHOICE 2: STOCK INVENTORY */}
+                    <div
+                      onClick={() => setActiveTab('inventory')}
+                      style={{
+                        background: '#ffffff',
+                        border: '2px solid #cbd5e1',
+                        borderRadius: '24px',
+                        padding: '2.25rem 2rem',
+                        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                      }}
+                    >
+                      <div>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
+                          <Package size={28} />
+                        </div>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                          {lang === 'ar' ? 'دليل المخزون' : 'Stock Inventory Directory'}
+                        </h2>
+                        <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'استعراض 7,942 قطعة غيار BYD الأصلية، التعديل والتعديل على الأسعار والكميات' : 'Search 7,942 BYD OEM parts, update stock count, prices, and fitment.'}
+                        </p>
+                      </div>
+
+                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
+                        <Package size={18} /> {lang === 'ar' ? 'دخول دليل المخزون' : 'Open Inventory Directory'}
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
               )}
 
               {activeTab === 'inventory' && (
