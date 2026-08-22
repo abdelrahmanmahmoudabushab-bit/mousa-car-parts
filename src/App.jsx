@@ -221,11 +221,8 @@ export default function App() {
             🚗
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.1rem', color: '#0f172a' }}>
               MOUSA CAR PARTS
-              <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.6rem', borderRadius: '12px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', fontWeight: '700' }}>
-                🟢 Live ({products.length})
-              </span>
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
               {lang === 'ar' ? 'نظام قطع السيارات والمخزون' : 'Auto Parts POS & Inventory'}
