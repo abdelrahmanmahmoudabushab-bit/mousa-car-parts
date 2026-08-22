@@ -274,19 +274,6 @@ export default function App() {
             {lang === 'ar' ? 'سجل المبيعات' : 'Sales Log'}
           </button>
 
-          {isManagerOrAdmin && (
-            <button
-              onClick={() => {
-                setEditingItem(null);
-                setIsItemModalOpen(true);
-              }}
-              className="btn-primary"
-              style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-            >
-              <Plus size={15} /> {lang === 'ar' ? 'قطعة جديدة +' : 'New Part +'}
-            </button>
-          )}
-
           <button
             onClick={toggleLanguage}
             style={{
