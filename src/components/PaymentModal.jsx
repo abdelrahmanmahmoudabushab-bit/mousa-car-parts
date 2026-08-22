@@ -12,7 +12,7 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
 
   const handleProcessPayment = () => {
     if (method === 'Cash' && tenderedNum < totals.total) {
-      alert('Tendered cash amount is less than the total sale amount!');
+      alert('المبلغ النقدي المستلم أقل من إجمالي الفاتورة!');
       return;
     }
 
@@ -29,23 +29,23 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '520px' }}>
+      <div className="modal-content" style={{ maxWidth: '520px', borderRadius: '20px', fontFamily: "'Cairo', sans-serif" }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: '800' }}>Counter Sale Checkout</h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{cart.length} Auto Part(s) in Ticket</p>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a' }}>تأكيد دفع الفاتورة 🧾</h2>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>عدد القطع في الفاتورة: {cart.length} قطعة</p>
           </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}>
             <X size={24} />
           </button>
         </div>
 
         {/* Total Highlight */}
-        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '1.25rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1e40af', fontWeight: '700' }}>
-            Total Sale Amount
+        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', padding: '1.25rem', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.85rem', color: '#b45309', fontWeight: '800' }}>
+            المبلغ الإجمالي المطلوب
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: '800', color: 'var(--primary)' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '2rem', fontWeight: '800', color: '#d97706' }}>
             ${totals.total.toFixed(2)}
           </div>
         </div>
@@ -53,8 +53,8 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
         {/* Payment Methods */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {[
-            { id: 'Cash', label: 'Cash Payment', icon: DollarSign },
-            { id: 'Credit Card', label: 'Card Reader', icon: CreditCard },
+            { id: 'Cash', label: 'دفع نقدي (كاش) 💵', icon: DollarSign },
+            { id: 'Credit Card', label: 'بطاقة مدى / فيزا 💳', icon: CreditCard },
           ].map(m => {
             const Icon = m.icon;
             const isActive = method === m.id;
@@ -67,14 +67,15 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
-                  padding: '0.85rem',
-                  borderRadius: '10px',
-                  background: isActive ? 'var(--primary)' : '#f8fafc',
-                  border: isActive ? '1px solid var(--primary)' : '1px solid var(--border-color)',
-                  color: isActive ? 'white' : 'var(--text-main)',
+                  padding: '0.9rem',
+                  borderRadius: '12px',
+                  background: isActive ? '#0f172a' : '#ffffff',
+                  border: isActive ? '1px solid #0f172a' : '1px solid #cbd5e1',
+                  color: isActive ? '#ffffff' : '#0f172a',
                   cursor: 'pointer',
-                  fontWeight: '700',
-                  fontSize: '0.9rem'
+                  fontWeight: '800',
+                  fontSize: '0.9rem',
+                  fontFamily: "'Cairo', sans-serif"
                 }}
               >
                 <Icon size={18} />
@@ -86,22 +87,23 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
 
         {/* Cash Tender */}
         {method === 'Cash' && (
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-            <label style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.4rem', fontWeight: '600' }}>Cash Received ($)</label>
+          <div style={{ background: '#f8fafc', padding: '1.1rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+            <label style={{ fontSize: '0.85rem', color: '#475569', display: 'block', marginBottom: '0.4rem', fontWeight: '700' }}>المبلغ المستلم من العميل ($)</label>
             <input
               type="number"
               value={cashTendered}
               onChange={e => setCashTendered(e.target.value)}
-              placeholder={`e.g. ${totals.total.toFixed(0)}`}
+              placeholder={`مثال: ${totals.total.toFixed(0)}`}
               style={{
                 width: '100%',
                 padding: '0.75rem 1rem',
                 background: '#ffffff',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                color: 'var(--text-main)',
+                border: '1px solid #cbd5e1',
+                borderRadius: '10px',
+                color: '#0f172a',
                 fontSize: '1.25rem',
                 fontFamily: 'var(--font-mono)',
+                fontWeight: '800',
                 outline: 'none'
               }}
             />
@@ -113,13 +115,13 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
                   onClick={() => setCashTendered(val.toString())}
                   style={{
                     flex: 1,
-                    padding: '0.4rem',
-                    borderRadius: '6px',
-                    background: '#e2e8f0',
-                    border: 'none',
+                    padding: '0.45rem',
+                    borderRadius: '8px',
+                    background: '#ffffff',
+                    border: '1px solid #cbd5e1',
                     color: '#0f172a',
                     fontFamily: 'var(--font-mono)',
-                    fontWeight: '700',
+                    fontWeight: '800',
                     cursor: 'pointer'
                   }}
                 >
@@ -128,9 +130,9 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
               ))}
             </div>
 
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px dashed var(--border-color)' }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Change to Return:</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: '800', color: tenderedNum >= totals.total ? '#15803d' : 'var(--text-muted)' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px dashed #cbd5e1' }}>
+              <span style={{ fontSize: '0.9rem', color: '#475569', fontWeight: '700' }}>المبلغ المتبقي للعميل (المتبقي):</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.4rem', fontWeight: '800', color: tenderedNum >= totals.total ? '#047857' : '#64748b' }}>
                 ${changeDue.toFixed(2)}
               </span>
             </div>
@@ -140,10 +142,10 @@ export default function PaymentModal({ cart, totals, onClose, onCompleteSale }) 
         <button
           onClick={handleProcessPayment}
           disabled={isProcessing}
-          className="btn-primary"
-          style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          className="btn-sand"
+          style={{ width: '100%', padding: '0.9rem', fontSize: '1.05rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: '800', fontFamily: "'Cairo', sans-serif" }}
         >
-          <CheckCircle size={20} /> Complete Sale (${totals.total.toFixed(2)})
+          <CheckCircle size={20} /> تأكيد الدفع وطباعة الفاتورة (${totals.total.toFixed(2)})
         </button>
       </div>
     </div>
