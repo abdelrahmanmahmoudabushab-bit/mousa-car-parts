@@ -205,29 +205,11 @@ export default function App() {
         zIndex: 50
       }}>
         {/* Brand & Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.2rem',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
-          }}>
-            🚗
-          </div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.1rem', color: '#0f172a' }}>
-              MOUSA CAR PARTS
-            </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
-              {lang === 'ar' ? 'نظام قطع السيارات والمخزون' : 'Auto Parts POS & Inventory'}
-            </div>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ fontSize: '1.3rem' }}>🚗</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
+            MOUSA CAR PARTS
+          </span>
         </div>
 
         {/* Top Header Actions & Portal Links */}
