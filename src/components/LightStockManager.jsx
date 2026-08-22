@@ -326,124 +326,111 @@ export default function LightStockManager({ products, categories, token, onProdu
       />
 
       {/* 📦 STOCK DIRECTORY TABLE */}
-      <div style={{ background: '#ffffff', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)' }}>
         
         {/* Category & New Item Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>Current Inventory Directory</h3>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{filteredProducts.length} of {products.length} OEM Auto Parts Matching Fitment</div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '800', margin: 0, color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>دليل المخزون وإدارة قطع الغيار 📦</h3>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <select
               value={selectedCat}
               onChange={(e) => handleFilterChange(setSelectedCat, e.target.value)}
-              style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: '#f8fafc', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }}
+              style={{ padding: '0.55rem 1rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.88rem', outline: 'none', fontWeight: '700', fontFamily: "'Cairo', sans-serif", color: '#0f172a' }}
             >
-              <option value="all">All Part Categories</option>
+              <option value="all">جميع الأقسام</option>
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
 
-            <button onClick={onOpenAddItem} className="btn-primary" style={{ padding: '0.55rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#059669' }}>
-              <Plus size={16} /> New Part
+            <button onClick={onOpenAddItem} className="btn-sand" style={{ padding: '0.55rem 1.15rem', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '800' }}>
+              <Plus size={16} /> إضافة قطعة جديدة +
             </button>
           </div>
         </div>
 
         {/* Pagination Bar */}
         {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.4rem 0.75rem' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-              Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length} items
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.5rem 1rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
+              عرض {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} من أصل {filteredProducts.length} قطعة
             </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                style={{ padding: '0.25rem 0.65rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: currentPage === 1 ? '#e2e8f0' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : 'var(--text-main)', cursor: currentPage === 1 ? 'default' : 'pointer', fontSize: '0.78rem', fontWeight: '700' }}
+                style={{ padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: currentPage === 1 ? '#f1f5f9' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : '#0f172a', cursor: currentPage === 1 ? 'default' : 'pointer', fontSize: '0.82rem', fontWeight: '800', fontFamily: "'Cairo', sans-serif" }}
               >
-                ◀ Prev
+                ◀ السابق
               </button>
-              <span style={{ fontSize: '0.8rem', fontWeight: '700', padding: '0 0.3rem' }}>
-                Page {currentPage} of {totalPages}
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', padding: '0 0.4rem', color: '#d97706', fontFamily: "'Cairo', sans-serif" }}>
+                صفحة {currentPage} من {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                style={{ padding: '0.25rem 0.65rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: currentPage === totalPages ? '#e2e8f0' : '#ffffff', color: currentPage === totalPages ? '#94a3b8' : 'var(--text-main)', cursor: currentPage === totalPages ? 'default' : 'pointer', fontSize: '0.78rem', fontWeight: '700' }}
+                style={{ padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: currentPage === totalPages ? '#f1f5f9' : '#ffffff', color: currentPage === totalPages ? '#94a3b8' : '#0f172a', cursor: currentPage === totalPages ? 'default' : 'pointer', fontSize: '0.82rem', fontWeight: '800', fontFamily: "'Cairo', sans-serif" }}
               >
-                Next ▶
+                التالي ▶
               </button>
             </div>
           </div>
         )}
 
         {/* Directory Table */}
-        <div style={{ overflowY: 'auto', flex: 1, border: '1px solid var(--border-color)', borderRadius: '10px' }}>
-          <table className="data-table">
+        <div style={{ overflowY: 'auto', flex: 1, border: '1px solid #e2e8f0', borderRadius: '12px' }}>
+          <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Cairo', sans-serif" }}>
             <thead>
-              <tr>
-                <th>OEM Code</th>
-                <th>Part Title & Arabic Spec</th>
-                <th>Vehicle Fitment (Model & Year)</th>
-                <th>Bin Location</th>
-                <th>Cost</th>
-                <th>Retail Price</th>
-                <th>Current Stock</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+              <tr style={{ background: '#f8fafc', color: '#475569', fontSize: '0.85rem', fontWeight: '800' }}>
+                <th style={{ padding: '0.85rem 1rem' }}>رقم OEM</th>
+                <th style={{ padding: '0.85rem 1rem' }}>اسم القطعة والمواصفات</th>
+                <th style={{ padding: '0.85rem 1rem' }}>الموديل والسنوات</th>
+                <th style={{ padding: '0.85rem 1rem' }}>الرف / المستودع</th>
+                <th style={{ padding: '0.85rem 1rem' }}>التكلفة ($)</th>
+                <th style={{ padding: '0.85rem 1rem' }}>سعر البيع ($)</th>
+                <th style={{ padding: '0.85rem 1rem' }}>الكمية المتوفرة</th>
+                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {displayedProducts.map(p => (
                 <tr key={p.id}>
-                  <td className="mono" style={{ fontWeight: '700', color: 'var(--primary)' }}>{p.oem}</td>
+                  <td className="mono" style={{ fontWeight: '800', color: '#d97706', fontSize: '0.9rem' }}>{p.oem}</td>
                   <td>
-                    <div style={{ fontWeight: '600' }}>{p.name}</div>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.15rem' }}>
-                      {p.arName && (
-                        <span style={{ fontSize: '0.75rem', color: '#059669', background: '#ecfdf5', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid #a7f3d0', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
-                          🇸🇦 {p.arName}
-                        </span>
-                      )}
-                      {p.cnName && (
-                        <span style={{ fontSize: '0.75rem', color: '#475569', background: '#f8fafc', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                          🇨🇳 {p.cnName}
-                        </span>
-                      )}
-                    </div>
+                    <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>{p.arName || p.name}</div>
                   </td>
                   <td>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem', background: 'rgba(59, 130, 246, 0.1)', color: '#2563eb', padding: '0.2rem 0.5rem', borderRadius: '6px', fontWeight: '600' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', background: '#fffbeb', color: '#d97706', padding: '0.2rem 0.6rem', borderRadius: '6px', fontWeight: '700', border: '1px solid #fde68a' }}>
                         🚗 {p.vehicleModel || 'BYD Seagull'}
                       </span>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                        Years: {p.yearRange || '2023 - 2026'}
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '600' }}>
+                        السنوات: {p.yearRange || '2023 - 2026'}
                       </span>
                     </div>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      <MapPin size={12} style={{ color: 'var(--primary)' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
+                      <MapPin size={14} style={{ color: '#d97706' }} />
                       <span>{p.location}</span>
                     </div>
                   </td>
-                  <td className="mono">${(Number(p.costPrice) || 0).toFixed(2)}</td>
-                  <td className="mono" style={{ fontWeight: '700', color: 'var(--primary)' }}>${(Number(p.unitPrice) || 0).toFixed(2)}</td>
+                  <td className="mono" style={{ fontWeight: '700', color: '#475569' }}>${(Number(p.costPrice) || 0).toFixed(2)}</td>
+                  <td className="mono" style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>${(Number(p.unitPrice) || 0).toFixed(2)}</td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '22px', height: '22px', borderRadius: '4px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
-                      <span className="mono" style={{ fontWeight: '700', minWidth: '24px', textAlign: 'center' }}>{p.quantity}</span>
-                      <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '22px', height: '22px', borderRadius: '4px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>-</button>
+                      <span className="mono" style={{ fontWeight: '800', minWidth: '28px', textAlign: 'center', fontSize: '0.95rem', color: '#0f172a' }}>{p.quantity}</span>
+                      <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>+</button>
                     </div>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.3rem' }}>
-                      <button onClick={() => onEditItem(p)} style={{ padding: '0.35rem', borderRadius: '6px', background: '#f1f5f9', border: '1px solid var(--border-color)', cursor: 'pointer' }}><Edit2 size={14} /></button>
-                      <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.35rem', borderRadius: '6px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer' }}><Trash2 size={14} /></button>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
+                      <button onClick={() => onEditItem(p)} style={{ padding: '0.4rem', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', color: '#0f172a' }}><Edit2 size={15} /></button>
+                      <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.4rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer' }}><Trash2 size={15} /></button>
                     </div>
                   </td>
                 </tr>
