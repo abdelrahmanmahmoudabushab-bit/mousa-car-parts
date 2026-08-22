@@ -233,14 +233,6 @@ export default function App() {
 
         <div className="sidebar-nav">
           <button
-            className={`nav-item ${activeTab === 'store' ? 'active' : ''}`}
-            onClick={() => setActiveTab('store')}
-            style={{ background: activeTab === 'store' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'rgba(37, 99, 235, 0.1)', color: activeTab === 'store' ? '#ffffff' : '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)', fontWeight: '700' }}
-          >
-            <Globe size={18} /> {lang === 'ar' ? 'المتجر الإلكتروني للعملاء' : 'Customer Web Store'}
-          </button>
-
-          <button
             className={`nav-item ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
           >
