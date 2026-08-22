@@ -348,9 +348,6 @@ export default function App() {
               {activeTab === 'portal' && (
                 <div style={{ flex: 1, padding: '3rem 2rem', background: '#f4f6f9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', overflowY: 'auto' }}>
                   <div style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '600px' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.35rem 0.95rem', borderRadius: '999px', color: '#047857', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.85rem' }}>
-                      <CheckCircle size={16} /> Welcome, {user?.name || user?.username} ({user?.role})
-                    </div>
                     <h1 style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>
                       {lang === 'ar' ? 'اختر وجهة العمل المطلوبة' : 'Select Work Portal'}
                     </h1>
