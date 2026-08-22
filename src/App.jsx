@@ -196,10 +196,10 @@ export default function App() {
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">🚗</div>
           <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.15rem', color: '#ffffff' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.15rem', color: '#0f172a' }}>
               MOUSA CAR PARTS
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
               {lang === 'ar' ? 'موسى لقطع السيارات والمخزون' : 'Auto Parts & POS System'}
             </div>
           </div>
@@ -213,9 +213,9 @@ export default function App() {
               width: '100%',
               padding: '0.55rem 0.75rem',
               borderRadius: '8px',
-              background: lang === 'ar' ? '#10b981' : '#3b82f6',
-              color: '#ffffff',
-              border: 'none',
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              color: '#2563eb',
               fontWeight: '700',
               fontSize: '0.85rem',
               cursor: 'pointer',
@@ -243,7 +243,6 @@ export default function App() {
             <button
               className="nav-item"
               onClick={() => setIsImportModalOpen(true)}
-              style={{ color: '#60a5fa' }}
             >
               <Languages size={18} /> {lang === 'ar' ? 'سحب مخزون PDF / Excel' : 'Import Stock (PDF / Excel)'}
             </button>
@@ -267,7 +266,6 @@ export default function App() {
             <button
               className="nav-item"
               onClick={() => setIsUserMgmtOpen(true)}
-              style={{ color: '#c084fc' }}
             >
               <Users size={18} /> {lang === 'ar' ? 'إدارة المستخدمين' : 'User Accounts'}
             </button>
@@ -275,19 +273,19 @@ export default function App() {
         </div>
 
         {/* Logged in User Profile Footer */}
-        <div style={{ padding: '0.85rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '0.85rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '0.88rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <User size={14} style={{ color: '#3b82f6' }} /> {user.name || user.username}
+            <div style={{ fontWeight: '800', fontSize: '0.88rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <User size={14} style={{ color: '#2563eb' }} /> {user.name || user.username}
             </div>
-            <div style={{ fontSize: '0.72rem', color: user.role === 'Admin' ? '#c084fc' : user.role === 'Manager' ? '#60a5fa' : '#34d399', fontWeight: '600' }}>
+            <div style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700' }}>
               Role: {user.role}
             </div>
           </div>
 
           <button
             onClick={handleLogout}
-            style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', padding: '0.4rem', borderRadius: '6px', cursor: 'pointer' }}
+            style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer' }}
             title="Log Out"
           >
             <LogOut size={16} />
