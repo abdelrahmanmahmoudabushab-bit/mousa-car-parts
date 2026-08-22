@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: mousa-autoparts-pos
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: SUPABASE_URL
+        value: https://elqmqsaqsjkdqxoyvbje.supabase.co
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
