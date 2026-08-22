@@ -229,25 +229,38 @@ app.post('/api/import/confirm-batch', authenticateToken, requireRole(['Admin', '
 
 // -------------------------------------------------------------
 // PRODUCTION STATIC FILE SERVING (SINGLE-SERVER DEPLOYMENT)
+// Root / -> Customer Web Store (Simplest for Public Users)
+// /pos -> Cashier Counter POS Terminal
 // -------------------------------------------------------------
 const distPath = path.join(__dirname, '..', 'dist');
 const distCustomerPath = path.join(__dirname, '..', 'dist-customer');
 
-// Customer Store Production Route: /customer
+// Serve Customer Web Store at /customer
 if (fs.existsSync(distCustomerPath)) {
   app.use('/customer', express.static(distCustomerPath));
-  app.get('/customer/*', (req, res) => {
-    res.sendFile(path.join(distCustomerPath, 'customer.html'));
+}
+
+// Serve Cashier Counter POS Terminal at /pos
+if (fs.existsSync(distPath)) {
+  app.use('/pos', express.static(distPath));
+  app.get('/pos/*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
-// Cashier POS Terminal Production Route: /
-if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+// Root / Serves Customer Store Directly
+if (fs.existsSync(distCustomerPath)) {
+  app.use(express.static(distCustomerPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/customer')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/pos')) {
       return next();
     }
+    res.sendFile(path.join(distCustomerPath, 'customer.html'));
+  });
+} else if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }

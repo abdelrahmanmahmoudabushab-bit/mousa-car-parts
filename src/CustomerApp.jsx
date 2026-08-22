@@ -109,6 +109,25 @@ export default function CustomerApp() {
             <Languages size={15} />
             {lang === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English'}
           </button>
+
+          <a
+            href="/pos"
+            style={{
+              padding: '0.45rem 0.85rem',
+              borderRadius: '8px',
+              background: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              color: '#475569',
+              fontWeight: '700',
+              fontSize: '0.8rem',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
+            }}
+          >
+            🛒 {lang === 'ar' ? 'دخول الكاشير' : 'Cashier POS'}
+          </a>
         </div>
       </header>
 
