@@ -3,26 +3,56 @@ import { RefreshCw, Languages, ShoppingBag, PhoneCall, ShieldCheck, Car } from '
 import CustomerStore from './components/CustomerStore';
 
 export default function CustomerApp() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Initialize state from client-side localStorage cache for 0ms instant initial rendering!
+  const [products, setProducts] = useState(() => {
+    try {
+      const cached = localStorage.getItem('mousa_cached_products');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [categories, setCategories] = useState(() => {
+    try {
+      const cached = localStorage.getItem('mousa_cached_categories');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [loading, setLoading] = useState(() => products.length === 0);
   const [error, setError] = useState('');
   const [lang, setLang] = useState('ar');
 
   const fetchBootstrapData = async () => {
-    setLoading(true);
+    if (products.length === 0) setLoading(true);
     setError('');
     try {
       const response = await fetch('/api/bootstrap');
       if (!response.ok) throw new Error('Failed to connect to Mousa POS Backend API');
       const data = await response.json();
-      setProducts(data.products || []);
-      setCategories(data.categories || []);
+      const fetchedProducts = data.products || [];
+      const fetchedCategories = data.categories || [];
+      
+      setProducts(fetchedProducts);
+      setCategories(fetchedCategories);
+
+      // Save to localStorage cache for 0ms instant future page opens
+      try {
+        localStorage.setItem('mousa_cached_products', JSON.stringify(fetchedProducts));
+        localStorage.setItem('mousa_cached_categories', JSON.stringify(fetchedCategories));
+      } catch (e) {
+        // Ignore quota limits
+      }
     } catch (err) {
       console.error('Customer Store API Error:', err);
-      setError('Unable to load catalog from server. Make sure POS backend is running on http://localhost:5000');
+      if (products.length === 0) {
+        setError('Unable to load catalog from server. Make sure POS backend is running on http://localhost:5000');
+      }
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 

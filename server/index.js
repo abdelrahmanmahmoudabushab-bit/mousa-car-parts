@@ -80,12 +80,22 @@ app.delete('/api/users/:id', authenticateToken, requireRole(['Admin']), (req, re
   res.json({ success: true, users: db.getUsers() });
 });
 
-// -------------------------------------------------------------
-// BOOTSTRAP & CATALOG DATA ENDPOINTS
-// -------------------------------------------------------------
+// In-memory server cache for INSTANT sub-10ms response times
+let memoryCache = {
+  products: null,
+  categories: null,
+  lastUpdated: 0
+};
 
-// GET Initial state
-app.get('/api/bootstrap', async (req, res) => {
+// Cache TTL: 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function getCachedBootstrapData() {
+  const now = Date.now();
+  if (memoryCache.products && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
+    return memoryCache;
+  }
+
   if (isSupabaseConfigured()) {
     try {
       const [sbProducts, sbCategories] = await Promise.all([
@@ -94,24 +104,40 @@ app.get('/api/bootstrap', async (req, res) => {
       ]);
 
       if (sbProducts && sbProducts.length > 0) {
-        return res.json({
-          products: sbProducts,
-          categories: sbCategories.length > 0 ? sbCategories : db.getCategories(),
-          orders: db.getOrders(),
-          dbSource: 'Supabase PostgreSQL'
-        });
+        memoryCache.products = sbProducts;
+        memoryCache.categories = sbCategories.length > 0 ? sbCategories : db.getCategories();
+        memoryCache.lastUpdated = now;
+        return memoryCache;
       }
     } catch (err) {
-      console.error('Supabase bootstrap query error, falling back to local DB:', err.message);
+      console.error('Supabase fetch error, using local/cached DB:', err.message);
     }
   }
 
-  res.json({
-    products: db.getProducts(),
-    categories: db.getCategories(),
-    orders: db.getOrders(),
-    dbSource: 'Local JSON Database'
-  });
+  memoryCache.products = db.getProducts();
+  memoryCache.categories = db.getCategories();
+  memoryCache.lastUpdated = now;
+  return memoryCache;
+}
+
+// GET Initial state (Instant In-Memory Cache Response)
+app.get('/api/bootstrap', async (req, res) => {
+  try {
+    const cache = await getCachedBootstrapData();
+    res.json({
+      products: cache.products,
+      categories: cache.categories,
+      orders: db.getOrders(),
+      dbSource: isSupabaseConfigured() ? 'Supabase PostgreSQL (In-Memory Cache)' : 'Local JSON'
+    });
+  } catch (err) {
+    res.json({
+      products: db.getProducts(),
+      categories: db.getCategories(),
+      orders: db.getOrders(),
+      dbSource: 'Local JSON Fallback'
+    });
+  }
 });
 
 // GET VIN Lookup
