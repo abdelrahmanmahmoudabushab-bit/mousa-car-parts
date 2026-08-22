@@ -136711,7 +136711,7 @@
       "categoryId": "cat-body",
       "costPrice": 3722500,
       "unitPrice": 5583750,
-      "quantity": 2,
+      "quantity": 1,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
@@ -143019,6 +143019,31 @@
     }
   ],
   "orders": [
+    {
+      "cashier": "System Administrator",
+      "items": [
+        {
+          "id": "P-5612",
+          "sku": "P-5612",
+          "oem": "EQEE-3722500AZ",
+          "name": "جسم صندوق توزيع الطاقة في المقصورة الأمامية (前舱配电盒本体)",
+          "arName": "أمامي الجسم الرئيسي",
+          "cnName": "前舱配电盒本体",
+          "unitPrice": 5583750,
+          "quantity": 2,
+          "vehicleModel": "BYD Seagull (海鸥)",
+          "categoryId": "cat-body",
+          "qty": 1
+        }
+      ],
+      "subtotal": 5583750,
+      "tax": 446700,
+      "total": 6030450,
+      "paymentMethod": "Credit Card",
+      "id": "ORD-fc0a7989",
+      "date": "2026-08-22T12:19:20.205Z",
+      "status": "Completed"
+    },
     {
       "customerName": "System Health Checker",
       "customerPhone": "0550000000",
