@@ -74,7 +74,7 @@ export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit
           </div>
           <button
             onClick={() => { if (onSearchSubmit) onSearchSubmit(); }}
-            className="btn-primary"
+            className="btn-sand"
             style={{ padding: '0.6rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', whiteSpace: 'nowrap', fontWeight: '800' }}
           >
             <Search size={16} /> بحث

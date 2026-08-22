@@ -128,15 +128,15 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
             style={{
               padding: '0.55rem 1.1rem',
               borderRadius: '10px',
-              background: selectedCat === 'all' ? '#2563eb' : '#ffffff',
-              color: selectedCat === 'all' ? '#ffffff' : '#475569',
-              border: selectedCat === 'all' ? '1px solid #2563eb' : '1px solid #cbd5e1',
+              background: selectedCat === 'all' ? '#d97706' : '#ffffff',
+              color: selectedCat === 'all' ? '#ffffff' : '#0f172a',
+              border: selectedCat === 'all' ? '1px solid #d97706' : '1px solid #cbd5e1',
               fontWeight: '800',
               fontSize: '0.85rem',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               fontFamily: "'Cairo', sans-serif",
-              boxShadow: selectedCat === 'all' ? '0 4px 12px rgba(37, 99, 235, 0.25)' : 'none'
+              boxShadow: selectedCat === 'all' ? '0 4px 12px rgba(217, 119, 6, 0.25)' : 'none'
             }}
           >
             جميع قطع الغيار ({products.length})
@@ -148,15 +148,15 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
               style={{
                 padding: '0.55rem 1.1rem',
                 borderRadius: '10px',
-                background: selectedCat === cat.id ? '#2563eb' : '#ffffff',
-                color: selectedCat === cat.id ? '#ffffff' : '#475569',
-                border: selectedCat === cat.id ? '1px solid #2563eb' : '1px solid #cbd5e1',
+                background: selectedCat === cat.id ? '#d97706' : '#ffffff',
+                color: selectedCat === cat.id ? '#ffffff' : '#0f172a',
+                border: selectedCat === cat.id ? '1px solid #d97706' : '1px solid #cbd5e1',
                 fontWeight: '800',
                 fontSize: '0.85rem',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 fontFamily: "'Cairo', sans-serif",
-                boxShadow: selectedCat === cat.id ? '0 4px 12px rgba(37, 99, 235, 0.25)' : 'none'
+                boxShadow: selectedCat === cat.id ? '0 4px 12px rgba(217, 119, 6, 0.25)' : 'none'
               }}
             >
               {cat.name}
@@ -178,7 +178,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
               >
                 ◀ السابق
               </button>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', padding: '0 0.4rem', color: '#2563eb', fontFamily: "'Cairo', sans-serif" }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', padding: '0 0.4rem', color: '#d97706', fontFamily: "'Cairo', sans-serif" }}>
                 صفحة {currentPage} من {totalPages}
               </span>
               <button
@@ -212,7 +212,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
               }}
             >
               <div>
-                <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#2563eb', marginBottom: '0.35rem' }}>
+                <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#d97706', marginBottom: '0.35rem' }}>
                   {product.oem}
                 </div>
                 <div style={{ fontSize: '0.95rem', fontWeight: '800', lineHeight: '1.35', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>
@@ -220,14 +220,14 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', fontWeight: '600' }}>
-                  <MapPin size={13} style={{ color: '#2563eb' }} />
+                  <MapPin size={13} style={{ color: '#d97706' }} />
                   <span>{product.location}</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.85rem', paddingTop: '0.65rem', borderTop: '1px solid #f1f5f9' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', fontWeight: '800', color: '#2563eb' }}>
+                  <div style={{ fontFamily: "'Cairo', sans-serif", fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
                     ${(Number(product.unitPrice) || 0).toFixed(2)}
                   </div>
                   <div style={{ fontSize: '0.74rem', color: product.quantity <= product.minLevel ? '#b91c1c' : '#475569', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
@@ -239,14 +239,14 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                     width: '36px',
                     height: '36px',
                     borderRadius: '10px',
-                    background: '#2563eb',
+                    background: '#0f172a',
                     border: 'none',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)'
+                    boxShadow: '0 4px 10px rgba(15, 23, 42, 0.25)'
                   }}
                 >
                   <Plus size={18} />
@@ -261,7 +261,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
       <div className="cart-section" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
         <div style={{ padding: '1.1rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ShoppingCart size={18} />
             </div>
             <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>فاتورة البيع الحالية 🛒</h3>
@@ -292,7 +292,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                     <Trash2 size={15} />
                   </button>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#2563eb', fontFamily: 'var(--font-mono)', fontWeight: '700' }}>OEM: {item.oem}</div>
+                <div style={{ fontSize: '0.75rem', color: '#d97706', fontFamily: 'var(--font-mono)', fontWeight: '700' }}>OEM: {item.oem}</div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -300,7 +300,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                     <span style={{ fontWeight: '800', fontSize: '0.95rem', width: '24px', textAlign: 'center', color: '#0f172a' }}>{item.qty}</span>
                     <button onClick={() => updateQty(item.id, 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#e2e8f0', border: 'none', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer' }}>+</button>
                   </div>
-                  <div style={{ fontWeight: '800', color: '#2563eb', fontSize: '1.05rem', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1.05rem', fontFamily: 'var(--font-mono)' }}>
                     ${(Number(item.unitPrice || item.price || 0) * item.qty).toFixed(2)}
                   </div>
                 </div>
@@ -321,14 +321,14 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: '800', borderTop: '1px dashed #cbd5e1', paddingTop: '0.65rem', fontFamily: "'Cairo', sans-serif" }}>
             <span style={{ color: '#0f172a' }}>المبلغ الإجمالي النهائي:</span>
-            <span style={{ color: '#2563eb' }}>${(Number(total) || 0).toFixed(2)}</span>
+            <span style={{ color: '#d97706' }}>${(Number(total) || 0).toFixed(2)}</span>
           </div>
 
           <button
             onClick={handleCheckoutClick}
             disabled={cart.length === 0}
             className="btn-primary"
-            style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', marginTop: '0.5rem', fontWeight: '800', fontFamily: "'Cairo', sans-serif", opacity: cart.length === 0 ? 0.5 : 1 }}
+            style={{ width: '100%', padding: '0.9rem', fontSize: '1rem', marginTop: '0.5rem', fontWeight: '800', fontFamily: "'Cairo', sans-serif", background: '#0f172a', border: '1px solid #0f172a', opacity: cart.length === 0 ? 0.5 : 1 }}
           >
             إتمام البيع والدفع النقدي (${(Number(total) || 0).toFixed(2)})
           </button>
