@@ -175,51 +175,13 @@ export default function LightStockManager({ products, categories, token, onProdu
   return (
     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto' }}>
       
-      {/* 🚀 LIGHTWEIGHT PDF & EXCEL STOCK PULLER BAR */}
-      <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e293b)', padding: '1.25rem 1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.12)', color: 'white' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <div style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Languages size={15} /> Instant PDF & Excel Stock Puller
-            </div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: '800', margin: '0.2rem 0 0' }}>
-              Pull Stock from PDF / Excel & Auto-Translate Chinese → Arabic
-            </h2>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button 
-              onClick={handleDownloadDemoCSV}
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', padding: '0.5rem 0.85rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-            >
-              <Download size={14} /> Sample CSV
-            </button>
-
-            <button
-              onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.pdf, .xlsx, .xls, .csv';
-                input.onchange = (e) => handleFileDrop(e.target.files[0]);
-                input.click();
-              }}
-              className="btn-primary"
-              style={{ padding: '0.6rem 1.25rem', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <UploadCloud size={18} /> Upload PDF / Excel Stock File
-            </button>
-          </div>
+      {/* File Loading Toast Notice */}
+      {fileLoading && (
+        <div style={{ padding: '0.85rem 1.25rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#2563eb', fontSize: '0.88rem', fontWeight: '700' }}>
+          <RefreshCw className="spin" size={18} />
+          <span>{loadingMsg}</span>
         </div>
-
-        {/* Loading Bar */}
-        {fileLoading && (
-          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(59, 130, 246, 0.15)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#60a5fa', fontSize: '0.88rem' }}>
-            <RefreshCw className="spin" size={18} />
-            <span>{loadingMsg}</span>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* 📋 EXTRACTED REVIEW TABLE (PULLED FROM PDF/EXCEL) */}
       {extractedItems && (
