@@ -191,149 +191,146 @@ export default function App() {
   };
 
   return (
-    <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Sidebar Navigation */}
-      <div className="sidebar">
-        <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">🚗</div>
+    <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ flexDirection: 'column', height: '100vh', width: '100vw', background: '#f4f6f9' }}>
+      {/* Clean Full-Width Top Header Bar */}
+      <header style={{
+        height: '68px',
+        background: '#ffffff',
+        borderBottom: '1px solid var(--border-color)',
+        padding: '0 1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
+        zIndex: 50
+      }}>
+        {/* Brand & Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+          }}>
+            🚗
+          </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.15rem', color: '#0f172a' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '800', fontSize: '1.1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               MOUSA CAR PARTS
+              <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.6rem', borderRadius: '12px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', fontWeight: '700' }}>
+                🟢 Live ({products.length})
+              </span>
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
-              {lang === 'ar' ? 'موسى لقطع السيارات والمخزون' : 'Auto Parts & POS System'}
+              {lang === 'ar' ? 'نظام قطع السيارات والمخزون' : 'Auto Parts POS & Inventory'}
             </div>
           </div>
         </div>
 
-        {/* Language Switcher Button */}
-        <div style={{ padding: '0 0.75rem 1rem 0.75rem' }}>
+        {/* Top Header Actions & Portal Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          {activeTab !== 'portal' && (
+            <button
+              onClick={() => setActiveTab('portal')}
+              style={{
+                padding: '0.45rem 0.85rem',
+                borderRadius: '8px',
+                background: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                color: '#2563eb',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              <LayoutDashboard size={15} />
+              {lang === 'ar' ? 'الرئيسية' : 'Home Portal'}
+            </button>
+          )}
+
           <button
-            onClick={toggleLanguage}
+            onClick={() => setActiveTab('orders')}
             style={{
-              width: '100%',
-              padding: '0.55rem 0.75rem',
+              padding: '0.45rem 0.85rem',
               borderRadius: '8px',
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              color: '#2563eb',
+              background: activeTab === 'orders' ? '#0f172a' : '#f8fafc',
+              color: activeTab === 'orders' ? '#ffffff' : '#475569',
+              border: activeTab === 'orders' ? '1px solid #0f172a' : '1px solid #cbd5e1',
               fontWeight: '700',
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
+              gap: '0.35rem'
+            }}
+          >
+            <History size={15} />
+            {lang === 'ar' ? 'سجل المبيعات' : 'Sales Log'}
+          </button>
+
+          {isManagerOrAdmin && (
+            <button
+              onClick={() => {
+                setEditingItem(null);
+                setIsItemModalOpen(true);
+              }}
+              className="btn-primary"
+              style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              <Plus size={15} /> {lang === 'ar' ? 'قطعة جديدة +' : 'New Part +'}
+            </button>
+          )}
+
+          <button
+            onClick={toggleLanguage}
+            style={{
+              padding: '0.45rem 0.85rem',
+              borderRadius: '8px',
+              background: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              color: '#334155',
+              fontWeight: '700',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
               fontFamily: "'Cairo', sans-serif"
             }}
           >
-            <Languages size={16} />
-            {lang === 'ar' ? '🇸🇦 العربية (نشط)' : '🇬🇧 English (Active)'}
-          </button>
-        </div>
-
-        <div className="sidebar-nav">
-          <button
-            className={`nav-item ${activeTab === 'portal' ? 'active' : ''}`}
-            onClick={() => setActiveTab('portal')}
-          >
-            <LayoutDashboard size={18} /> {lang === 'ar' ? 'الرئيسية' : 'Home Portal'}
+            <Languages size={15} />
+            {lang === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English'}
           </button>
 
-          <button
-            className={`nav-item ${activeTab === 'inventory' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inventory')}
-          >
-            <Package size={18} /> {lang === 'ar' ? 'دليل المخزون' : 'Stock Directory'}
-          </button>
-          
-          {isManagerOrAdmin && (
+          <div style={{ height: '24px', width: '1px', background: '#cbd5e1', margin: '0 0.25rem' }} />
+
+          {/* User & Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <User size={15} style={{ color: '#2563eb' }} /> {user.name || user.username}
+            </div>
             <button
-              className="nav-item"
-              onClick={() => setIsImportModalOpen(true)}
+              onClick={handleLogout}
+              style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.4rem 0.65rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: '700' }}
+              title="Log Out"
             >
-              <Languages size={18} /> {lang === 'ar' ? 'سحب مخزون PDF / Excel' : 'Import Stock (PDF / Excel)'}
+              <LogOut size={14} /> {lang === 'ar' ? 'خروج' : 'Logout'}
             </button>
-          )}
-
-          <button
-            className={`nav-item ${activeTab === 'pos' ? 'active' : ''}`}
-            onClick={() => setActiveTab('pos')}
-          >
-            <ShoppingCart size={18} /> {lang === 'ar' ? 'نقطة البيع الكاشير' : 'Counter POS Checkout'}
-          </button>
-          
-          <button
-            className={`nav-item ${activeTab === 'orders' ? 'active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            <History size={18} /> {lang === 'ar' ? 'سجل المبيعات' : 'Sales Orders Log'}
-          </button>
-
-          {isAdmin && (
-            <button
-              className="nav-item"
-              onClick={() => setIsUserMgmtOpen(true)}
-            >
-              <Users size={18} /> {lang === 'ar' ? 'إدارة المستخدمين' : 'User Accounts'}
-            </button>
-          )}
-        </div>
-
-        {/* Logged in User Profile Footer */}
-        <div style={{ padding: '0.85rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ fontWeight: '800', fontSize: '0.88rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <User size={14} style={{ color: '#2563eb' }} /> {user.name || user.username}
-            </div>
-            <div style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: '700' }}>
-              Role: {user.role}
-            </div>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer' }}
-            title="Log Out"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Screen Container */}
-      <div className="main-content">
-        {/* Top Header */}
-        <div className="top-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div>
-              <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.06em', fontWeight: '700' }}>
-                {lang === 'ar' ? 'مستودع قطع الغيار والسيارات' : 'Auto Parts & Warehouse POS'}
-              </div>
-              <div style={{ fontWeight: '800', fontSize: '1.15rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-                {lang === 'ar' ? 'موسى لقطع السيارات' : 'Mousa Car Parts Store'}
-                <span style={{ fontSize: '0.72rem', padding: '0.15rem 0.6rem', borderRadius: '12px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', fontWeight: '700' }}>
-                  🟢 Live System ({products.length} Parts)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {isManagerOrAdmin && (
-              <button
-                onClick={() => {
-                  setEditingItem(null);
-                  setIsItemModalOpen(true);
-                }}
-                className="btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-              >
-                <Plus size={16} /> New Auto Part
-              </button>
-            )}
           </div>
         </div>
+      </header>
+
+      {/* Main Screen Full Width Container */}
+      <div className="main-content" style={{ flex: 1, width: '100%', overflow: 'hidden' }}>
 
         {/* Tab Views */}
         <div style={{ flex: 1, overflow: 'hidden' }}>
