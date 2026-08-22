@@ -314,16 +314,6 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {isManagerOrAdmin && (
               <button
-                onClick={() => setIsImportModalOpen(true)}
-                className="btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
-              >
-                <Languages size={16} /> Import Stock (PDF/Excel)
-              </button>
-            )}
-
-            {isManagerOrAdmin && (
-              <button
                 onClick={() => {
                   setEditingItem(null);
                   setIsItemModalOpen(true);
