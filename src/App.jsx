@@ -194,14 +194,16 @@ export default function App() {
   return (
     <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ flexDirection: 'column', height: '100vh', width: '100vw', background: '#f4f6f9' }}>
       {/* Clean Full-Width Top Header Bar */}
-      <header style={{
-        height: '68px',
+      <header className="top-header" style={{
+        minHeight: '68px',
         background: '#ffffff',
         borderBottom: '1px solid var(--border-color)',
-        padding: '0 1.5rem',
+        padding: '0.5rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
         boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
         zIndex: 50
       }}>
