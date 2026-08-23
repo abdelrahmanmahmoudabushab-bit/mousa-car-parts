@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { UploadCloud, Download, CheckCircle2, RefreshCw, Languages, Search, Plus, Trash2, Edit2, Sparkles, MapPin, PackageCheck, AlertTriangle, Car, ShieldCheck } from 'lucide-react';
+import { UploadCloud, Download, CheckCircle2, RefreshCw, Languages, Search, Plus, Trash2, Edit2, Sparkles, MapPin, PackageCheck, AlertTriangle, Car, ShieldCheck, FileSpreadsheet } from 'lucide-react';
 import { parseExcelFile, parsePdfFile, matchProductSearch } from '../utils/documentParser';
 import VinLookupBar from './VinLookupBar';
 

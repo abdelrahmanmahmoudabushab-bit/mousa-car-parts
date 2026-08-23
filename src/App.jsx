@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
@@ -12,7 +12,36 @@ import LoginScreen from './components/LoginScreen';
 import UserManagementModal from './components/UserManagementModal';
 import CustomerStore from './components/CustomerStore';
 
-export default function App() {
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('App Uncaught UI Error:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: '#ffffff', fontFamily: "'Cairo', sans-serif", padding: '2rem', textAlign: 'center' }}>
+          <div style={{ background: '#1e293b', border: '1px solid #d97706', padding: '2rem', borderRadius: '20px', maxWidth: '500px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+            <h2 style={{ fontSize: '1.4rem', color: '#f59e0b', marginBottom: '1rem' }}>⚠️ جاري تحديث التطبيق... (App Auto Recovery)</h2>
+            <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginBottom: '1.5rem' }}>حدث تحديث في البيانات. انقر أدناه لإعادة التحميل التلقائي.</p>
+            <button onClick={() => window.location.reload()} style={{ padding: '0.75rem 1.75rem', background: '#d97706', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: '800', cursor: 'pointer' }}>
+              إعادة التحميل الآن 🔄
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function App() {
   // Auth State
   const [token, setToken] = useState(() => localStorage.getItem('mousa_pos_token') || '');
   const [user, setUser] = useState(() => {
@@ -532,5 +561,13 @@ export default function App() {
         />
       )}
     </div>
+  );
+}
+
+export default function RootApp() {
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   );
 }
