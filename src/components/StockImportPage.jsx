@@ -130,7 +130,20 @@ export default function StockImportPage({ products = [], categories = [], token,
     }
   }, [activeChoice, isCameraActive]);
 
-  // Process Scanned Serial / OEM Code
+  // Single Part Creation State for new un-matched serial codes
+  const [showNewSinglePartForm, setShowNewSinglePartForm] = useState(false);
+  const [newSinglePart, setNewSinglePart] = useState({
+    oem: '',
+    arName: '',
+    unitPrice: 20.00,
+    costPrice: 12.00,
+    quantity: 1,
+    location: 'Shelf-A1',
+    vehicleModel: 'BYD Seagull',
+    yearRange: '2023 - 2026'
+  });
+
+  // Process Scanned Serial / OEM Code for Single Part
   const processScannedCode = async (queryText) => {
     const query = (queryText || '').trim();
     if (!query) return;
@@ -144,6 +157,7 @@ export default function StockImportPage({ products = [], categories = [], token,
 
     if (itemMatch) {
       setFoundProduct(itemMatch);
+      setShowNewSinglePartForm(false);
       try {
         const res = await fetch(`/api/products/${itemMatch.id}/adjust-stock`, {
           method: 'PATCH',
@@ -156,7 +170,7 @@ export default function StockImportPage({ products = [], categories = [], token,
         const data = await res.json();
         if (data.success) {
           if (onProductsUpdated) onProductsUpdated(data.products);
-          setScanMessage(`✅ تم قراءة الباركود (${itemMatch.arName || itemMatch.oem}) وتحديث الكمية بمقدار +${scanQty}`);
+          setScanMessage(`✅ تم العثور على القطعة (${itemMatch.arName || itemMatch.oem}) وتحديث الكمية بمقدار +${scanQty}`);
           setScannedHistory(prev => [
             { id: query, oem: itemMatch.oem, name: itemMatch.arName || itemMatch.name, qtyAdded: scanQty, date: new Date().toLocaleTimeString('ar-SA') },
             ...prev
@@ -166,7 +180,58 @@ export default function StockImportPage({ products = [], categories = [], token,
         console.error(err);
       }
     } else {
-      setScanMessage(`⚠️ تم قراءة الكود: (${query}) - لم يتم العثور على قطعة مطابقة بالمستودع.`);
+      // Single Part Code is NEW -> open single part instant registration form pre-filled with query code!
+      setFoundProduct(null);
+      setNewSinglePart(prev => ({ ...prev, oem: query, arName: '', quantity: scanQty }));
+      setShowNewSinglePartForm(true);
+      setScanMessage(`ℹ️ كود السيريال/OEM جديد: (${query}). أدخل بيانات القطعة الفردية أدناه للحفظ السريع.`);
+    }
+  };
+
+  // Submit New Single Part Registration
+  const handleSaveNewSinglePart = async (e) => {
+    e.preventDefault();
+    if (!newSinglePart.oem || !newSinglePart.arName) {
+      alert('يرجى أدخال كود القطعة واسم القطعة بالعربي!');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          oem: newSinglePart.oem,
+          name: newSinglePart.arName,
+          arName: newSinglePart.arName,
+          unitPrice: parseFloat(newSinglePart.unitPrice) || 20.00,
+          costPrice: parseFloat(newSinglePart.costPrice) || 12.00,
+          quantity: parseInt(newSinglePart.quantity, 10) || 1,
+          location: newSinglePart.location || 'Shelf-A1',
+          vehicleModel: newSinglePart.vehicleModel || 'BYD Seagull',
+          yearRange: newSinglePart.yearRange || '2023 - 2026',
+          categoryId: categories[0]?.id || 'cat-body'
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (onProductsUpdated) onProductsUpdated(data.products);
+        playSuccessBeep();
+        setScanMessage(`✅ تم تسجيل وإضافة القطعة الفردية الجديدة (${newSinglePart.arName}) بنجاح!`);
+        setScannedHistory(prev => [
+          { id: newSinglePart.oem, oem: newSinglePart.oem, name: newSinglePart.arName, qtyAdded: newSinglePart.quantity, date: new Date().toLocaleTimeString('ar-SA') },
+          ...prev
+        ]);
+        setShowNewSinglePartForm(false);
+      } else {
+        alert('فشل إضافة القطعة: ' + (data.error || 'خطأ غير معروف'));
+      }
+    } catch (err) {
+      alert('خطأ في إضافة القطعة: ' + err.message);
     }
   };
 
@@ -570,9 +635,100 @@ export default function StockImportPage({ products = [], categories = [], token,
             </form>
 
             {scanMessage && (
-              <div style={{ padding: '0.85rem 1.25rem', borderRadius: '12px', background: scanMessage.includes('✅') ? '#ecfdf5' : '#fef2f2', border: scanMessage.includes('✅') ? '1px solid #a7f3d0' : '1px solid #fca5a5', color: scanMessage.includes('✅') ? '#047857' : '#b91c1c', fontWeight: '800', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+              <div style={{ padding: '0.85rem 1.25rem', borderRadius: '12px', background: scanMessage.includes('✅') ? '#ecfdf5' : '#fffbeb', border: scanMessage.includes('✅') ? '1px solid #a7f3d0' : '1px solid #fde68a', color: scanMessage.includes('✅') ? '#047857' : '#b45309', fontWeight: '800', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
                 {scanMessage}
               </div>
+            )}
+
+            {/* INSTANT SINGLE PART REGISTRATION FORM (When scanning a new OEM/Serial Code) */}
+            {showNewSinglePartForm && (
+              <form onSubmit={handleSaveNewSinglePart} style={{ background: '#f8fafc', border: '2px solid #2563eb', padding: '1.5rem', borderRadius: '16px', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>
+                    🏎️ تسجيل وإضافة قطعة فردية جديدة بالمستودع
+                  </h3>
+                  <button type="button" onClick={() => setShowNewSinglePartForm(false)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', fontWeight: '700' }}>
+                    إلغاء ×
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>كود OEM / السيريال</label>
+                    <input
+                      type="text"
+                      required
+                      value={newSinglePart.oem}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, oem: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '800', fontFamily: 'var(--font-mono)' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>اسم القطعة بالعربي</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="مثال: فحمات فرامل أمامي"
+                      value={newSinglePart.arName}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, arName: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '800', fontFamily: "'Cairo', sans-serif" }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>سعر البيع ($)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={newSinglePart.unitPrice}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, unitPrice: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '800' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>سعر التكلفة ($)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newSinglePart.costPrice}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, costPrice: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '800' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>الموديل المناسب</label>
+                    <select
+                      value={newSinglePart.vehicleModel}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, vehicleModel: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}
+                    >
+                      <option value="BYD Seagull">بي واي دي سيجول (BYD Seagull)</option>
+                      <option value="BYD Dolphin">بي واي دي دولفين (BYD Dolphin)</option>
+                      <option value="BYD Atto 3">بي واي دي أتو 3 (BYD Atto 3)</option>
+                      <option value="BYD Tang">بي واي دي تانج (BYD Tang)</option>
+                      <option value="BYD Han">بي واي دي هان (BYD Han)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '0.3rem' }}>رقم الرف / المستودع</label>
+                    <input
+                      type="text"
+                      value={newSinglePart.location}
+                      onChange={e => setNewSinglePart(prev => ({ ...prev, location: e.target.value }))}
+                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '700' }}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-sand" style={{ padding: '0.75rem 1.75rem', fontSize: '0.95rem', fontWeight: '800', width: '100%', borderRadius: '10px' }}>
+                  تأكيد وإضافة القطعة الفردية الجديدة للمخزون ➕
+                </button>
+              </form>
             )}
 
             {/* SCANNED HISTORY LIST */}
