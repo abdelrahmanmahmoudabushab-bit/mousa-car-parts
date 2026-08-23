@@ -292,9 +292,9 @@ if (fs.existsSync(distCustomerPath)) {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`⚡ Mousa Auto Parts Production Server running on http://localhost:${PORT}`);
-  console.log(`   - Cashier POS Counter: http://localhost:${PORT}/`);
-  console.log(`   - Customer Web Store:  http://localhost:${PORT}/customer`);
-  console.log(`   - Live Database:       ${isSupabaseConfigured() ? 'Supabase PostgreSQL' : 'Local JSON'}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`⚡ Mousa Auto Parts Server running on http://0.0.0.0:${PORT}`);
+  console.log(`   - Cashier POS Counter: http://localhost:${PORT}/pos`);
+  console.log(`   - Customer Web Store:  http://localhost:${PORT}/`);
+  console.log(`   - Mobile Wi-Fi Access: http://192.168.100.54:${PORT}/pos`);
 });
