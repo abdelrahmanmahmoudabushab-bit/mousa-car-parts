@@ -167,6 +167,38 @@ export default function LightStockManager({ products, categories, token, onProdu
     return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
+  // Export Current Filtered Directory to Excel CSV
+  const handleExportCurrentToExcel = () => {
+    const headers = ['Row', 'OEM Code', 'Arabic Name', 'Category', 'Vehicle Model', 'Location', 'Cost Price ($)', 'Unit Price ($)', 'Profit Margin (%)', 'Quantity', 'Total Valuation ($)'];
+    const rows = filteredProducts.map((p, i) => {
+      const margin = p.costPrice > 0 ? (((p.unitPrice - p.costPrice) / p.costPrice) * 100).toFixed(1) : '0.0';
+      const lineTotal = (p.costPrice * p.quantity).toFixed(2);
+      return [
+        i + 1,
+        `"${p.oem || ''}"`,
+        `"${p.arName || p.name || ''}"`,
+        `"${categories.find(c => c.id === p.categoryId)?.name || 'General'}"`,
+        `"${p.vehicleModel || 'BYD Seagull'}"`,
+        `"${p.location || 'Shelf-A1'}"`,
+        (p.costPrice || 0).toFixed(2),
+        (p.unitPrice || 0).toFixed(2),
+        `${margin}%`,
+        p.quantity || 0,
+        lineTotal
+      ].join(',');
+    });
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Mousa_Car_Parts_Inventory_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto', background: '#f8fafc', fontFamily: "'Cairo', sans-serif" }}>
       
@@ -241,19 +273,28 @@ export default function LightStockManager({ products, categories, token, onProdu
             </select>
           </div>
 
-          <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.35rem 0.85rem', borderRadius: '10px' }}>
-            نتائج البحث: {filteredProducts.length} قطعة متطابقة من أصل {products.length}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={handleExportCurrentToExcel}
+              style={{ padding: '0.45rem 0.95rem', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontWeight: '800', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+            >
+              <Download size={16} /> تصدير ملف Excel 📊
+            </button>
+
+            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.35rem 0.85rem', borderRadius: '10px' }}>
+              نتائج البحث: {filteredProducts.length} قطعة
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 📊 EXCEL SPREADSHEET TABLE VIEW */}
+      {/* 📊 ADVANCED EXCEL SPREADSHEET TABLE VIEW */}
       <div style={{ background: '#ffffff', border: '2px solid #cbd5e1', borderRadius: '16px', padding: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', flex: 1 }}>
         
         {/* Pagination Bar Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', paddingBottom: '0.65rem', borderBottom: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.9rem', color: '#0f172a', fontWeight: '800' }}>
-            جدول بيانات المستودع (Excel Inventory Sheet)
+          <span style={{ fontSize: '0.92rem', color: '#0f172a', fontWeight: '800' }}>
+            جدول بيانات المستودع التفاعلي (Excel Interactive Sheet)
           </span>
 
           {totalPages > 1 && (
@@ -279,68 +320,142 @@ export default function LightStockManager({ products, categories, token, onProdu
           )}
         </div>
 
-        {/* EXCEL SHEET DATA GRID */}
+        {/* EXCEL SHEET DATA GRID WITH RICH COLUMNS & SUMMARY FOOTER */}
         <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, border: '1px solid #cbd5e1', borderRadius: '10px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', textWrap: 'nowrap' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textWrap: 'nowrap' }}>
             <thead>
-              <tr style={{ background: '#0f172a', color: '#ffffff', fontSize: '0.85rem', fontWeight: '800', borderBottom: '2px solid #0f172a' }}>
-                <th style={{ padding: '0.75rem', width: '50px', textAlign: 'center', borderRight: '1px solid #334155' }}>#</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>كود OEM / السيريال</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>اسم القطعة بالعربي</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>الموديل والسنوات</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>رقم الرف</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>سعر التكلفة ($)</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>سعر البيع ($)</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>الكمية</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>الإجراءات</th>
+              <tr style={{ background: '#0f172a', color: '#ffffff', fontSize: '0.84rem', fontWeight: '800', borderBottom: '2px solid #0f172a' }}>
+                <th style={{ padding: '0.75rem', width: '45px', textAlign: 'center', borderRight: '1px solid #334155' }}>#</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>حالة المخزون</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>كود OEM / السيريال</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>اسم القطعة بالعربي</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>التصنيف</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>الموديل والسنوات</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>موقع الرف</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>التكلفة ($)</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>سعر البيع ($)</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>هامش الربح</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>إجمالي قيمة الصنف ($)</th>
+                <th style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #334155' }}>الكمية</th>
+                <th style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {displayedProducts.map((p, index) => {
                 const globalRowIndex = ((currentPage - 1) * ITEMS_PER_PAGE) + index + 1;
                 const isEven = index % 2 === 0;
+                const catName = categories.find(c => c.id === p.categoryId)?.name || 'General';
+                const cost = Number(p.costPrice) || 0;
+                const retail = Number(p.unitPrice) || 0;
+                const qty = p.quantity || 0;
+                const lineTotal = (cost * qty).toFixed(2);
+                const marginPercent = cost > 0 ? (((retail - cost) / cost) * 100).toFixed(1) : '0.0';
+
                 return (
                   <tr key={p.id} style={{ background: isEven ? '#ffffff' : '#f8fafc', borderBottom: '1px solid #cbd5e1' }}>
-                    <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center', fontWeight: '700', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>
+                    <td style={{ padding: '0.6rem 0.65rem', textAlign: 'center', fontWeight: '700', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>
                       {globalRowIndex}
                     </td>
 
-                    <td className="mono" style={{ padding: '0.65rem 1rem', fontWeight: '800', color: '#d97706', borderRight: '1px solid #e2e8f0', fontSize: '0.92rem' }}>
+                    <td style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0' }}>
+                      {qty > 3 ? (
+                        <span style={{ fontSize: '0.75rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: '800' }}>
+                          متوفر 🟢
+                        </span>
+                      ) : qty > 0 ? (
+                        <span style={{ fontSize: '0.75rem', background: '#fffbeb', border: '1px solid #fde68a', color: '#b45309', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: '800' }}>
+                          قليل ⚠️
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: '800' }}>
+                          منتهي ❌
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="mono" style={{ padding: '0.6rem 0.85rem', fontWeight: '800', color: '#d97706', borderRight: '1px solid #e2e8f0', fontSize: '0.9rem' }}>
                       {p.oem}
                     </td>
 
-                    <td style={{ padding: '0.65rem 1rem', fontWeight: '800', color: '#0f172a', borderRight: '1px solid #e2e8f0' }}>
+                    <td style={{ padding: '0.6rem 0.85rem', fontWeight: '800', color: '#0f172a', borderRight: '1px solid #e2e8f0' }}>
                       {p.arName || p.name}
                     </td>
 
-                    <td style={{ padding: '0.65rem 1rem', borderRight: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: '0.78rem', background: '#fffbeb', border: '1px solid #fde68a', color: '#b45309', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: '700' }}>
+                    <td style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
+                      {catName}
+                    </td>
+
+                    <td style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: '700' }}>
                         🚗 {p.vehicleModel || 'BYD Seagull'}
                       </span>
                     </td>
 
-                    <td style={{ padding: '0.65rem 1rem', borderRight: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
+                    <td style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
                       📌 {p.location || 'Shelf-A1'}
                     </td>
 
-                    <td className="mono" style={{ padding: '0.65rem 1rem', borderRight: '1px solid #e2e8f0', fontWeight: '700', color: '#475569' }}>
-                      ${(Number(p.costPrice) || 0).toFixed(2)}
+                    <td className="mono" style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', fontWeight: '700', color: '#475569' }}>
+                      ${cost.toFixed(2)}
                     </td>
 
-                    <td className="mono" style={{ padding: '0.65rem 1rem', borderRight: '1px solid #e2e8f0', fontWeight: '900', color: '#0f172a', fontSize: '1rem' }}>
-                      ${(Number(p.unitPrice) || 0).toFixed(2)}
+                    <td className="mono" style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', fontWeight: '900', color: '#0f172a', fontSize: '0.95rem' }}>
+                      ${retail.toFixed(2)}
                     </td>
 
-                    <td style={{ padding: '0.65rem 1rem', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem' }}>
-                        <button onClick={() => onEditItem(p)} style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', color: '#0f172a', fontWeight: '700', fontSize: '0.78rem' }}>تعديل ✏️</button>
-                        <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', fontWeight: '700', fontSize: '0.78rem' }}>حذف 🗑️</button>
+                    <td className="mono" style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', fontWeight: '800', color: '#047857' }}>
+                      +{marginPercent}%
+                    </td>
+
+                    <td className="mono" style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0', fontWeight: '800', color: '#d97706' }}>
+                      ${lineTotal}
+                    </td>
+
+                    <td style={{ padding: '0.6rem 0.85rem', borderRight: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '24px', height: '24px', borderRadius: '5px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>-</button>
+                        <span className="mono" style={{ fontWeight: '900', minWidth: '24px', textAlign: 'center', fontSize: '0.95rem', color: qty <= 3 ? '#b45309' : '#047857' }}>
+                          {qty}
+                        </span>
+                        <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '24px', height: '24px', borderRadius: '5px', background: '#e2e8f0', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>+</button>
+                      </div>
+                    </td>
+
+                    <td style={{ padding: '0.6rem 0.85rem', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.35rem' }}>
+                        <button onClick={() => onEditItem(p)} style={{ padding: '0.3rem 0.55rem', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', color: '#0f172a', fontWeight: '700', fontSize: '0.75rem' }}>تعديل ✏️</button>
+                        <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.3rem 0.55rem', borderRadius: '6px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', fontWeight: '700', fontSize: '0.75rem' }}>حذف 🗑️</button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
+
+            {/* EXCEL SUMMARY FOOTER ROW */}
+            <tfoot>
+              <tr style={{ background: '#f1f5f9', borderTop: '2px solid #0f172a', fontWeight: '900', color: '#0f172a', fontSize: '0.88rem' }}>
+                <td colSpan={7} style={{ padding: '0.75rem 1rem', borderRight: '1px solid #cbd5e1' }}>
+                  إجمالي ملخص الجدول السطر الختامي (Excel Summary Totals) 📊
+                </td>
+                <td className="mono" style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #cbd5e1', color: '#475569' }}>
+                  -${filteredProducts.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td className="mono" style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #cbd5e1', color: '#0f172a' }}>
+                  ${filteredProducts.reduce((acc, p) => acc + (p.unitPrice * p.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td className="mono" style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #cbd5e1', color: '#047857' }}>
+                  +{( ( (filteredProducts.reduce((acc, p) => acc + (p.unitPrice * p.quantity), 0) - filteredProducts.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0)) / (filteredProducts.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0) || 1) ) * 100).toFixed(1)}%
+                </td>
+                <td className="mono" style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #cbd5e1', color: '#d97706' }}>
+                  ${filteredProducts.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td className="mono" style={{ padding: '0.75rem 0.85rem', borderRight: '1px solid #cbd5e1', color: '#047857' }}>
+                  +{filteredProducts.reduce((acc, p) => acc + p.quantity, 0).toLocaleString()} قطعة
+                </td>
+                <td style={{ textAlign: 'center' }}>-</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
 
