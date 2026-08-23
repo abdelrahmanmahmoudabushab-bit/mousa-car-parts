@@ -7,6 +7,7 @@ import ReceiptModal from './components/ReceiptModal';
 import OrdersLog from './components/OrdersLog';
 import StockImportModal from './components/StockImportModal';
 import LightStockManager from './components/LightStockManager';
+import StockImportPage from './components/StockImportPage';
 import LoginScreen from './components/LoginScreen';
 import UserManagementModal from './components/UserManagementModal';
 import CustomerStore from './components/CustomerStore';
@@ -395,10 +396,7 @@ export default function App() {
 
                     {/* CHOICE 3: STOCK INGESTION & ENTRY (إدخال مخزون) */}
                     <div
-                      onClick={() => {
-                        setActiveTab('inventory');
-                        setIsImportModalOpen(true);
-                      }}
+                      onClick={() => setActiveTab('import')}
                       style={{
                         background: '#ffffff',
                         border: '2px solid #d97706',
@@ -420,7 +418,7 @@ export default function App() {
                           {lang === 'ar' ? 'إدخال مخزون' : 'Stock Import & Entry'}
                         </h2>
                         <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
-                          {lang === 'ar' ? 'سحب وتحديث قطع الغيار من ملفات Excel / PDF وإدخال شحنات المخزون الجديد' : 'Import and bulk update OEM auto parts from Excel, PDF, or invoice files.'}
+                          {lang === 'ar' ? 'سحب وتحديث قطع الغيار من ملفات Excel / PDF أو مسح السيريال كود والباركود' : 'Import parts from PDF/Excel or scan QR & serial barcode numbers.'}
                         </p>
                       </div>
 
@@ -431,6 +429,17 @@ export default function App() {
 
                   </div>
                 </div>
+              )}
+
+              {activeTab === 'import' && (
+                <StockImportPage
+                  products={products}
+                  categories={categories}
+                  token={token}
+                  lang={lang}
+                  onProductsUpdated={(updated) => setProducts(updated)}
+                  onBackToPortal={() => setActiveTab('portal')}
+                />
               )}
 
               {activeTab === 'inventory' && (
