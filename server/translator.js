@@ -72,11 +72,13 @@ const dictionary = {
   '节温器': 'ثرموستات الحرارة',
   '发电机': 'دينامو الشحن',
   '起动机': 'سلف التشغيل',
+  '按照': 'قطع غيار أصلي المصنع',
   '原厂': 'قطع غيار أصلي المصنع'
 };
 
 // Sub-term Component Glossary (Sorted by length descending for greedy matching)
 const termGlossary = [
+  { cn: '按照', ar: 'قطع غيار أصلي المصنع' },
   { cn: '右前门裙板饰条', ar: 'شريط تزيين تنورة الباب الأمامي الأيمن' },
   { cn: '左前门裙板饰条', ar: 'شريط تزيين تنورة الباب الأمامي الأيسر' },
   { cn: '右后门裙板饰条', ar: 'شريط تزيين تنورة الباب الخلفي الأيمن' },
@@ -175,7 +177,10 @@ function buildOfflineArabic(text) {
   }
 
   // Strip any unmapped Chinese characters to ensure 100% clean Arabic output
-  result = result.replace(/[\u4e00-\u9fa5]+/g, '');
+  result = result.replace(/[\u4e00-\u9fa5]+/g, '').trim();
+  if (!result) {
+    result = 'قطع غيار أصلي المصنع';
+  }
 
   // Re-order 'تجميعة' (assembly) to the front if present
   if (result.includes('تجميعة') && !result.startsWith('تجميعة')) {
