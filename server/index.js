@@ -28,23 +28,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Native GZIP Response Compression for High User Load (Up to 8x faster data transfers)
-app.use((req, res, next) => {
-  const acceptEncoding = req.headers['accept-encoding'] || '';
-  if (!acceptEncoding.includes('gzip')) return next();
-
-  const originalSend = res.send;
-  res.send = function (body) {
-    if (typeof body === 'string' && body.length > 1024) {
-      res.set('Content-Encoding', 'gzip');
-      const compressed = zlib.gzipSync(body);
-      return originalSend.call(this, compressed);
-    }
-    return originalSend.call(this, body);
-  };
-  next();
-});
-
 // -------------------------------------------------------------
 // AUTHENTICATION ENDPOINTS
 // -------------------------------------------------------------
@@ -121,9 +104,12 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 async function getCachedBootstrapData() {
   const now = Date.now();
-  if (memoryCache.products && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
+  if (memoryCache.products && memoryCache.products.length >= 7000 && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
     return memoryCache;
   }
+
+  const localProds = db.getProducts();
+  const localCats = db.getCategories();
 
   if (isSupabaseConfigured()) {
     try {
@@ -133,8 +119,8 @@ async function getCachedBootstrapData() {
       ]);
 
       if (sbProducts && sbProducts.length > 0) {
-        memoryCache.products = sbProducts;
-        memoryCache.categories = sbCategories.length > 0 ? sbCategories : db.getCategories();
+        memoryCache.products = sbProducts.length > localProds.length ? sbProducts : localProds;
+        memoryCache.categories = sbCategories.length > 0 ? sbCategories : localCats;
         memoryCache.lastUpdated = now;
         return memoryCache;
       }
@@ -143,8 +129,8 @@ async function getCachedBootstrapData() {
     }
   }
 
-  memoryCache.products = db.getProducts();
-  memoryCache.categories = db.getCategories();
+  memoryCache.products = localProds;
+  memoryCache.categories = localCats;
   memoryCache.lastUpdated = now;
   return memoryCache;
 }
@@ -167,6 +153,11 @@ app.get('/api/bootstrap', async (req, res) => {
       dbSource: 'Local JSON Fallback'
     });
   }
+});
+
+// GET All Products Directly
+app.get('/api/products', (req, res) => {
+  res.json({ success: true, products: db.getProducts(), categories: db.getCategories() });
 });
 
 // GET VIN Lookup
