@@ -15,15 +15,15 @@ export default function StockImportModal({ products, categories, token, onClose,
 
   // Demo file generator for instant user testing
   const handleDownloadDemoFile = () => {
-    const csvContent = `OEM Part No,Chinese Name (中文名),Cost Price (USD),Quantity incoming,Vehicle Model
-EQEA-5402841,右前门裙板,42.00,15,BYD Seagull
-EQEA-8403019/70,右翼子板总成 M00666,85.00,10,BYD Seagull
-ST-6206109,右后门上铰链总成,12.00,25,BYD Seagull
-EQEA-2803411,前保险杠右支架,9.00,30,BYD Seagull
-EQEA-5302430,左后轮眉装饰板总成,22.00,12,BYD Seagull
-EQEA-7701100,前大灯总成 (新到货),120.00,8,BYD Seagull
-EQEA-6101200,外后视镜总成 (电动),65.00,14,BYD Seagull
-EQEA-3501100,前刹车片总成,28.00,40,BYD Seagull`;
+    const csvContent = `OEM Part No,Arabic Name (اسم القطعة بالعربي),Cost Price (USD),Quantity incoming,Vehicle Model
+EQEA-5402841,تنورة الباب الأمامي الأيمن,42.00,15,BYD Seagull
+EQEA-8403019/70,تجميعة الرفرف الأيمن,85.00,10,BYD Seagull
+ST-6206109,تجميعة المفصلة العلوية للباب الخلفي الأيمن,12.00,25,BYD Seagull
+EQEA-2803411,حامل المصد الأمامي الأيمن,9.00,30,BYD Seagull
+EQEA-5302430,تجميعة شريط تزيين حافة العجلة الخلفية اليسرى,22.00,12,BYD Seagull
+EQEA-7701100,تجميعة الكشاف الأمامي (جديد),120.00,8,BYD Seagull
+EQEA-6101200,تجميعة المرآة الجانبية الخارجية (كهربائي),65.00,14,BYD Seagull
+EQEA-3501100,فحمات الفرامل الأمامية,28.00,40,BYD Seagull`;
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -332,7 +332,7 @@ EQEA-3501100,前刹车片总成,28.00,40,BYD Seagull`;
                         <th style={{ padding: '0.75rem 1rem', width: '40px' }}>Import</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Status</th>
                         <th style={{ padding: '0.75rem 1rem' }}>OEM / Part No</th>
-                        <th style={{ padding: '0.75rem 1rem' }}>Chinese Name (中文名)</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>اسم الفاتورة الأصلية</th>
                         <th style={{ padding: '0.75rem 1rem', color: '#34d399' }}>Arabic Translation (الاسم بالعربي)</th>
                         <th style={{ padding: '0.75rem 1rem', width: '90px' }}>Cost ($)</th>
                         <th style={{ padding: '0.75rem 1rem', width: '90px' }}>Price ($)</th>

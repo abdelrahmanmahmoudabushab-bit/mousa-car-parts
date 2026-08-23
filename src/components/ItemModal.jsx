@@ -8,7 +8,7 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
     name: '',
     cnName: '',
     arName: '',
-    vehicleModel: 'BYD Seagull (海鸥)',
+    vehicleModel: 'BYD Seagull',
     categoryId: categories[0] ? categories[0].id : '',
     costPrice: '',
     unitPrice: '',
@@ -27,7 +27,7 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
         name: item.name || '',
         cnName: item.cnName || '',
         arName: item.arName || '',
-        vehicleModel: item.vehicleModel || 'BYD Seagull (海鸥)',
+        vehicleModel: item.vehicleModel || 'BYD Seagull',
         categoryId: item.categoryId || (categories[0] ? categories[0].id : ''),
         costPrice: item.costPrice || '',
         unitPrice: item.unitPrice || '',
@@ -59,7 +59,7 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: '580px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '800' }}>{item ? 'Edit OEM Auto Part' : 'Add New OEM Auto Part'}</h2>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '800' }}>{item ? 'تعديل قطعة غيار OEM' : 'إضافة قطعة غيار OEM جديدة'}</h2>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
             <X size={22} />
           </button>
@@ -68,10 +68,10 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>OEM Part Number *</label>
+              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>رقم القطعة (OEM Code) *</label>
               <input
                 type="text"
-                placeholder="e.g. EQEA-5402841"
+                placeholder="مثال: EQEA-5402841"
                 value={formData.oem}
                 onChange={e => setFormData({ ...formData, oem: e.target.value, sku: e.target.value })}
                 className="input-field-sm"
@@ -81,27 +81,27 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Vehicle Model</label>
+              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>الموديل المتوافق</label>
               <select
                 value={formData.vehicleModel}
                 onChange={e => setFormData({ ...formData, vehicleModel: e.target.value })}
                 className="input-field-sm"
               >
-                <option value="BYD Seagull (海鸥)">BYD Seagull (海鸥)</option>
-                <option value="BYD Dolphin (海豚)">BYD Dolphin (海豚)</option>
-                <option value="BYD Atto 3 (元PLUS)">BYD Atto 3 (元PLUS)</option>
-                <option value="BYD Tang (唐)">BYD Tang (唐)</option>
-                <option value="BYD Han (汉)">BYD Han (汉)</option>
+                <option value="BYD Seagull">بي واي دي سيجول (BYD Seagull)</option>
+                <option value="BYD Dolphin">بي واي دي دولفين (BYD Dolphin)</option>
+                <option value="BYD Atto 3">بي واي دي أتو 3 (BYD Atto 3)</option>
+                <option value="BYD Tang">بي واي دي تانج (BYD Tang)</option>
+                <option value="BYD Han">بي واي دي هان (BYD Han)</option>
               </select>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Compatible Years</label>
+              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>سنوات الصنع</label>
               <input
                 type="text"
-                placeholder="e.g. 2023 - 2026"
+                placeholder="مثال: 2023 - 2026"
                 value={formData.yearRange || '2023 - 2026'}
                 onChange={e => setFormData({ ...formData, yearRange: e.target.value })}
                 className="input-field-sm"
@@ -109,10 +109,10 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>VIN / Chassis Pattern (Optional)</label>
+              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>رقم الهيكل VIN</label>
               <input
                 type="text"
-                placeholder="e.g. EQEA / LC0"
+                placeholder="مثال: EQEA / LC0"
                 value={formData.vinPattern || ''}
                 onChange={e => setFormData({ ...formData, vinPattern: e.target.value })}
                 className="input-field-sm"
@@ -122,7 +122,7 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-            <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>English Part Title *</label>
+            <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>اسم القطعة بالإنجليزية *</label>
             <input
               type="text"
               placeholder="e.g. Right Front Door Skirt Panel"
@@ -135,10 +135,10 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: '600' }}>Arabic Translation (الاسم بالعربي)</label>
+              <label style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: '600' }}>اسم القطعة بالعربي</label>
               <input
                 type="text"
-                placeholder="e.g. حافة الباب الأمامي الأيمن"
+                placeholder="مثال: تنورة الباب الأمامي الأيمن"
                 value={formData.arName || ''}
                 onChange={e => setFormData({ ...formData, arName: e.target.value })}
                 dir="rtl"
@@ -148,10 +148,10 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>Chinese Spec (中文名)</label>
+              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>مواصفات القطعة الإضافية</label>
               <input
                 type="text"
-                placeholder="e.g. 右前门裙板"
+                placeholder="مثال: تنورة الباب الأمامي الأيمن"
                 value={formData.cnName}
                 onChange={e => setFormData({ ...formData, cnName: e.target.value })}
                 className="input-field-sm"

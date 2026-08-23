@@ -135,7 +135,7 @@ export async function parseExcelFile(file) {
             costPrice: 0,
             unitPrice: 0,
             quantity: 1,
-            vehicleModel: 'BYD Seagull (海鸥)',
+            vehicleModel: 'BYD Seagull',
             category: 'cat-body',
             location: 'Main Warehouse',
             confidence: 100 // Default high confidence
@@ -314,7 +314,7 @@ export async function parsePdfFile(file) {
             costPrice: costPrice || 25,
             unitPrice: unitPrice || 45,
             quantity: quantity || 10,
-            vehicleModel: 'BYD Seagull (海鸥)',
+            vehicleModel: 'BYD Seagull',
             category: 'cat-body',
             location: 'Aisle 1',
             confidence: Math.min(100, score)

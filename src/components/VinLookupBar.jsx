@@ -4,11 +4,11 @@ import { Car, Search, XCircle } from 'lucide-react';
 export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit, selectedModel, onModelChange, selectedYear, onYearChange, matchedCount, totalCount }) {
   const models = [
     { id: 'all', name: 'جميع موديلات BYD' },
-    { id: 'BYD Seagull', name: 'بي واي دي سيجول (Seagull - 海鸥)' },
-    { id: 'BYD Dolphin', name: 'بي واي دي دولفين (Dolphin - 海豚)' },
-    { id: 'BYD Atto 3', name: 'بي واي دي أتو 3 (Atto 3 - 元PLUS)' },
-    { id: 'BYD Tang', name: 'بي واي دي تانج (Tang - 唐)' },
-    { id: 'BYD Han', name: 'بي واي دي هان (Han - 汉)' }
+    { id: 'BYD Seagull', name: 'بي واي دي سيجول (BYD Seagull)' },
+    { id: 'BYD Dolphin', name: 'بي واي دي دولفين (BYD Dolphin)' },
+    { id: 'BYD Atto 3', name: 'بي واي دي أتو 3 (BYD Atto 3)' },
+    { id: 'BYD Tang', name: 'بي واي دي تانج (BYD Tang)' },
+    { id: 'BYD Han', name: 'بي واي دي هان (BYD Han)' }
   ];
 
   const years = ['all', '2026', '2025', '2024', '2023', '2022'];
@@ -33,7 +33,7 @@ export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit
             value={searchVal}
             onChange={(e) => onSearchChange(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && onSearchSubmit) onSearchSubmit(); }}
-            placeholder="ابحث برقم OEM، رقم الهيكل VIN، اسم القطعة بالعربي أو الصيني (فحمات، صدام، هوبات)..."
+            placeholder="ابحث برقم OEM، رقم الهيكل VIN، أو اسم القطعة بالعربي (فحمات، صدام، هوبات)..."
             style={{
               width: '100%',
               height: '52px',
