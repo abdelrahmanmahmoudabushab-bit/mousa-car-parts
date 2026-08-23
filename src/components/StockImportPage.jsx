@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FileText, QrCode, UploadCloud, Download, Search, CheckCircle2, RefreshCw, ArrowRight, Barcode, Plus, Trash2, ShieldCheck, MapPin } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FileText, QrCode, UploadCloud, Download, Search, CheckCircle2, RefreshCw, ArrowRight, Barcode, Plus, Trash2, ShieldCheck, MapPin, Camera, CameraOff, Volume2 } from 'lucide-react';
 import { parseExcelFile, parsePdfFile } from '../utils/documentParser';
 
 export default function StockImportPage({ products = [], categories = [], token, lang = 'ar', onProductsUpdated, onBackToPortal }) {
@@ -18,6 +18,157 @@ export default function StockImportPage({ products = [], categories = [], token,
   const [scannedHistory, setScannedHistory] = useState([]);
   const [foundProduct, setFoundProduct] = useState(null);
   const [scanMessage, setScanMessage] = useState('');
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState('');
+  const html5QrcodeRef = useRef(null);
+
+  // Instant Audio Beep on Successful Mobile Barcode Scan
+  const playSuccessBeep = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // High clear A5 confirmation note
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch (e) {
+      console.log('Audio playback prevented or unsupported:', e);
+    }
+  };
+
+  // Start Mobile Camera Scanner
+  const startCameraScanner = () => {
+    setCameraError('');
+    setIsCameraActive(true);
+  };
+
+  // Stop Mobile Camera Scanner
+  const stopCameraScanner = () => {
+    if (html5QrcodeRef.current) {
+      try {
+        html5QrcodeRef.current.stop().then(() => {
+          html5QrcodeRef.current.clear();
+        }).catch(err => console.error(err));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setIsCameraActive(false);
+  };
+
+  // Load html5-qrcode script & start scanner on mobile
+  useEffect(() => {
+    if (activeChoice === 'qr' && isCameraActive) {
+      let isMounted = true;
+
+      const initScanner = () => {
+        if (!window.Html5Qrcode || !isMounted) return;
+
+        try {
+          const scanner = new window.Html5Qrcode("interactive-camera-reader");
+          html5QrcodeRef.current = scanner;
+
+          const config = {
+            fps: 15,
+            qrbox: { width: 280, height: 180 },
+            aspectRatio: 1.333334
+          };
+
+          scanner.start(
+            { facingMode: "environment" }, // Rear phone camera
+            config,
+            (decodedText) => {
+              playSuccessBeep();
+              processScannedCode(decodedText);
+            },
+            () => {}
+          ).catch(err => {
+            console.warn("Camera fallback to default camera:", err);
+            // Fallback to any available camera if facingMode environment fails
+            scanner.start(
+              { facingMode: "user" },
+              config,
+              (decodedText) => {
+                playSuccessBeep();
+                processScannedCode(decodedText);
+              },
+              () => {}
+            ).catch(e => {
+              setCameraError(lang === 'ar' ? 'تعذر فتح كاميرا الهاتف. يرجي السماح بالصلاحيات.' : 'Could not access phone camera. Please grant camera permission.');
+              setIsCameraActive(false);
+            });
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      if (!window.Html5Qrcode) {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        script.async = true;
+        script.onload = () => {
+          if (isMounted) initScanner();
+        };
+        document.body.appendChild(script);
+      } else {
+        initScanner();
+      }
+
+      return () => {
+        isMounted = false;
+        if (html5QrcodeRef.current) {
+          try {
+            html5QrcodeRef.current.stop().then(() => html5QrcodeRef.current?.clear()).catch(() => {});
+          } catch (e) {}
+        }
+      };
+    }
+  }, [activeChoice, isCameraActive]);
+
+  // Process Scanned Serial / OEM Code
+  const processScannedCode = async (queryText) => {
+    const query = (queryText || '').trim();
+    if (!query) return;
+
+    // Look for matching product by OEM, Barcode, SKU, or Serial
+    const itemMatch = products.find(p => 
+      (p.oem || '').toLowerCase() === query.toLowerCase() ||
+      (p.sku || '').toLowerCase() === query.toLowerCase() ||
+      (p.id || '').toLowerCase() === query.toLowerCase()
+    );
+
+    if (itemMatch) {
+      setFoundProduct(itemMatch);
+      try {
+        const res = await fetch(`/api/products/${itemMatch.id}/adjust-stock`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ adjustment: scanQty })
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (onProductsUpdated) onProductsUpdated(data.products);
+          setScanMessage(`✅ تم قراءة الباركود (${itemMatch.arName || itemMatch.oem}) وتحديث الكمية بمقدار +${scanQty}`);
+          setScannedHistory(prev => [
+            { id: query, oem: itemMatch.oem, name: itemMatch.arName || itemMatch.name, qtyAdded: scanQty, date: new Date().toLocaleTimeString('ar-SA') },
+            ...prev
+          ]);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setScanMessage(`⚠️ تم قراءة الكود: (${query}) - لم يتم العثور على قطعة مطابقة بالمستودع.`);
+    }
+  };
 
   // Handle PDF/Excel Upload
   const handleFileUpload = async (selectedFile) => {
@@ -43,7 +194,6 @@ export default function StockImportPage({ products = [], categories = [], token,
 
       setLoadingMsg(lang === 'ar' ? 'جاري ترجمة أسماء القطع وإقرانها ببيانات المستودع...' : 'Translating auto parts...');
 
-      // Translate via backend API
       const res = await fetch('/api/import/translate-batch', {
         method: 'POST',
         headers: {
@@ -111,48 +261,13 @@ export default function StockImportPage({ products = [], categories = [], token,
     }
   };
 
-  // Handle Barcode / QR Serial Scan
-  const handleSerialScan = async (e) => {
+  // Manual Input Submit
+  const handleSerialScan = (e) => {
     e.preventDefault();
-    const query = scannedSerial.trim();
-    if (!query) return;
-
-    // Look for matching product by OEM, Barcode, SKU, or Serial
-    const itemMatch = products.find(p => 
-      (p.oem || '').toLowerCase() === query.toLowerCase() ||
-      (p.sku || '').toLowerCase() === query.toLowerCase() ||
-      (p.id || '').toLowerCase() === query.toLowerCase()
-    );
-
-    if (itemMatch) {
-      setFoundProduct(itemMatch);
-      // Automatically increment stock on server
-      try {
-        const res = await fetch(`/api/products/${itemMatch.id}/adjust-stock`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ adjustment: scanQty })
-        });
-        const data = await res.json();
-        if (data.success) {
-          if (onProductsUpdated) onProductsUpdated(data.products);
-          setScanMessage(`✅ تم تحديث كمية القطعة (${itemMatch.arName || itemMatch.oem}) بمقدار +${scanQty}`);
-          setScannedHistory(prev => [
-            { id: query, oem: itemMatch.oem, name: itemMatch.arName || itemMatch.name, qtyAdded: scanQty, date: new Date().toLocaleTimeString('ar-SA') },
-            ...prev
-          ]);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      setScanMessage(`⚠️ لم يتم العثور على قطعة برقم السيريال/OEM: (${query}). يمكن إضافتها يدويًا.`);
+    if (scannedSerial) {
+      processScannedCode(scannedSerial);
+      setScannedSerial('');
     }
-
-    setScannedSerial('');
   };
 
   return (
@@ -176,7 +291,7 @@ export default function StockImportPage({ products = [], categories = [], token,
 
         {onBackToPortal && (
           <button
-            onClick={onBackToPortal}
+            onClick={() => { stopCameraScanner(); onBackToPortal(); }}
             style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
           >
             <ArrowRight size={16} /> العودة للرئيسية
@@ -245,15 +360,15 @@ export default function StockImportPage({ products = [], categories = [], token,
                   <QrCode size={32} />
                 </div>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                  📷 مسح البار كود / QR (قراءة الرقم التسلسلي)
+                  📷 مسح البار كود / QR (كاميرا الهاتف & السيريال)
                 </h2>
                 <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.6', margin: 0, fontWeight: '600' }}>
-                  استخدم قارئ الباركود أو الكاميرا لقراءة الرقم التسلسلي (Serial Number) ورقم الهيكل OEM لزيادة الكميات بالمستودع فورًا وتتبع الشحنات.
+                  افتح كاميرا الهاتف المحمول لقراءة الباركود والسيريال كود سريعًا في التو واللحظة لتحديث كميات المستودع وتأكيد الشحنات الواردة.
                 </p>
               </div>
 
               <button className="btn-sand" style={{ marginTop: '2rem', padding: '0.9rem', fontSize: '1rem', fontWeight: '800', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <Barcode size={20} /> مسح السيريال كود 📷
+                <Camera size={20} /> مسح بواسطة كاميرا الهاتف 📷
               </button>
             </div>
 
@@ -293,7 +408,7 @@ export default function StockImportPage({ products = [], categories = [], token,
               >
                 <UploadCloud size={48} style={{ color: '#2563eb', marginBottom: '1rem' }} />
                 <h3 style={{ fontSize: '1.2rem', fontWeight: '800', margin: '0 0 0.5rem 0' }}>انقر هنا لاختيار ملف فاتورة (PDF / Excel / CSV)</h3>
-                <p style={{ color: '#64748b', fontSize: '0.88rem', margin: 0, fontWeight: '600' }}>تدعم النظام سحب الفواتير باللغات العربية، الصينية والإنجلیزية وتعديل الأسعار تلقائيًا</p>
+                <p style={{ color: '#64748b', fontSize: '0.88rem', margin: 0, fontWeight: '600' }}>يدعم النظام سحب الفواتير باللغات العربية، الصينية والإنجلیزية وتعديل الأسعار تلقائيًا</p>
               </div>
             )}
 
@@ -352,23 +467,71 @@ export default function StockImportPage({ products = [], categories = [], token,
           </div>
         )}
 
-        {/* CHOICE 2 VIEW: QR / BARCODE SCANNER */}
+        {/* CHOICE 2 VIEW: MOBILE CAMERA & SERIAL BARCODE SCANNER */}
         {activeChoice === 'qr' && (
           <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                📷 قراءة الباركود والسيريال كود (Serial & QR Scanner)
+                📷 قارئ باركود وكاميرا الهاتف المباشر (Fast Mobile Scanner)
               </h2>
-              <button onClick={() => setActiveChoice('menu')} style={{ padding: '0.4rem 0.85rem', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}>
+              <button onClick={() => { stopCameraScanner(); setActiveChoice('menu'); }} style={{ padding: '0.4rem 0.85rem', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}>
                 ← العودة لخيارات الإدخال
               </button>
             </div>
 
-            {/* SCANNER INPUT FORM */}
+            {/* LIVE CAMERA TOGGLE ACTION */}
+            <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '16px', padding: '1.25rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+              {!isCameraActive ? (
+                <button
+                  onClick={startCameraScanner}
+                  className="btn-sand"
+                  style={{ padding: '0.85rem 2rem', fontSize: '1.05rem', fontWeight: '800', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}
+                >
+                  <Camera size={22} /> تشغيل كاميرا الهاتف للمسح السريع 📷
+                </button>
+              ) : (
+                <button
+                  onClick={stopCameraScanner}
+                  style={{ padding: '0.85rem 2rem', fontSize: '1.05rem', fontWeight: '800', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}
+                >
+                  <CameraOff size={22} /> إيقاف الكاميرا
+                </button>
+              )}
+
+              {cameraError && (
+                <div style={{ marginTop: '0.85rem', color: '#dc2626', fontWeight: '700', fontSize: '0.9rem' }}>
+                  ⚠️ {cameraError}
+                </div>
+              )}
+            </div>
+
+            {/* LIVE CAMERA STREAM SCANNER DISPLAY */}
+            {isCameraActive && (
+              <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                <div 
+                  id="interactive-camera-reader" 
+                  style={{ 
+                    width: '100%', 
+                    maxWidth: '480px', 
+                    margin: '0 auto', 
+                    borderRadius: '16px', 
+                    overflow: 'hidden', 
+                    border: '3px solid #d97706',
+                    boxShadow: '0 8px 24px rgba(217, 119, 6, 0.2)',
+                    background: '#000000'
+                  }} 
+                />
+                <div style={{ fontSize: '0.85rem', color: '#047857', fontWeight: '800', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+                  <Volume2 size={16} /> وجه كاميرا الهاتف نحو باركود القطعة للمسح وقراءة السيريال فورًا
+                </div>
+              </div>
+            )}
+
+            {/* MANUAL / HARDWARE SCANNER INPUT FORM */}
             <form onSubmit={handleSerialScan} style={{ background: '#fffbeb', border: '2px solid #fde68a', padding: '1.5rem', borderRadius: '16px', marginBottom: '1.5rem' }}>
               <label style={{ fontSize: '0.95rem', fontWeight: '800', color: '#b45309', display: 'block', marginBottom: '0.6rem' }}>
-                امسح بالباركود أو أدخل الرقم التسلسلي (Serial / OEM Code):
+                أو أدخل كود OEM / السيريال بواسطة القارئ اليدوي:
               </label>
               
               <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -377,7 +540,7 @@ export default function StockImportPage({ products = [], categories = [], token,
                   autoFocus
                   value={scannedSerial}
                   onChange={e => setScannedSerial(e.target.value)}
-                  placeholder="وجه قارئ الباركود هنا أو أدخل كود OEM..."
+                  placeholder="وجه قارئ الباركود أو اكتب السيريال..."
                   style={{
                     flex: 1,
                     height: '52px',
@@ -420,7 +583,7 @@ export default function StockImportPage({ products = [], categories = [], token,
               
               {scannedHistory.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '2.5rem 1rem', background: '#f8fafc', borderRadius: '12px', color: '#64748b', fontWeight: '700' }}>
-                  لم يتم مسح أي باركود حتى الآن. امسح أول قطعة للبدء.
+                  لم يتم مسح أي باركود حتى الآن. اشغل الكاميرا أو استخدم القارئ لمسح أول قطعة.
                 </div>
               ) : (
                 <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
