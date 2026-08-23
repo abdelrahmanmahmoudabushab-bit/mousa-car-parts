@@ -288,51 +288,80 @@ export default function LightStockManager({ products, categories, token, onProdu
         </div>
       </div>
 
-      {/* 📊 ADVANCED EXCEL SPREADSHEET TABLE VIEW */}
-      <div style={{ background: '#ffffff', border: '2px solid #cbd5e1', borderRadius: '16px', padding: '1rem', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      {/* 📊 AUTHENTIC MICROSOFT EXCEL SPREADSHEET CONTAINER */}
+      <div style={{ background: '#ffffff', border: '2px solid #107c41', borderRadius: '14px', boxShadow: '0 8px 30px rgba(16, 124, 65, 0.12)', display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         
-        {/* Pagination Bar Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', paddingBottom: '0.65rem', borderBottom: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.92rem', color: '#0f172a', fontWeight: '800' }}>
-            جدول بيانات المستودع التفاعلي (Excel Interactive Sheet)
-          </span>
+        {/* Excel Green Header Bar */}
+        <div style={{ background: '#107c41', color: '#ffffff', padding: '0.65rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '800', fontSize: '0.92rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <FileSpreadsheet size={22} style={{ color: '#ffffff' }} />
+            <span>Microsoft Excel · Mousa_Car_Parts_Inventory_2026.xlsx</span>
+          </div>
 
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                style={{ padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: currentPage === 1 ? '#f1f5f9' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : '#0f172a', cursor: currentPage === 1 ? 'default' : 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
-              >
-                ◀ السابق
-              </button>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', padding: '0 0.4rem', color: '#d97706' }}>
-                صفحة {currentPage} من {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                style={{ padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: currentPage === totalPages ? '#f1f5f9' : '#ffffff', color: currentPage === totalPages ? '#94a3b8' : '#0f172a', cursor: currentPage === totalPages ? 'default' : 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
-              >
-                التالي ▶
-              </button>
-            </div>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '0.82rem', background: '#0b5c30', padding: '0.25rem 0.75rem', borderRadius: '6px', border: '1px solid #159a53' }}>
+              إجمالي السجلات: {filteredProducts.length} صف
+            </span>
+
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  style={{ padding: '0.25rem 0.65rem', borderRadius: '6px', border: 'none', background: currentPage === 1 ? '#0b5c30' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : '#107c41', cursor: currentPage === 1 ? 'default' : 'pointer', fontSize: '0.78rem', fontWeight: '800' }}
+                >
+                  ◀
+                </button>
+                <span style={{ fontSize: '0.8rem', color: '#ffffff', padding: '0 0.2rem' }}>
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  style={{ padding: '0.25rem 0.65rem', borderRadius: '6px', border: 'none', background: currentPage === totalPages ? '#0b5c30' : '#ffffff', color: currentPage === totalPages ? '#94a3b8' : '#107c41', cursor: currentPage === totalPages ? 'default' : 'pointer', fontSize: '0.78rem', fontWeight: '800' }}
+                >
+                  ▶
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* EXCEL SHEET DATA GRID - SIMPLE & CLEAN IMPORTANT DATA */}
-        <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, border: '2px solid #cbd5e1', borderRadius: '12px', background: '#ffffff' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.92rem', textWrap: 'nowrap' }}>
+        {/* Excel Formula Bar (fx) */}
+        <div style={{ background: '#f3f4f6', borderBottom: '1px solid #d1d5db', padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.88rem' }}>
+          <span style={{ fontWeight: '900', color: '#107c41', fontStyle: 'italic', fontFamily: 'serif', fontSize: '1.05rem', minWidth: '24px' }}>fx</span>
+          <div style={{ width: '1px', height: '18px', background: '#9ca3af' }}></div>
+          <div className="mono" style={{ background: '#ffffff', border: '1px solid #d1d5db', borderRadius: '4px', padding: '0.2rem 0.75rem', flex: 1, color: '#1f2937', fontWeight: '700', fontSize: '0.85rem' }}>
+            =SUM(E2:E{filteredProducts.length + 1}) ➔ إجمالي المخزون الحالي: ${filteredProducts.reduce((acc, p) => acc + (p.unitPrice * p.quantity), 0).toLocaleString()} | +{filteredProducts.reduce((acc, p) => acc + p.quantity, 0).toLocaleString()} قطعة
+          </div>
+        </div>
+
+        {/* EXCEL SHEET DATA GRID WITH EXCEL COLUMN HEADERS (A, B, C, D...) */}
+        <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, background: '#ffffff' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textWrap: 'nowrap' }}>
             <thead>
-              <tr style={{ background: '#0f172a', color: '#ffffff', fontSize: '0.9rem', fontWeight: '800', borderBottom: '3px solid #0f172a' }}>
-                <th style={{ padding: '0.85rem 1rem', width: '50px', textAlign: 'center', borderRight: '1px solid #334155' }}>#</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155' }}>كود OEM / السيريال</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155' }}>اسم القطعة بالعربي</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155' }}>الموديل المتوافق</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155' }}>موقع الرف</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155' }}>سعر البيع ($)</th>
-                <th style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #334155', textAlign: 'center' }}>الكمية بالمخزون</th>
-                <th style={{ padding: '0.85rem 1.25rem', textAlign: 'center' }}>الإجراءات</th>
+              {/* Excel Column Letters Sub-Header (A, B, C, D...) */}
+              <tr style={{ background: '#e5e7eb', color: '#4b5563', fontSize: '0.78rem', fontWeight: '800', borderBottom: '1px solid #cbd5e1', textAlign: 'center' }}>
+                <th style={{ padding: '0.35rem', width: '45px', borderRight: '1px solid #d1d5db' }}></th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>A</th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>B</th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>C</th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>D</th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>E</th>
+                <th style={{ padding: '0.35rem', borderRight: '1px solid #d1d5db' }}>F</th>
+                <th style={{ padding: '0.35rem' }}>G</th>
+              </tr>
+
+              {/* Excel Main Headers */}
+              <tr style={{ background: '#107c41', color: '#ffffff', fontSize: '0.88rem', fontWeight: '800', borderBottom: '2px solid #0b5c30' }}>
+                <th style={{ padding: '0.75rem', textAlign: 'center', borderRight: '1px solid #159a53' }}>#</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53' }}>كود OEM / السيريال</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53' }}>اسم القطعة بالعربي</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53' }}>الموديل المتوافق</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53' }}>موقع الرف</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53' }}>سعر البيع ($)</th>
+                <th style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #159a53', textAlign: 'center' }}>الكمية بالمخزون</th>
+                <th style={{ padding: '0.75rem 1.1rem', textAlign: 'center' }}>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
@@ -346,51 +375,51 @@ export default function LightStockManager({ products, categories, token, onProdu
                   <tr 
                     key={p.id} 
                     style={{ 
-                      background: isEven ? '#ffffff' : '#f8fafc', 
-                      borderBottom: '1px solid #e2e8f0',
+                      background: isEven ? '#ffffff' : '#f9fafb', 
+                      borderBottom: '1px solid #e5e7eb',
                       transition: 'background 0.15s ease'
                     }}
                   >
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center', fontWeight: '800', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>
+                    <td style={{ padding: '0.65rem 0.75rem', textAlign: 'center', fontWeight: '800', color: '#6b7280', background: '#f3f4f6', borderRight: '1px solid #d1d5db', fontSize: '0.82rem' }}>
                       {globalRowIndex}
                     </td>
 
-                    <td className="mono" style={{ padding: '0.75rem 1.25rem', fontWeight: '900', color: '#d97706', borderRight: '1px solid #e2e8f0', fontSize: '1rem' }}>
+                    <td className="mono" style={{ padding: '0.65rem 1.1rem', fontWeight: '900', color: '#d97706', borderRight: '1px solid #e5e7eb', fontSize: '0.95rem' }}>
                       {p.oem}
                     </td>
 
-                    <td style={{ padding: '0.75rem 1.25rem', fontWeight: '900', color: '#0f172a', borderRight: '1px solid #e2e8f0', fontSize: '1rem' }}>
+                    <td style={{ padding: '0.65rem 1.1rem', fontWeight: '900', color: '#111827', borderRight: '1px solid #e5e7eb', fontSize: '0.95rem' }}>
                       {p.arName || p.name}
                     </td>
 
-                    <td style={{ padding: '0.75rem 1.25rem', borderRight: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1d4ed8', padding: '0.25rem 0.65rem', borderRadius: '8px', fontWeight: '800' }}>
+                    <td style={{ padding: '0.65rem 1.1rem', borderRight: '1px solid #e5e7eb' }}>
+                      <span style={{ fontSize: '0.78rem', background: '#e0f2fe', border: '1px solid #bae6fd', color: '#0369a1', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: '800' }}>
                         🚗 {p.vehicleModel || 'BYD Seagull'}
                       </span>
                     </td>
 
-                    <td style={{ padding: '0.75rem 1.25rem', borderRight: '1px solid #e2e8f0', color: '#475569', fontWeight: '800' }}>
+                    <td style={{ padding: '0.65rem 1.1rem', borderRight: '1px solid #e5e7eb', color: '#4b5563', fontWeight: '800' }}>
                       📌 {p.location || 'Shelf-A1'}
                     </td>
 
-                    <td className="mono" style={{ padding: '0.75rem 1.25rem', borderRight: '1px solid #e2e8f0', fontWeight: '900', color: '#047857', fontSize: '1.1rem' }}>
+                    <td className="mono" style={{ padding: '0.65rem 1.1rem', borderRight: '1px solid #e5e7eb', fontWeight: '900', color: '#107c41', fontSize: '1.05rem' }}>
                       ${retail.toFixed(2)}
                     </td>
 
-                    <td style={{ padding: '0.75rem 1.25rem', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-                        <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '1.05rem' }}>-</button>
-                        <span className="mono" style={{ fontWeight: '900', minWidth: '32px', textAlign: 'center', fontSize: '1.1rem', color: qty <= 3 ? '#b45309' : '#047857' }}>
+                    <td style={{ padding: '0.65rem 1.1rem', borderRight: '1px solid #e5e7eb', textAlign: 'center' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#f3f4f6', padding: '0.15rem 0.45rem', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+                        <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '26px', height: '26px', borderRadius: '4px', background: '#ffffff', border: '1px solid #d1d5db', cursor: 'pointer', fontWeight: 'bold', color: '#111827', fontSize: '1rem' }}>-</button>
+                        <span className="mono" style={{ fontWeight: '900', minWidth: '28px', textAlign: 'center', fontSize: '1rem', color: qty <= 3 ? '#b45309' : '#107c41' }}>
                           {qty}
                         </span>
-                        <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '1.05rem' }}>+</button>
+                        <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '26px', height: '26px', borderRadius: '4px', background: '#ffffff', border: '1px solid #d1d5db', cursor: 'pointer', fontWeight: 'bold', color: '#111827', fontSize: '1rem' }}>+</button>
                       </div>
                     </td>
 
-                    <td style={{ padding: '0.75rem 1.25rem', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-                        <button onClick={() => onEditItem(p)} style={{ padding: '0.4rem 0.85rem', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', color: '#0f172a', fontWeight: '800', fontSize: '0.82rem' }}>تعديل ✏️</button>
-                        <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.4rem 0.85rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', fontWeight: '800', fontSize: '0.82rem' }}>حذف 🗑️</button>
+                    <td style={{ padding: '0.65rem 1.1rem', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem' }}>
+                        <button onClick={() => onEditItem(p)} style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', background: '#f3f4f6', border: '1px solid #d1d5db', cursor: 'pointer', color: '#111827', fontWeight: '800', fontSize: '0.78rem' }}>تعديل ✏️</button>
+                        <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', fontWeight: '800', fontSize: '0.78rem' }}>حذف 🗑️</button>
                       </div>
                     </td>
                   </tr>
@@ -398,16 +427,16 @@ export default function LightStockManager({ products, categories, token, onProdu
               })}
             </tbody>
 
-            {/* SIMPLE EXCEL SUMMARY FOOTER ROW */}
+            {/* EXCEL SUMMARY FOOTER ROW */}
             <tfoot>
-              <tr style={{ background: '#f1f5f9', borderTop: '3px solid #0f172a', fontWeight: '900', color: '#0f172a', fontSize: '0.95rem' }}>
-                <td colSpan={5} style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #cbd5e1' }}>
+              <tr style={{ background: '#e5e7eb', borderTop: '2px solid #107c41', fontWeight: '900', color: '#111827', fontSize: '0.9rem' }}>
+                <td colSpan={5} style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #d1d5db' }}>
                   إجمالي ملخص الجدول (Excel Summary Totals) 📊
                 </td>
-                <td className="mono" style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #cbd5e1', color: '#047857', fontSize: '1.15rem' }}>
+                <td className="mono" style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #d1d5db', color: '#107c41', fontSize: '1.1rem' }}>
                   ${filteredProducts.reduce((acc, p) => acc + (p.unitPrice * p.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
-                <td className="mono" style={{ padding: '0.85rem 1.25rem', borderRight: '1px solid #cbd5e1', color: '#0f172a', textAlign: 'center', fontSize: '1.15rem' }}>
+                <td className="mono" style={{ padding: '0.75rem 1.1rem', borderRight: '1px solid #d1d5db', color: '#111827', textAlign: 'center', fontSize: '1.1rem' }}>
                   +{filteredProducts.reduce((acc, p) => acc + p.quantity, 0).toLocaleString()} قطعة
                 </td>
                 <td style={{ textAlign: 'center' }}>-</td>
