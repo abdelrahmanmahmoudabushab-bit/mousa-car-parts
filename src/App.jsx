@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle } from 'lucide-react';
+import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
@@ -321,11 +321,11 @@ export default function App() {
                       {lang === 'ar' ? 'اختر وجهة العمل المطلوبة' : 'Select Work Portal'}
                     </h1>
                     <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0.5rem 0 0 0' }}>
-                      {lang === 'ar' ? 'اختر بين نقطة البيع الكاشير أو استعراض دليل المخزون العام' : 'Choose between Counter POS Checkout or Stock Inventory Directory.'}
+                      {lang === 'ar' ? 'اختر بين نقطة البيع الكاشير، دليل المخزون العام، أو إدخال وسحب المخزون' : 'Choose between Counter POS, Inventory Directory, or Stock Import.'}
                     </p>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem', width: '100%', maxWidth: '820px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', width: '100%', maxWidth: '1050px' }}>
                     
                     {/* CHOICE 1: POS COUNTER */}
                     <div
@@ -334,7 +334,7 @@ export default function App() {
                         background: '#ffffff',
                         border: '2px solid #2563eb',
                         borderRadius: '24px',
-                        padding: '2.25rem 2rem',
+                        padding: '2rem 1.75rem',
                         boxShadow: '0 10px 30px rgba(37, 99, 235, 0.1)',
                         cursor: 'pointer',
                         display: 'flex',
@@ -344,18 +344,18 @@ export default function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(37, 99, 235, 0.3)' }}>
-                          <ShoppingCart size={28} />
+                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(37, 99, 235, 0.3)' }}>
+                          <ShoppingCart size={26} />
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
                           {lang === 'ar' ? 'نقطة البيع الكاشير' : 'Counter POS Checkout'}
                         </h2>
-                        <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
-                          {lang === 'ar' ? 'إجراء عمليات البيع السريعة، الكاشير، طباعة الفواتير وتأكيد الطلبات' : 'Fast barcode counter sales, cart checkout, and receipt printing.'}
+                        <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'إجراء عمليات البيع السريعة، الكاشير، طباعة الفواتير وتأكيد الطلبات' : 'Fast counter sales, cart checkout, and receipt printing.'}
                         </p>
                       </div>
 
-                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <ShoppingCart size={18} /> {lang === 'ar' ? 'دخول نقطة البيع' : 'Enter Counter POS'}
                       </button>
                     </div>
@@ -367,7 +367,7 @@ export default function App() {
                         background: '#ffffff',
                         border: '2px solid #cbd5e1',
                         borderRadius: '24px',
-                        padding: '2.25rem 2rem',
+                        padding: '2rem 1.75rem',
                         boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
                         cursor: 'pointer',
                         display: 'flex',
@@ -377,19 +377,55 @@ export default function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
-                          <Package size={28} />
+                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
+                          <Package size={26} />
                         </div>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
                           {lang === 'ar' ? 'دليل المخزون' : 'Stock Inventory Directory'}
                         </h2>
-                        <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
-                          {lang === 'ar' ? 'استعراض 7,942 قطعة غيار BYD الأصلية، التعديل والتعديل على الأسعار والكميات' : 'Search 7,942 BYD OEM parts, update stock count, prices, and fitment.'}
+                        <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'استعراض 7,942 قطعة غيار BYD الأصلية، التعديل على الأسعار والكميات' : 'Search 7,942 BYD OEM parts, update stock count, prices, and fitment.'}
                         </p>
                       </div>
 
-                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
+                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
                         <Package size={18} /> {lang === 'ar' ? 'دخول دليل المخزون' : 'Open Inventory Directory'}
+                      </button>
+                    </div>
+
+                    {/* CHOICE 3: STOCK INGESTION & ENTRY (إدخال مخزون) */}
+                    <div
+                      onClick={() => {
+                        setActiveTab('inventory');
+                        setIsImportModalOpen(true);
+                      }}
+                      style={{
+                        background: '#ffffff',
+                        border: '2px solid #d97706',
+                        borderRadius: '24px',
+                        padding: '2rem 1.75rem',
+                        boxShadow: '0 10px 30px rgba(217, 119, 6, 0.12)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                      }}
+                    >
+                      <div>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: 'linear-gradient(135deg, #d97706, #b45309)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(217, 119, 6, 0.3)' }}>
+                          <UploadCloud size={26} />
+                        </div>
+                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                          {lang === 'ar' ? 'إدخال مخزون' : 'Stock Import & Entry'}
+                        </h2>
+                        <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'سحب وتحديث قطع الغيار من ملفات Excel / PDF وإدخال شحنات المخزون الجديد' : 'Import and bulk update OEM auto parts from Excel, PDF, or invoice files.'}
+                        </p>
+                      </div>
+
+                      <button className="btn-sand" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <UploadCloud size={18} /> {lang === 'ar' ? 'إدخال وسحب مخزون 📥' : 'Import Stock 📥'}
                       </button>
                     </div>
 

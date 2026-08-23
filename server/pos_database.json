@@ -73,11 +73,11 @@
       "categoryId": "cat-body",
       "costPrice": 25,
       "unitPrice": 45,
-      "quantity": 899,
+      "quantity": 895,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
-      "lastUpdated": "2026-08-22T12:48:01.895Z"
+      "lastUpdated": "2026-08-23T10:06:27.995Z"
     },
     {
       "id": "P-8402",
@@ -91,11 +91,11 @@
       "categoryId": "cat-body",
       "costPrice": 25,
       "unitPrice": 45,
-      "quantity": 899,
+      "quantity": 895,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
-      "lastUpdated": "2026-08-22T12:48:01.895Z"
+      "lastUpdated": "2026-08-23T10:06:30.147Z"
     },
     {
       "id": "P-6566",
@@ -122725,7 +122725,7 @@
       "categoryId": "cat-body",
       "costPrice": 1003300,
       "unitPrice": 5,
-      "quantity": 1416,
+      "quantity": 1415,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
@@ -143019,6 +143019,31 @@
     }
   ],
   "orders": [
+    {
+      "cashier": "System Administrator",
+      "items": [
+        {
+          "id": "P-9227",
+          "sku": "P-9227",
+          "oem": "472QA-1003300",
+          "name": "حشية رأس الاسطوانة (气缸盖垫片)",
+          "arName": "حشية رأس الاسطوانة",
+          "cnName": "气缸盖垫片",
+          "unitPrice": 5,
+          "quantity": 944,
+          "vehicleModel": "BYD Seagull (海鸥)",
+          "categoryId": "cat-body",
+          "qty": 1
+        }
+      ],
+      "subtotal": 5,
+      "tax": 0.4,
+      "total": 5.4,
+      "paymentMethod": "Credit Card",
+      "id": "ORD-ceb688d2",
+      "date": "2026-08-22T13:40:04.139Z",
+      "status": "Completed"
+    },
     {
       "cashier": "System Administrator",
       "items": [
