@@ -39,45 +39,62 @@ export function normalizeSearchCode(code) {
 }
 
 /**
- * High-Accuracy Smart Search Helper
+ * High-Accuracy Smart Multi-Token Search Helper
  */
 export function matchProductSearch(product, searchQuery) {
-  if (!searchQuery) return true;
+  if (!searchQuery || !searchQuery.trim()) return true;
+
   const rawQ = searchQuery.trim().toLowerCase();
-  const cleanQ = normalizeSearchCode(searchQuery);
+  const cleanCodeQ = normalizeSearchCode(searchQuery);
   const arQ = normalizeArabic(searchQuery);
 
   const oemClean = normalizeSearchCode(product.oem);
   const skuClean = normalizeSearchCode(product.sku);
   const vinClean = normalizeSearchCode(product.vinPattern);
   const modelClean = normalizeSearchCode(product.vehicleModel);
-  const nameRaw = (product.name || '').toLowerCase();
-  const cnRaw = (product.cnName || '').toLowerCase();
-  const arRaw = normalizeArabic(product.arName);
-  const locRaw = (product.location || '').toLowerCase();
-  const brandRaw = (product.brand || '').toLowerCase();
 
-  // Exact or partial OEM code match ignoring hyphens/spaces
-  if (cleanQ && (oemClean.includes(cleanQ) || skuClean.includes(cleanQ) || vinClean.includes(cleanQ))) {
-    return true;
+  // Fast direct OEM / Code match (ignoring hyphens, spaces, slashes)
+  if (cleanCodeQ && cleanCodeQ.length >= 2) {
+    if (oemClean.includes(cleanCodeQ) || skuClean.includes(cleanCodeQ) || vinClean.includes(cleanCodeQ)) {
+      return true;
+    }
   }
 
-  // Arabic match with diacritics normalization
-  if (arQ && arRaw.includes(arQ)) {
-    return true;
-  }
+  // Build a searchable composite string containing all fields of the product
+  const compositeText = [
+    product.oem || '',
+    product.sku || '',
+    product.name || '',
+    product.arName || '',
+    product.cnName || '',
+    product.vehicleModel || '',
+    (product.compatibleModels || []).join(' '),
+    product.location || '',
+    product.brand || '',
+    product.yearRange || '',
+    product.vinPattern || ''
+  ].join(' ');
 
-  // Chinese spec match
-  if (rawQ && cnRaw.includes(rawQ)) {
-    return true;
-  }
+  const normalizedComposite = normalizeArabic(compositeText) + ' ' + compositeText.toLowerCase();
 
-  // English name, model, location, or brand match
-  if (rawQ && (nameRaw.includes(rawQ) || modelClean.includes(cleanQ) || locRaw.includes(rawQ) || brandRaw.includes(rawQ))) {
-    return true;
-  }
+  // Split query into individual words (multi-token search)
+  const tokens = rawQ.split(/\s+/).filter(Boolean);
 
-  return false;
+  // EVERY word in the user's query must match at least something in the product
+  return tokens.every(token => {
+    const cleanTok = normalizeSearchCode(token);
+    const arTok = normalizeArabic(token);
+
+    if (cleanTok && cleanTok.length >= 2 && (oemClean.includes(cleanTok) || skuClean.includes(cleanTok) || modelClean.includes(cleanTok))) {
+      return true;
+    }
+
+    if (arTok && normalizedComposite.includes(arTok)) {
+      return true;
+    }
+
+    return normalizedComposite.includes(token);
+  });
 }
 
 /**
