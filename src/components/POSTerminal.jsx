@@ -225,18 +225,17 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
             {currentProducts.map(product => (
               <div
                 key={product.id}
+                className="glow-card"
                 onClick={() => addToCart(product)}
                 style={{
                   background: '#ffffff',
                   border: '1px solid #e2e8f0',
-                  borderRadius: '16px',
+                  borderRadius: '12px',
                   padding: '1.1rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.05)',
-                  transition: 'transform 0.15s ease, border-color 0.15s ease'
+                  cursor: 'pointer'
                 }}
               >
                 <div>

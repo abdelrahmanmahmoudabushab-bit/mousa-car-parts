@@ -408,6 +408,7 @@ function App() {
                     
                     {/* CHOICE 1: POS COUNTER */}
                     <div
+                      className="glow-card"
                       onClick={() => setActiveTab('pos')}
                       style={{
                         background: '#ffffff',
@@ -418,8 +419,7 @@ function App() {
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                        justifyContent: 'space-between'
                       }}
                     >
                       <div>
@@ -441,6 +441,7 @@ function App() {
 
                     {/* CHOICE 2: STOCK INVENTORY */}
                     <div
+                      className="glow-card"
                       onClick={() => setActiveTab('inventory')}
                       style={{
                         background: '#ffffff',
@@ -451,8 +452,7 @@ function App() {
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                        justifyContent: 'space-between'
                       }}
                     >
                       <div>
@@ -474,6 +474,7 @@ function App() {
 
                     {/* CHOICE 3: STOCK INGESTION & ENTRY (إدخال مخزون) */}
                     <div
+                      className="glow-card"
                       onClick={() => setActiveTab('import')}
                       style={{
                         background: '#ffffff',
@@ -484,8 +485,7 @@ function App() {
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                        justifyContent: 'space-between'
                       }}
                     >
                       <div>
