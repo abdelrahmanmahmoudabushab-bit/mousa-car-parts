@@ -371,7 +371,7 @@ export default function LightStockManager({ products, categories, token, onProdu
                     </td>
 
                     <td style={{ padding: '0.65rem 1rem', fontWeight: '900', color: '#0f172a', borderRight: '1px solid #cbd5e1', fontSize: '0.92rem' }}>
-                      {p.arName || p.name}
+                      {(!p.arName || p.arName.trim() === '()' || p.arName.trim() === 'أصلي ( أصلي )') ? 'قطع غيار أصلي المصنع' : p.arName}
                     </td>
 
                     <td style={{ padding: '0.65rem 1rem', borderRight: '1px solid #cbd5e1' }}>

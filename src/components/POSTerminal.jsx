@@ -216,7 +216,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                   {product.oem}
                 </div>
                 <div style={{ fontSize: '0.95rem', fontWeight: '800', lineHeight: '1.35', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>
-                  {product.arName || product.name}
+                  {(!product.arName || product.arName.trim() === '()' || product.arName.trim() === 'أصلي ( أصلي )') ? 'قطع غيار أصلي المصنع' : product.arName}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', fontWeight: '600' }}>
