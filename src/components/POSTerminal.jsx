@@ -208,26 +208,11 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
               {!search.trim() ? 'شاشة الكاشير السريعة · ابحث عن قطعة غيار 🔍' : `لا توجد نتائج مطابقة لـ "${search}"`}
             </h3>
 
-            <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto 1.5rem auto', lineHeight: '1.6', fontFamily: "'Cairo', sans-serif" }}>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6', fontFamily: "'Cairo', sans-serif" }}>
               {!search.trim() 
                 ? 'استخدم شريط البحث الأكبر أعلاه لإدخال اسم القطعة، كود OEM، رقم الشاسي VIN، أو مسح الباركوم بالكاميرا لإظهار القطع وإضافتها للفاتورة مباشرة.' 
                 : 'تأكد من كود القطعة OEM أو جرب البحث بكلمات عامة مثل (باب، صدام، شمعة).'}
             </p>
-
-            {!search.trim() && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.82rem', color: '#94a3b8', alignSelf: 'center', fontWeight: '700' }}>عينة سريعة:</span>
-                {['EQEA-5402841', 'ST-6206109', 'EQEA-2803411', 'حافة الباب'].map((sample, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleFilterChange(setSearch, sample)}
-                    style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#0f172a', padding: '0.35rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}
-                  >
-                    🔍 {sample}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
