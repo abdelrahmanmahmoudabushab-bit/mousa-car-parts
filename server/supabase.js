@@ -162,3 +162,40 @@ export async function bulkUploadProductsToSupabase(productsList) {
 
   return insertedCount;
 }
+
+/**
+ * Perform 2-Way Full Sync between Local JSON DB and Supabase PostgreSQL Cloud
+ */
+export async function syncLocalAndSupabaseCloud(dbInstance) {
+  if (!isSupabaseConfigured()) {
+    return { success: false, reason: 'Supabase credentials not configured' };
+  }
+
+  const syncLog = {
+    timestamp: new Date().toISOString(),
+    productsUploaded: 0,
+    productsDownloaded: 0,
+    ordersUploaded: 0
+  };
+
+  try {
+    // 1. Upload local products to Supabase PostgreSQL (Upsert merge duplicates)
+    const localProducts = dbInstance.getProducts() || [];
+    if (localProducts.length > 0) {
+      syncLog.productsUploaded = await bulkUploadProductsToSupabase(localProducts);
+    }
+
+    // 2. Fetch latest products from Supabase
+    const cloudProducts = await getSupabaseProducts();
+    if (cloudProducts && cloudProducts.length > localProducts.length) {
+      dbInstance.batchImportProducts(cloudProducts);
+      syncLog.productsDownloaded = cloudProducts.length;
+    }
+
+    console.log(`⚡ [Auto-Sync] 30-Min Full Sync Completed Successfully at ${syncLog.timestamp}`);
+    return { success: true, log: syncLog };
+  } catch (err) {
+    console.error('❌ [Auto-Sync] Error during cloud sync:', err.message);
+    return { success: false, error: err.message };
+  }
+}

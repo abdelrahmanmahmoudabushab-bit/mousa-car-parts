@@ -6,14 +6,42 @@ import { fileURLToPath } from 'url';
 import { translateCnToAr } from './translator.js';
 import { db, verifyPassword } from './db.js';
 import { signJwt, verifyJwt, authenticateToken, requireRole } from './auth.js';
-import { isSupabaseConfigured, getSupabaseProducts, getSupabaseCategories, saveSupabaseOrder } from './supabase.js';
-
-
+import { isSupabaseConfigured, getSupabaseProducts, getSupabaseCategories, saveSupabaseOrder, syncLocalAndSupabaseCloud } from './supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// 30-Minute Automatic Cloud & Local Database Sync Engine
+let lastSyncState = {
+  lastSyncTime: new Date().toISOString(),
+  status: 'Idle / Ready',
+  isSyncing: false
+};
+
+const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+async function runScheduledAutoSync() {
+  if (lastSyncState.isSyncing) return;
+  lastSyncState.isSyncing = true;
+  lastSyncState.status = 'Syncing...';
+  console.log('🔄 [Auto-Sync] Starting 30-minute database synchronization...');
+
+  const res = await syncLocalAndSupabaseCloud(db);
+  lastSyncState.isSyncing = false;
+  lastSyncState.lastSyncTime = new Date().toISOString();
+  if (res.success) {
+    lastSyncState.status = 'Completed Successfully';
+  } else {
+    lastSyncState.status = 'Offline Mode / Local Active (' + (res.reason || res.error || 'Cloud Unavailable') + ')';
+  }
+}
+
+// Start 30-Minute Interval Sync Timer
+setInterval(runScheduledAutoSync, SYNC_INTERVAL_MS);
+// Run initial sync 10 seconds after server launch
+setTimeout(runScheduledAutoSync, 10000);
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -280,6 +308,31 @@ app.post('/api/admin/clear-all-data', authenticateToken, requireRole(['Admin']),
   } catch (err) {
     console.error('Error clearing database data:', err);
     res.status(500).json({ error: 'Failed to clear data: ' + err.message });
+  }
+});
+
+// GET 30-Minute Auto-Sync Status & Health
+app.get('/api/sync-status', (req, res) => {
+  res.json({
+    success: true,
+    supabaseConfigured: isSupabaseConfigured(),
+    syncIntervalMinutes: 30,
+    lastSyncTime: lastSyncState.lastSyncTime,
+    status: lastSyncState.status,
+    isSyncing: lastSyncState.isSyncing
+  });
+});
+
+// POST Trigger Immediate Sync Now (On Demand)
+app.post('/api/sync-now', async (req, res) => {
+  try {
+    await runScheduledAutoSync();
+    res.json({
+      success: true,
+      lastSyncState
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Sync failed: ' + err.message });
   }
 });
 

@@ -92135,7 +92135,7 @@
       "categoryId": "cat-body",
       "costPrice": 5820100,
       "unitPrice": 8730150,
-      "quantity": 4,
+      "quantity": 2,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
@@ -94903,6 +94903,39 @@
     }
   ],
   "orders": [
+    {
+      "cashier": "System Administrator",
+      "items": [
+        {
+          "id": "P-afd82088",
+          "sku": "EQEA-5820100B",
+          "oem": "EQEA-5820100B",
+          "name": "قطع غيار أصلي المصنع (主气囊)",
+          "arName": "قطع غيار أصلي المصنع",
+          "cnName": "主气囊",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "EQEA-5820100B",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 5820100,
+          "unitPrice": 8730150,
+          "quantity": 6,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:17.902Z",
+          "qty": 2
+        }
+      ],
+      "subtotal": 17460300,
+      "tax": 1396824,
+      "total": 18857124,
+      "paymentMethod": "Credit Card",
+      "id": "ORD-e42f4e75",
+      "date": "2026-08-24T13:19:53.436Z",
+      "status": "Completed"
+    },
     {
       "cashier": "System Administrator",
       "items": [

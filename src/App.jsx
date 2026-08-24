@@ -238,11 +238,18 @@ function App() {
         zIndex: 50
       }}>
         {/* Brand & Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '1.3rem' }}>🚗</span>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
-            MOUSA CAR PARTS
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.3rem' }}>🚗</span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
+              MOUSA CAR PARTS
+            </span>
+          </div>
+
+          <div style={{ padding: '0.25rem 0.65rem', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontSize: '0.75rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <RefreshCw size={12} style={{ animation: 'spin 8s linear infinite' }} />
+            {lang === 'ar' ? 'مزامنة تلقائية 30 دقيقة ⚡ (أوفلاين + سحابي)' : '30-Min Auto Sync ⚡ (Offline + Cloud)'}
+          </div>
         </div>
 
         {/* Top Header Actions & Portal Links */}
