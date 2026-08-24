@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Printer, X, CheckCircle } from 'lucide-react';
 
 export default function ReceiptModal({ order, onClose }) {
+  const [storeInfo] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mousa_store_info');
+      return saved ? JSON.parse(saved) : {
+        name: 'MOUSA CAR PARTS',
+        subName: 'AUTO PARTS & OEM DISTRIBUTOR · موسى لقطع السيارات',
+        phone: '(555) 019-8200',
+        taxId: '#98-201823',
+      };
+    } catch {
+      return {
+        name: 'MOUSA CAR PARTS',
+        subName: 'AUTO PARTS & OEM DISTRIBUTOR · موسى لقطع السيارات',
+        phone: '(555) 019-8200',
+        taxId: '#98-201823',
+      };
+    }
+  });
+
   const handlePrint = () => {
     window.print();
   };
@@ -11,7 +30,7 @@ export default function ReceiptModal({ order, onClose }) {
   return (
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: '420px', alignItems: 'center' }}>
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="no-print" style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#15803d', fontWeight: '700', fontSize: '0.95rem' }}>
             <CheckCircle size={20} /> Transaction Complete
           </div>
@@ -23,28 +42,28 @@ export default function ReceiptModal({ order, onClose }) {
         {/* Receipt Paper */}
         <div className="receipt-paper">
           <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', textTransform: 'uppercase' }}>MOUSA CAR PARTS</div>
-            <div style={{ fontSize: '0.72rem' }}>AUTO PARTS & OEM DISTRIBUTOR · موسى لقطع السيارات</div>
-            <div style={{ fontSize: '0.72rem' }}>TEL: (555) 019-8200 · TAX ID: #98-201823</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', textTransform: 'uppercase' }}>{storeInfo.name || 'MOUSA CAR PARTS'}</div>
+            <div style={{ fontSize: '0.72rem' }}>{storeInfo.subName || 'AUTO PARTS & OEM DISTRIBUTOR · موسى لقطع السيارات'}</div>
+            <div style={{ fontSize: '0.72rem' }}>TEL: {storeInfo.phone || '(555) 019-8200'} · TAX ID: {storeInfo.taxId || '#98-201823'}</div>
           </div>
 
           <div className="receipt-divider"></div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>RECEIPT #: {order.id}</span>
-            <span>{new Date(order.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>{new Date(order.date || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
-          <div>DATE: {new Date(order.date).toLocaleDateString()}</div>
+          <div>DATE: {new Date(order.date || Date.now()).toLocaleDateString()}</div>
           <div>CASHIER: {order.cashier || 'Alex Counter'}</div>
 
           <div className="receipt-divider"></div>
 
           {/* Items */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            {order.items.map((item, idx) => (
+            {(order.items || []).map((item, idx) => (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600' }}>
-                  <span>{item.qty}x {item.name}</span>
+                  <span>{item.qty}x {item.arName || item.name}</span>
                   <span>${(Number(item.price || item.unitPrice || 0) * item.qty).toFixed(2)}</span>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: '#475569' }}>OEM: {item.oem}</div>
@@ -66,7 +85,7 @@ export default function ReceiptModal({ order, onClose }) {
             </div>
             <div className="receipt-divider"></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: '800' }}>
-              <span>TOTAL ({order.paymentMethod}):</span>
+              <span>TOTAL ({order.paymentMethod || 'Cash'}):</span>
               <span>${(Number(order.total) || 0).toFixed(2)}</span>
             </div>
           </div>
@@ -81,7 +100,7 @@ export default function ReceiptModal({ order, onClose }) {
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
+        <div className="no-print" style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
           <button
             onClick={handlePrint}
             className="btn-primary"

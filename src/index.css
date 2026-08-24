@@ -452,30 +452,72 @@ h1, h2, h3, h4 {
   to { transform: rotate(360deg); }
 }
 
-/* Print Styles */
+/* Print Styles for Thermal Receipts & Invoices */
 @media print {
-  body * {
-    visibility: hidden !important;
+  @page {
+    margin: 0;
+    size: auto;
   }
-  .receipt-paper,
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide background elements, app headers, and non-print UI */
+  .top-header,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  .modal-overlay {
+    position: static !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .modal-content {
+    position: static !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+
+  .receipt-paper {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    padding: 4mm !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 12px !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+    font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+  }
+
   .receipt-paper * {
     visibility: visible !important;
-  }
-  .receipt-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80mm;
-    max-width: 80mm;
-    padding: 8mm;
-    border: none;
-    box-shadow: none;
-    font-size: 11px;
-  }
-  .modal-overlay,
-  .btn-primary,
-  .btn-secondary {
-    display: none !important;
+    color: #000000 !important;
   }
 }
 
