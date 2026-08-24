@@ -239,6 +239,31 @@ app.post('/api/orders', async (req, res) => {
   res.status(201).json({ success: true, order: result.order, products: result.products });
 });
 
+// POST Return Order & Restock Inventory
+app.post('/api/orders/return', authenticateToken, (req, res) => {
+  try {
+    const { orderId, returnedItems, reason } = req.body;
+    if (!orderId || !Array.isArray(returnedItems) || returnedItems.length === 0) {
+      return res.status(400).json({ error: 'orderId and returnedItems array are required.' });
+    }
+
+    const result = db.returnOrder({ orderId, returnedItems, reason });
+    
+    // Invalidate in-memory cache
+    memoryCache.lastUpdated = 0;
+
+    res.json({
+      success: true,
+      message: `Order ${orderId} successfully returned. Restocked ${result.totalRestockedQty} item(s) back to inventory.`,
+      products: result.products,
+      orders: result.orders,
+      order: result.order
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // -------------------------------------------------------------
 // TRANSLATION & BATCH IMPORT ENDPOINTS
 // -------------------------------------------------------------

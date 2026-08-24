@@ -379,6 +379,42 @@ class RelationalDatabase {
     return { order: orderData, products: this.tables.products };
   }
 
+  returnOrder({ orderId, returnedItems, reason }) {
+    const order = this.tables.orders.find(o => o.id === orderId);
+    if (!order) {
+      throw new Error(`Order ${orderId} not found.`);
+    }
+
+    if (order.status === 'Returned') {
+      throw new Error(`Order ${orderId} has already been fully returned.`);
+    }
+
+    let totalRestockedQty = 0;
+
+    // Restock each returned item back to products table
+    returnedItems.forEach(ret => {
+      const prod = this.tables.products.find(p => p.id === ret.id || p.oem === ret.oem);
+      const restockQty = Math.max(1, parseInt(ret.qty || 1, 10));
+      if (prod) {
+        prod.quantity = (Number(prod.quantity) || 0) + restockQty;
+        prod.lastUpdated = new Date().toISOString();
+        totalRestockedQty += restockQty;
+      }
+    });
+
+    order.status = 'Returned';
+    order.returnedAt = new Date().toISOString();
+    order.returnReason = reason || 'Customer Return';
+
+    this.save();
+    return {
+      order,
+      products: this.tables.products,
+      orders: this.tables.orders,
+      totalRestockedQty
+    };
+  }
+
   // Batch Import
   batchImportProducts(incomingItems) {
     let updatedCount = 0;

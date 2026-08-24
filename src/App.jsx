@@ -209,6 +209,31 @@ function App() {
     }
   };
 
+  // Return Order & Restock Inventory
+  const handleReturnOrder = async (orderId, returnedItems, reason) => {
+    try {
+      const res = await fetch('/api/orders/return', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ orderId, returnedItems, reason }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (data.products) setProducts(data.products);
+        if (data.orders) setOrders(data.orders);
+        alert(`📦 ${lang === 'ar' ? `تم إرجاع الفاتورة ${orderId} وإعادة القطع للمخزون بنجاح!` : `Order ${orderId} returned and restocked to inventory!`}`);
+      } else {
+        alert(data.error || 'Failed to process return.');
+      }
+    } catch (err) {
+      alert('Error returning order: ' + err.message);
+    }
+  };
+
   // If unauthenticated, show LoginScreen
   if (!token || !user) {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
@@ -527,7 +552,9 @@ function App() {
                 {activeTab === 'orders' && (
                   <OrdersLog
                     orders={orders}
+                    lang={lang}
                     onReprintReceipt={(order) => setActiveReceipt(order)}
+                    onReturnOrder={handleReturnOrder}
                   />
                 )}
 
