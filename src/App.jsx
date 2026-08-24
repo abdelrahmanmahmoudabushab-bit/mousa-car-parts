@@ -5,6 +5,7 @@ import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
 import ReceiptModal from './components/ReceiptModal';
 import LoginScreen from './components/LoginScreen';
+import WaitingScreen from './components/WaitingScreen';
 
 // Lazy-loaded heavy components for instant sub-30ms initial page load speed
 const OrdersLog = lazy(() => import('./components/OrdersLog'));
@@ -354,18 +355,12 @@ function App() {
 
         {/* Tab Views */}
         <div style={{ flex: 1, overflow: 'hidden' }}>
-          {loading ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.5rem', color: 'var(--text-muted)' }}>
-              <RefreshCw className="spin" size={24} /> Loading Auto Parts Catalog...
-            </div>
-          ) : bootstrapError ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem', color: '#b91c1c', padding: '2rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.2rem', fontWeight: '700' }}>⚠️ Server Connection Error</div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '400px' }}>{bootstrapError}</div>
-              <button onClick={fetchBootstrapData} className="btn-primary" style={{ marginTop: '0.5rem' }}>
-                <RefreshCw size={16} /> Retry Connection
-              </button>
-            </div>
+          {loading || bootstrapError ? (
+            <WaitingScreen
+              lang={lang}
+              error={bootstrapError}
+              onRetry={fetchBootstrapData}
+            />
           ) : (
             <>
               {activeTab === 'portal' && (
