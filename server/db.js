@@ -222,6 +222,15 @@ class RelationalDatabase {
     fs.writeFileSync(DB_FILE, JSON.stringify(this.tables, null, 2));
   }
 
+  // Clear All Inventory & Orders (Safety Backup First)
+  clearAllData() {
+    this.createBackup();
+    this.tables.products = [];
+    this.tables.orders = [];
+    this.save();
+    return { products: [], orders: [] };
+  }
+
   // User Operations
   getUsers() {
     return this.tables.users.map(({ password_hash, ...u }) => u);

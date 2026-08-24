@@ -166,6 +166,36 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
     }
   };
 
+  const handleClearAllData = async () => {
+    const confirmationPrompt = window.prompt(
+      lang === 'ar' 
+        ? '⚠️ تحذير شديد: سيتم مسح كافة قطع الغيار وفواتير المبيعات بالكامل!\n\nللتأكيد وإتمام المسح اكتب كلمة: DELETE' 
+        : '⚠️ DANGER: This will permanently delete ALL products and sales order history!\n\nType DELETE to confirm wiping all data:'
+    );
+
+    if (confirmationPrompt !== 'DELETE') {
+      alert(lang === 'ar' ? 'تم إلغاء عملية المسح.' : 'Wipe operation cancelled.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/clear-all-data', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (onProductsUpdated) onProductsUpdated([]);
+        alert(lang === 'ar' ? 'تم مسح كافة البيانات بنجاح!' : 'All inventory products and sales order data cleared!');
+        fetchDbStatus();
+      } else {
+        alert(data.error || 'Failed to clear data');
+      }
+    } catch (err) {
+      alert('Error clearing data: ' + err.message);
+    }
+  };
+
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto', background: '#f8fafc', fontFamily: "'Cairo', sans-serif" }}>
       
@@ -199,7 +229,7 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
           { id: 'tax', labelAr: 'الضريبة والأسعار 🏷️', labelEn: 'Tax & Pricing', icon: Percent },
           { id: 'users', labelAr: 'حسابات المستخدمين 👥', labelEn: 'User Accounts', icon: Users },
           { id: 'database', labelAr: 'قاعدة البيانات والمزامنة ⚡', labelEn: 'Database & Sync', icon: Database },
-          { id: 'backup', labelAr: 'النسخ الاحتياطي وتصدير البيانات 💾', labelEn: 'Backup & Export', icon: Download },
+          { id: 'backup', labelAr: 'النسخ الاحتياطي وإعادة الضبط 💾', labelEn: 'Backup & Reset', icon: Download },
         ].map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -499,21 +529,61 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
         </div>
       )}
 
-      {/* TAB 5: BACKUP & EXPORT */}
+      {/* TAB 5: BACKUP & RESET */}
       {activeTab === 'backup' && (
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', boxShadow: '0 4px 14px rgba(15, 23, 42, 0.03)' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: 0, borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
-            {lang === 'ar' ? 'النسخ الاحتياطي وتصدير السجلات 💾' : 'Database Backup & System Export'}
-          </h2>
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 4px 14px rgba(15, 23, 42, 0.03)' }}>
+          <div>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: 0, borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+              {lang === 'ar' ? 'النسخ الاحتياطي وتصدير السجلات 💾' : 'Database Backup & Export'}
+            </h2>
 
-          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-            {lang === 'ar' ? 'يمكنك تصدير النسخة الاحتياطية الكاملة لقطع الغيار والفواتير بصيغة JSON أو Excel للحفظ المحلي 🛡️' : 'Download a complete JSON database snapshot or Excel sheet for offline storage.'}
-          </p>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0.75rem 0 1rem 0' }}>
+              {lang === 'ar' ? 'يمكنك تصدير النسخة الاحتياطية الكاملة لقطع الغيار والفواتير بصيغة JSON أو Excel للحفظ المحلي 🛡️' : 'Download a complete JSON database snapshot or Excel sheet for offline storage.'}
+            </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button onClick={handleExportFullJsonBackup} className="btn-sand" style={{ padding: '0.85rem 1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <HardDrive size={20} />
-              {lang === 'ar' ? 'تحميل نسخة احتسابية كاملة (JSON Backup)' : 'Download Full JSON Backup'}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button onClick={handleExportFullJsonBackup} className="btn-sand" style={{ padding: '0.85rem 1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <HardDrive size={20} />
+                {lang === 'ar' ? 'تحميل نسخة احتسابية كاملة (JSON Backup)' : 'Download Full JSON Backup'}
+              </button>
+            </div>
+          </div>
+
+          {/* DANGER ZONE: WIPE / CLEAR ALL DATA */}
+          <div style={{ background: '#fef2f2', border: '2px dashed #fecaca', borderRadius: '16px', padding: '1.5rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#b91c1c', marginBottom: '0.5rem' }}>
+              <Trash2 size={24} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '900', margin: 0 }}>
+                {lang === 'ar' ? 'منطقة الخطر: مسح وإعادة ضبط البيانات بالكامل ⚠️' : 'Danger Zone: Wipe All Data ⚠️'}
+              </h3>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#991b1b', margin: '0 0 1.25rem 0', lineHeight: '1.5', fontWeight: '600' }}>
+              {lang === 'ar' 
+                ? 'سيؤدي النقر على زر المسح أدناه إلى حذف كافة قطع الغيار المخزنة وسجل فواتير المبيعات بالكامل من قاعدة البيانات. يتم إنشاء نسخة احتياطية تلقائياً قبل المسح.' 
+                : 'Clicking the wipe button below will permanently delete all inventory products and sales order history from the database. An automated backup is created first.'}
+            </p>
+
+            <button
+              onClick={handleClearAllData}
+              style={{
+                background: '#dc2626',
+                color: '#ffffff',
+                border: '1px solid #b91c1c',
+                padding: '0.85rem 1.75rem',
+                borderRadius: '12px',
+                fontSize: '0.95rem',
+                fontWeight: '900',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                boxShadow: '0 4px 14px rgba(220, 38, 38, 0.3)',
+                fontFamily: "'Cairo', sans-serif"
+              }}
+            >
+              <Trash2 size={20} />
+              {lang === 'ar' ? 'مسح كافة البيانات فوراً 🗑️ (Wipe All Data)' : 'Wipe All Data Permanently 🗑️'}
             </button>
           </div>
         </div>

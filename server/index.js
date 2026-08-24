@@ -280,6 +280,27 @@ app.post('/api/import/confirm-batch', authenticateToken, requireRole(['Admin', '
   }
 });
 
+// POST Clear All Products and Orders Data (Admin Only)
+app.post('/api/admin/clear-all-data', authenticateToken, requireRole(['Admin']), (req, res) => {
+  try {
+    const result = db.clearAllData();
+    // Invalidate in-memory server cache
+    memoryCache.products = [];
+    memoryCache.orders = [];
+    memoryCache.lastUpdated = Date.now();
+
+    res.json({
+      success: true,
+      message: 'All inventory products and sales orders have been completely cleared.',
+      products: [],
+      orders: []
+    });
+  } catch (err) {
+    console.error('Error clearing database data:', err);
+    res.status(500).json({ error: 'Failed to clear data: ' + err.message });
+  }
+});
+
 // -------------------------------------------------------------
 // PRODUCTION STATIC FILE SERVING (SINGLE-SERVER DEPLOYMENT)
 // Root / -> Customer Web Store (Simplest for Public Users)
