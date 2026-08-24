@@ -48,10 +48,10 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
 
     onSave({
       ...formData,
-      costPrice: parseFloat(formData.costPrice) || 0,
-      unitPrice: parseFloat(formData.unitPrice) || 0,
-      quantity: parseInt(formData.quantity, 10) || 0,
-      minLevel: parseInt(formData.minLevel, 10) || 5,
+      costPrice: Math.max(0, parseFloat(formData.costPrice) || 0),
+      unitPrice: Math.max(0, parseFloat(formData.unitPrice) || 0),
+      quantity: Math.max(0, parseInt(formData.quantity, 10) || 0),
+      minLevel: Math.max(0, parseInt(formData.minLevel, 10) || 5),
     });
   };
 

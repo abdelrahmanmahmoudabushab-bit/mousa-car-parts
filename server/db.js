@@ -344,6 +344,19 @@ class RelationalDatabase {
   }
 
   createOrder(orderData) {
+    if (!Array.isArray(orderData.items) || orderData.items.length === 0) {
+      throw new Error('Order must contain at least one item.');
+    }
+
+    // Pre-validate stock availability for all items
+    for (const item of orderData.items) {
+      const prod = this.tables.products.find(p => p.id === item.id);
+      const availableStock = prod ? Number(prod.quantity || 0) : 0;
+      if (availableStock < item.qty) {
+        throw new Error(`Insufficient stock for part '${item.oem || item.name}'. Available: ${availableStock}, requested: ${item.qty}`);
+      }
+    }
+
     orderData.id = `ORD-${crypto.randomUUID().slice(0, 8)}`;
     orderData.date = new Date().toISOString();
     orderData.status = 'Completed';
@@ -352,7 +365,7 @@ class RelationalDatabase {
     orderData.items.forEach(item => {
       const prod = this.tables.products.find(p => p.id === item.id);
       if (prod) {
-        prod.quantity = Math.max(0, prod.quantity - item.qty);
+        prod.quantity = Math.max(0, Number(prod.quantity || 0) - item.qty);
       }
     });
 

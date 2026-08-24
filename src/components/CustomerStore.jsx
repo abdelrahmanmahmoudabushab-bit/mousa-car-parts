@@ -64,8 +64,19 @@ export default function CustomerStore({ products = [], lang = 'en', onPlaceOrder
 
   // Cart operations
   const addToCart = (product) => {
+    const availableStock = Number(product.quantity || 0);
+    if (availableStock <= 0) {
+      alert(lang === 'ar' ? '⚠️ هذه القطعة غير متوفرة حالياً بالمخزون' : '⚠️ This part is currently Out of Stock.');
+      return;
+    }
+
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
+      const currentQty = existing ? existing.qty : 0;
+      if (currentQty >= availableStock) {
+        alert(lang === 'ar' ? `⚠️ لا يمكن إضافة المزيد — الكمية المتاحة بالمخزون هي ${availableStock} فقط` : `⚠️ Only ${availableStock} unit(s) available in stock.`);
+        return prev;
+      }
       if (existing) {
         return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
       }
@@ -77,7 +88,12 @@ export default function CustomerStore({ products = [], lang = 'en', onPlaceOrder
   const updateCartQty = (id, delta) => {
     setCart(prev => prev.map(item => {
       if (item.id === id) {
+        const availableStock = Number(item.quantity || 0);
         const newQty = item.qty + delta;
+        if (delta > 0 && newQty > availableStock) {
+          alert(lang === 'ar' ? `⚠️ الحد الأقصى للكمية المتاحة بالمخزون هو ${availableStock} قطعة` : `⚠️ Maximum available stock is ${availableStock} units.`);
+          return item;
+        }
         return newQty > 0 ? { ...item, qty: newQty } : null;
       }
       return item;
