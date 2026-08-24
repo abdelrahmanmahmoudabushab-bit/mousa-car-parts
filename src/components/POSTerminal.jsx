@@ -60,16 +60,17 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
   }, [filteredProducts, currentPage]);
 
   const addToCart = useCallback((product) => {
-    if (product.quantity <= 0) {
-      alert(`Part ${product.oem} is currently Out of Stock!`);
+    const availableStock = Number(product.quantity || 0);
+    if (availableStock <= 0) {
+      alert(`⚠️ ${lang === 'ar' ? 'عفواً، هذه القطعة غير متوفرة حالياً في المخزون (0 قطعة)!' : `Part ${product.oem} is currently Out of Stock!`}`);
       return;
     }
 
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       const currentCartQty = existing ? existing.qty : 0;
-      if (currentCartQty >= product.quantity) {
-        alert(`Cannot add more — only ${product.quantity} unit(s) of ${product.oem} in stock.`);
+      if (currentCartQty >= availableStock) {
+        alert(`⚠️ ${lang === 'ar' ? `لا يمكن إضافة المزيد — الكمية المتوفرة في المخزون هي ${availableStock} قطعة فقط!` : `Cannot add more — only ${availableStock} unit(s) of ${product.oem} in stock.`}`);
         return prev;
       }
       if (existing) {
@@ -78,21 +79,26 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
         return [...prev, { ...product, qty: 1 }];
       }
     });
-  }, []);
+  }, [lang]);
 
   const updateQty = useCallback((id, delta) => {
     setCart(prev =>
       prev
         .map(item => {
           if (item.id === id) {
+            const availableStock = Number(item.quantity || 0);
             const newQty = item.qty + delta;
+            if (delta > 0 && newQty > availableStock) {
+              alert(`⚠️ ${lang === 'ar' ? `الحد الأقصى للكمية المتاحة في المخزون لهذه القطعة هو ${availableStock} قطعة فقط!` : `Maximum available stock for this part is ${availableStock} units!`}`);
+              return item;
+            }
             return newQty > 0 ? { ...item, qty: newQty } : null;
           }
           return item;
         })
         .filter(Boolean)
     );
-  }, []);
+  }, [lang]);
 
   const removeFromCart = useCallback((id) => {
     setCart(prev => prev.filter(item => item.id !== id));
@@ -252,23 +258,24 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
                     <div style={{ fontFamily: "'Cairo', sans-serif", fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
                       ${(Number(product.unitPrice) || 0).toFixed(2)}
                     </div>
-                    <div style={{ fontSize: '0.74rem', color: product.quantity <= product.minLevel ? '#b91c1c' : '#475569', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
-                      المتوفر: {product.quantity} قطعة
+                    <div style={{ fontSize: '0.74rem', color: (Number(product.quantity || 0) <= 0 || product.quantity <= product.minLevel) ? '#b91c1c' : '#475569', fontWeight: '800', fontFamily: "'Cairo', sans-serif" }}>
+                      {Number(product.quantity || 0) <= 0 ? 'غير متوفر بالمخزون ⚠️ (0 قطعة)' : `المتوفر: ${product.quantity} قطعة`}
                     </div>
                   </div>
                   <button
+                    disabled={Number(product.quantity || 0) <= 0}
                     style={{
                       width: '36px',
                       height: '36px',
                       borderRadius: '10px',
-                      background: '#0f172a',
+                      background: Number(product.quantity || 0) <= 0 ? '#cbd5e1' : '#0f172a',
                       border: 'none',
-                      color: 'white',
+                      color: Number(product.quantity || 0) <= 0 ? '#94a3b8' : 'white',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 10px rgba(15, 23, 42, 0.25)'
+                      cursor: Number(product.quantity || 0) <= 0 ? 'not-allowed' : 'pointer',
+                      boxShadow: Number(product.quantity || 0) <= 0 ? 'none' : '0 4px 10px rgba(15, 23, 42, 0.25)'
                     }}
                   >
                     <Plus size={18} />

@@ -91255,7 +91255,7 @@
       "categoryId": "cat-body",
       "costPrice": 6105109,
       "unitPrice": 9157664,
-      "quantity": 7,
+      "quantity": 0,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
@@ -94903,6 +94903,72 @@
     }
   ],
   "orders": [
+    {
+      "cashier": "System Administrator",
+      "items": [
+        {
+          "id": "P-e40e9c6d",
+          "sku": "TA-6105109C",
+          "oem": "TA-6105109C",
+          "name": "تجميعة الباب الأمامي الأيمن خارجي (右前门外把手总成)",
+          "arName": "تجميعة الباب الأمامي الأيمن خارجي",
+          "cnName": "右前门外把手总成",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "TA-6105109C",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 6105109,
+          "unitPrice": 9157664,
+          "quantity": 7,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:17.821Z",
+          "qty": 19
+        }
+      ],
+      "subtotal": 173995616,
+      "tax": 13919649.280000001,
+      "total": 187915265.28,
+      "paymentMethod": "Credit Card",
+      "id": "ORD-13ee9354",
+      "date": "2026-08-24T13:34:13.802Z",
+      "status": "Completed"
+    },
+    {
+      "cashier": "System Administrator",
+      "items": [
+        {
+          "id": "P-e40e9c6d",
+          "sku": "TA-6105109C",
+          "oem": "TA-6105109C",
+          "name": "تجميعة الباب الأمامي الأيمن خارجي (右前门外把手总成)",
+          "arName": "تجميعة الباب الأمامي الأيمن خارجي",
+          "cnName": "右前门外把手总成",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "TA-6105109C",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 6105109,
+          "unitPrice": 9157664,
+          "quantity": 7,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:17.821Z",
+          "qty": 19
+        }
+      ],
+      "subtotal": 173995616,
+      "tax": 13919649.280000001,
+      "total": 187915265.28,
+      "paymentMethod": "Credit Card",
+      "id": "ORD-bee1a31d",
+      "date": "2026-08-24T13:34:12.638Z",
+      "status": "Completed"
+    },
     {
       "cashier": "System Administrator",
       "items": [
