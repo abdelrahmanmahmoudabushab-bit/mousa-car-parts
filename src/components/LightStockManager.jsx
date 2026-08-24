@@ -341,8 +341,7 @@ export default function LightStockManager({ products, categories, token, onProdu
                 <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>موقع الرف</th>
                 <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>سعر التكلفة ($)</th>
                 <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155' }}>سعر البيع ($)</th>
-                <th style={{ padding: '0.75rem 1rem', borderRight: '1px solid #334155', textAlign: 'center' }}>الكمية بالمخزون</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>الإجراءات</th>
+                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>الكمية بالمخزون</th>
               </tr>
             </thead>
             <tbody>
@@ -392,20 +391,13 @@ export default function LightStockManager({ products, categories, token, onProdu
                       ${retail.toFixed(2)}
                     </td>
 
-                    <td style={{ padding: '0.65rem 1rem', borderRight: '1px solid #cbd5e1', textAlign: 'center' }}>
+                    <td style={{ padding: '0.65rem 1rem', textAlign: 'center' }}>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#f1f5f9', padding: '0.15rem 0.45rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
                         <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '24px', height: '24px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '0.95rem' }}>-</button>
                         <span className="mono" style={{ fontWeight: '900', minWidth: '28px', textAlign: 'center', fontSize: '0.95rem', color: qty <= 3 ? '#b45309' : '#047857' }}>
                           {qty}
                         </span>
                         <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '24px', height: '24px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '0.95rem' }}>+</button>
-                      </div>
-                    </td>
-
-                    <td style={{ padding: '0.65rem 1rem', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem' }}>
-                        <button onClick={() => onEditItem(p)} style={{ padding: '0.3rem 0.65rem', borderRadius: '6px', background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', color: '#0f172a', fontWeight: '800', fontSize: '0.78rem' }}>تعديل ✏️</button>
-                        <button onClick={() => onDeleteItem(p.id)} style={{ padding: '0.3rem 0.65rem', borderRadius: '6px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', cursor: 'pointer', fontWeight: '800', fontSize: '0.78rem' }}>حذف 🗑️</button>
                       </div>
                     </td>
                   </tr>
@@ -425,10 +417,9 @@ export default function LightStockManager({ products, categories, token, onProdu
                 <td className="mono" style={{ padding: '0.75rem 1rem', borderRight: '1px solid #cbd5e1', color: '#047857', fontSize: '1.05rem' }}>
                   ${filteredProducts.reduce((acc, p) => acc + (p.unitPrice * p.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
-                <td className="mono" style={{ padding: '0.75rem 1rem', borderRight: '1px solid #cbd5e1', color: '#0f172a', textAlign: 'center', fontSize: '1.05rem' }}>
+                <td className="mono" style={{ padding: '0.75rem 1rem', color: '#0f172a', textAlign: 'center', fontSize: '1.05rem' }}>
                   +{filteredProducts.reduce((acc, p) => acc + p.quantity, 0).toLocaleString()} قطعة
                 </td>
-                <td style={{ textAlign: 'center' }}>-</td>
               </tr>
             </tfoot>
           </table>
