@@ -91255,11 +91255,11 @@
       "categoryId": "cat-body",
       "costPrice": 6105109,
       "unitPrice": 9157664,
-      "quantity": 0,
+      "quantity": 19,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
-      "lastUpdated": "2026-08-24T13:14:17.821Z"
+      "lastUpdated": "2026-08-24T13:46:28.429Z"
     },
     {
       "id": "P-35ac5f7b",
@@ -94934,7 +94934,9 @@
       "paymentMethod": "Credit Card",
       "id": "ORD-13ee9354",
       "date": "2026-08-24T13:34:13.802Z",
-      "status": "Completed"
+      "status": "Returned",
+      "returnedAt": "2026-08-24T13:46:28.429Z",
+      "returnReason": "Customer Return / إرجاع عميل"
     },
     {
       "cashier": "System Administrator",

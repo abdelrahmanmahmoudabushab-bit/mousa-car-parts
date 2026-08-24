@@ -101,22 +101,23 @@ export async function getSupabaseCategories() {
 export async function saveSupabaseOrder(order) {
   const dbOrder = {
     id: order.id,
-    customer_name: order.customerName,
-    customer_phone: order.customerPhone,
-    delivery_method: order.deliveryMethod,
-    delivery_address: order.deliveryAddress,
-    source: order.source || 'Online Store',
+    customer_name: order.customerName || order.cashier || 'Walk-in POS Customer',
+    customer_phone: order.customerPhone || 'N/A',
+    delivery_method: order.deliveryMethod || 'pickup',
+    delivery_address: order.deliveryAddress || 'Counter Pickup',
+    source: order.source || 'POS Counter',
     items: order.items,
-    total_amount: Number(order.totalAmount || 0),
-    status: order.status || 'Pending'
+    total_amount: Number(order.totalAmount || order.total || 0),
+    status: order.status || 'Completed'
   };
 
   const result = await supabaseFetch('orders', {
     method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates' },
     body: JSON.stringify([dbOrder])
   });
 
-  return result[0];
+  return result ? result[0] : null;
 }
 
 /**

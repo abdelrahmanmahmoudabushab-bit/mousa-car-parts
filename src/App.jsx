@@ -181,11 +181,16 @@ function App() {
     try {
       const orderPayload = {
         cashier: user?.name || 'Alex Counter',
+        customerName: 'Walk-in POS Customer',
+        customerPhone: 'N/A',
+        deliveryMethod: 'pickup',
         items: paymentData.cart,
         subtotal: paymentData.totals.subtotal,
         tax: paymentData.totals.tax,
         total: paymentData.totals.total,
+        totalAmount: paymentData.totals.total,
         paymentMethod: paymentDetails.paymentMethod,
+        source: 'POS Counter'
       };
 
       const res = await fetch('/api/orders', {
@@ -407,9 +412,9 @@ function App() {
                       style={{
                         background: '#ffffff',
                         border: '2px solid #2563eb',
-                        borderRadius: '24px',
+                        borderRadius: '12px',
                         padding: '2rem 1.75rem',
-                        boxShadow: '0 10px 30px rgba(37, 99, 235, 0.1)',
+                        boxShadow: '0 10px 30px rgba(37, 99, 235, 0.08)',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -418,7 +423,7 @@ function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(37, 99, 235, 0.3)' }}>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(37, 99, 235, 0.25)' }}>
                           <ShoppingCart size={26} />
                         </div>
                         <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
@@ -429,7 +434,7 @@ function App() {
                         </p>
                       </div>
 
-                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <ShoppingCart size={18} /> {lang === 'ar' ? 'دخول نقطة البيع' : 'Enter Counter POS'}
                       </button>
                     </div>
@@ -440,9 +445,9 @@ function App() {
                       style={{
                         background: '#ffffff',
                         border: '2px solid #cbd5e1',
-                        borderRadius: '24px',
+                        borderRadius: '12px',
                         padding: '2rem 1.75rem',
-                        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
+                        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -451,7 +456,7 @@ function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
                           <Package size={26} />
                         </div>
                         <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
@@ -462,7 +467,7 @@ function App() {
                         </p>
                       </div>
 
-                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
+                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
                         <Package size={18} /> {lang === 'ar' ? 'دخول دليل المخزون' : 'Open Inventory Directory'}
                       </button>
                     </div>
@@ -473,9 +478,9 @@ function App() {
                       style={{
                         background: '#ffffff',
                         border: '2px solid #d97706',
-                        borderRadius: '24px',
+                        borderRadius: '12px',
                         padding: '2rem 1.75rem',
-                        boxShadow: '0 10px 30px rgba(217, 119, 6, 0.12)',
+                        boxShadow: '0 10px 30px rgba(217, 119, 6, 0.08)',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -484,7 +489,7 @@ function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: 'linear-gradient(135deg, #d97706, #b45309)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(217, 119, 6, 0.3)' }}>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: 'linear-gradient(135deg, #d97706, #b45309)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(217, 119, 6, 0.25)' }}>
                           <UploadCloud size={26} />
                         </div>
                         <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
@@ -495,7 +500,7 @@ function App() {
                         </p>
                       </div>
 
-                      <button className="btn-sand" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <button className="btn-sand" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <UploadCloud size={18} /> {lang === 'ar' ? 'إدخال وسحب مخزون 📥' : 'Import Stock 📥'}
                       </button>
                     </div>
