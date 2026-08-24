@@ -8,7 +8,7 @@ import { db, verifyPassword } from './db.js';
 import { signJwt, verifyJwt, authenticateToken, requireRole } from './auth.js';
 import { isSupabaseConfigured, getSupabaseProducts, getSupabaseCategories, saveSupabaseOrder } from './supabase.js';
 
-import zlib from 'zlib';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,7 +104,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 async function getCachedBootstrapData() {
   const now = Date.now();
-  if (memoryCache.products && memoryCache.products.length >= 7000 && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
+  if (memoryCache.products && memoryCache.products.length > 0 && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
     return memoryCache;
   }
 
@@ -191,14 +191,21 @@ app.delete('/api/products/:id', authenticateToken, requireRole(['Admin']), (req,
 // POST Checkout Order (POS Counter & Online Customer Store)
 app.post('/api/orders', async (req, res) => {
   const order = req.body;
-  
+
+  // Validate order has items
+  if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+    return res.status(400).json({ error: 'Cannot create order with empty items.' });
+  }
+
   // If request has auth token header, attach user name
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token) {
+  const authToken = authHeader && authHeader.split(' ')[1];
+  if (authToken) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      order.cashier = order.cashier || decoded.name || decoded.username;
+      const decoded = verifyJwt(authToken);
+      if (decoded) {
+        order.cashier = order.cashier || decoded.name || decoded.username;
+      }
     } catch (e) {
       // Ignore token decode error for guest online customer store orders
     }

@@ -142997,7 +142997,7 @@
       "minLevel": 8,
       "location": "Aisle 2 · Bin 10",
       "supplier": "BYD Hardware",
-      "lastUpdated": "2026-08-22T12:48:01.514Z"
+      "lastUpdated": "2026-08-24T12:54:12.523Z"
     },
     {
       "id": "P-2803411",
@@ -143019,6 +143019,56 @@
     }
   ],
   "orders": [
+    {
+      "items": [
+        {
+          "id": "P-6206109",
+          "oem": "ST-6206109",
+          "name": "Hinge",
+          "unitPrice": 24,
+          "qty": 1
+        }
+      ],
+      "subtotal": 24,
+      "tax": 1.92,
+      "total": 25.92,
+      "paymentMethod": "Cash",
+      "cashier": "System Administrator",
+      "id": "ORD-9e182b7b",
+      "date": "2026-08-24T12:54:11.988Z",
+      "status": "Completed"
+    },
+    {
+      "cashier": "Test",
+      "items": [],
+      "subtotal": 0,
+      "tax": 0,
+      "total": 0,
+      "paymentMethod": "Cash",
+      "id": "ORD-e69eca31",
+      "date": "2026-08-24T12:51:06.557Z",
+      "status": "Completed"
+    },
+    {
+      "cashier": "QA Test Cashier",
+      "items": [
+        {
+          "id": "P-5402841",
+          "oem": "EQEA-5402841",
+          "name": "Test Part",
+          "arName": "قطعة اختبار",
+          "unitPrice": 75,
+          "qty": 1
+        }
+      ],
+      "subtotal": 75,
+      "tax": 6,
+      "total": 81,
+      "paymentMethod": "Cash",
+      "id": "ORD-16d94791",
+      "date": "2026-08-24T12:51:05.858Z",
+      "status": "Completed"
+    },
     {
       "cashier": "System Administrator",
       "items": [
