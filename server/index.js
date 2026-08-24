@@ -104,30 +104,12 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 async function getCachedBootstrapData() {
   const now = Date.now();
-  if (memoryCache.products && memoryCache.products.length > 0 && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
+  if (memoryCache.products && (now - memoryCache.lastUpdated < CACHE_TTL_MS)) {
     return memoryCache;
   }
 
   const localProds = db.getProducts();
   const localCats = db.getCategories();
-
-  if (isSupabaseConfigured()) {
-    try {
-      const [sbProducts, sbCategories] = await Promise.all([
-        getSupabaseProducts(),
-        getSupabaseCategories()
-      ]);
-
-      if (sbProducts && sbProducts.length > 0) {
-        memoryCache.products = sbProducts.length > localProds.length ? sbProducts : localProds;
-        memoryCache.categories = sbCategories.length > 0 ? sbCategories : localCats;
-        memoryCache.lastUpdated = now;
-        return memoryCache;
-      }
-    } catch (err) {
-      console.error('Supabase fetch error, using local/cached DB:', err.message);
-    }
-  }
 
   memoryCache.products = localProds;
   memoryCache.categories = localCats;
