@@ -392,13 +392,9 @@ export default function LightStockManager({ products, categories, token, onProdu
                     </td>
 
                     <td style={{ padding: '0.65rem 1rem', textAlign: 'center' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#f1f5f9', padding: '0.15rem 0.45rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
-                        <button onClick={() => onQuickAdjustStock(p.id, -1)} style={{ width: '24px', height: '24px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '0.95rem' }}>-</button>
-                        <span className="mono" style={{ fontWeight: '900', minWidth: '28px', textAlign: 'center', fontSize: '0.95rem', color: qty <= 3 ? '#b45309' : '#047857' }}>
-                          {qty}
-                        </span>
-                        <button onClick={() => onQuickAdjustStock(p.id, 1)} style={{ width: '24px', height: '24px', borderRadius: '4px', background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', fontSize: '0.95rem' }}>+</button>
-                      </div>
+                      <span className="mono" style={{ fontWeight: '900', fontSize: '0.95rem', color: qty <= 3 ? '#b45309' : '#047857' }}>
+                        {qty}
+                      </span>
                     </td>
                   </tr>
                 );
