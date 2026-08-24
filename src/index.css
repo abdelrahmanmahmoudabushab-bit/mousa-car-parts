@@ -215,15 +215,32 @@ h1, h2, h3, h4 {
   border-color: #d97706;
 }
 
-/* Light Glow Effect on Card / Square Hover */
-.glow-card {
+/* Color-Specific Light Glow Effects on Hover */
+.glow-card-blue {
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
 }
-
-.glow-card:hover {
+.glow-card-blue:hover {
   transform: translateY(-5px) !important;
-  box-shadow: 0 16px 36px -4px rgba(37, 99, 235, 0.22), 0 0 24px rgba(217, 119, 6, 0.18) !important;
-  border-color: #3b82f6 !important;
+  box-shadow: 0 16px 36px -4px rgba(37, 99, 235, 0.3) !important;
+  border-color: #2563eb !important;
+}
+
+.glow-card-emerald {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
+}
+.glow-card-emerald:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.3) !important;
+  border-color: #059669 !important;
+}
+
+.glow-card-amber {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
+}
+.glow-card-amber:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 36px -4px rgba(217, 119, 6, 0.3) !important;
+  border-color: #d97706 !important;
 }
 
 /* Data Table */

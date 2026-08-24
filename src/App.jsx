@@ -406,9 +406,9 @@ function App() {
 
                   <div className="portal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', width: '100%', maxWidth: '1400px' }}>
                     
-                    {/* CHOICE 1: POS COUNTER */}
+                    {/* CHOICE 1: POS COUNTER (ROYAL BLUE) */}
                     <div
-                      className="glow-card"
+                      className="glow-card-blue"
                       onClick={() => setActiveTab('pos')}
                       style={{
                         background: '#ffffff',
@@ -434,21 +434,21 @@ function App() {
                         </p>
                       </div>
 
-                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <button className="btn-primary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#2563eb', borderColor: '#2563eb' }}>
                         <ShoppingCart size={18} /> {lang === 'ar' ? 'دخول نقطة البيع' : 'Enter Counter POS'}
                       </button>
                     </div>
 
-                    {/* CHOICE 2: STOCK INVENTORY */}
+                    {/* CHOICE 2: STOCK INVENTORY (EMERALD GREEN) */}
                     <div
-                      className="glow-card"
+                      className="glow-card-emerald"
                       onClick={() => setActiveTab('inventory')}
                       style={{
                         background: '#ffffff',
-                        border: '2px solid #cbd5e1',
+                        border: '2px solid #059669',
                         borderRadius: '12px',
                         padding: '2rem 1.75rem',
-                        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
+                        boxShadow: '0 10px 30px rgba(5, 150, 105, 0.08)',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -456,7 +456,7 @@ function App() {
                       }}
                     >
                       <div>
-                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: '#0f172a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(15, 23, 42, 0.2)' }}>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: 'linear-gradient(135deg, #059669, #047857)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(5, 150, 105, 0.25)' }}>
                           <Package size={26} />
                         </div>
                         <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
@@ -467,14 +467,14 @@ function App() {
                         </p>
                       </div>
 
-                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1' }}>
+                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
                         <Package size={18} /> {lang === 'ar' ? 'دخول دليل المخزون' : 'Open Inventory Directory'}
                       </button>
                     </div>
 
-                    {/* CHOICE 3: STOCK INGESTION & ENTRY (إدخال مخزون) */}
+                    {/* CHOICE 3: STOCK INGESTION & ENTRY (WARM AMBER GOLD) */}
                     <div
-                      className="glow-card"
+                      className="glow-card-amber"
                       onClick={() => setActiveTab('import')}
                       style={{
                         background: '#ffffff',
