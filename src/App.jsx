@@ -475,39 +475,6 @@ function App() {
                       </button>
                     </div>
 
-                    {/* CHOICE 4: SYSTEM SETTINGS & CONTROLS */}
-                    <div
-                      onClick={() => setActiveTab('settings')}
-                      style={{
-                        background: '#ffffff',
-                        border: '2px solid #7c3aed',
-                        borderRadius: '24px',
-                        padding: '2rem 1.75rem',
-                        boxShadow: '0 10px 30px rgba(124, 58, 237, 0.1)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                      }}
-                    >
-                      <div>
-                        <div style={{ width: '54px', height: '54px', borderRadius: '16px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(124, 58, 237, 0.3)' }}>
-                          <Settings size={26} />
-                        </div>
-                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
-                          {lang === 'ar' ? 'إعدادات النظام والتحكم' : 'System Settings & Controls'}
-                        </h2>
-                        <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
-                          {lang === 'ar' ? 'إدارة بيانات المحل، الضريبة، حسابات الكاشير، المزامنة السحابية والنسخ الاحتياطي' : 'Manage store info, tax rates, cashier accounts, DB sync, and backups.'}
-                        </p>
-                      </div>
-
-                      <button className="btn-secondary" style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#fcf5ff', color: '#7c3aed', border: '1px solid #ddd6fe' }}>
-                        <Settings size={18} /> {lang === 'ar' ? 'دخول إعدادات النظام ⚙️' : 'Open System Settings ⚙️'}
-                      </button>
-                    </div>
-
                   </div>
                 </div>
               )}
