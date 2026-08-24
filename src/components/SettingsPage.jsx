@@ -503,6 +503,27 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
             {lang === 'ar' ? 'حالة قاعدة البيانات والمزامنة السحابية ⚡' : 'Database Health & Cloud Sync'}
           </h2>
 
+          {/* 30-MIN AUTO SYNC BADGE CARD */}
+          <div style={{ padding: '1.1rem 1.35rem', background: '#ecfdf5', border: '1.5px solid #a7f3d0', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#047857', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <RefreshCw size={22} className={loadingDbStatus ? 'spin' : ''} />
+              </div>
+              <div>
+                <div style={{ fontSize: '1rem', fontWeight: '900', color: '#047857' }}>
+                  {lang === 'ar' ? 'مزامنة تلقائية كل 30 دقيقة ⚡ (أوفلاين + سحابي)' : '30-Minute Automatic Background Sync ⚡'}
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#065f46', marginTop: '0.15rem', fontWeight: '700' }}>
+                  {lang === 'ar' ? 'النظام يعمل أوفلاين وسحابي بسلاسة ويقوم بتحديث البيانات في الخلفية كل 30 دقيقة.' : 'System operates seamlessly offline and syncs all changes to cloud every 30 minutes.'}
+                </div>
+              </div>
+            </div>
+
+            <button onClick={fetchDbStatus} className="btn-sand" style={{ padding: '0.65rem 1.25rem', fontSize: '0.88rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <RefreshCw size={16} /> {lang === 'ar' ? 'مزامنة الآن 🔄' : 'Sync Now 🔄'}
+            </button>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
             <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '14px', padding: '1.1rem' }}>
               <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700' }}>المصدر الحالي</div>
@@ -518,13 +539,6 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
               <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700' }}>إجمالي الفواتير</div>
               <div className="mono" style={{ fontSize: '1.4rem', fontWeight: '900', color: '#047857', marginTop: '0.2rem' }}>{dbStatus?.orderCount || 0}</div>
             </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-            <button onClick={fetchDbStatus} className="btn-sand" style={{ padding: '0.75rem 1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <RefreshCw size={18} className={loadingDbStatus ? 'spin' : ''} />
-              {lang === 'ar' ? 'مزامنة وإعادة تحميل قاعدة البيانات' : 'Force Refresh & Sync'}
-            </button>
           </div>
         </div>
       )}
