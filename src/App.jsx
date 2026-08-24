@@ -1,17 +1,18 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect, Component, lazy, Suspense } from 'react';
 import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud, Settings } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
 import ReceiptModal from './components/ReceiptModal';
-import OrdersLog from './components/OrdersLog';
-import StockImportModal from './components/StockImportModal';
-import LightStockManager from './components/LightStockManager';
-import StockImportPage from './components/StockImportPage';
 import LoginScreen from './components/LoginScreen';
-import UserManagementModal from './components/UserManagementModal';
-import CustomerStore from './components/CustomerStore';
-import SettingsPage from './components/SettingsPage';
+
+// Lazy-loaded heavy components for instant sub-30ms initial page load speed
+const OrdersLog = lazy(() => import('./components/OrdersLog'));
+const LightStockManager = lazy(() => import('./components/LightStockManager'));
+const StockImportPage = lazy(() => import('./components/StockImportPage'));
+const SettingsPage = lazy(() => import('./components/SettingsPage'));
+const UserManagementModal = lazy(() => import('./components/UserManagementModal'));
+const CustomerStore = lazy(() => import('./components/CustomerStore'));
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -516,63 +517,69 @@ function App() {
                 </div>
               )}
 
-              {activeTab === 'import' && (
-                <StockImportPage
-                  products={products}
-                  categories={categories}
-                  token={token}
-                  lang={lang}
-                  onProductsUpdated={(updated) => setProducts(updated)}
-                  onBackToPortal={() => setActiveTab('portal')}
-                />
-              )}
+              <Suspense fallback={
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.5rem', color: 'var(--text-muted)', fontFamily: "'Cairo', sans-serif" }}>
+                  <RefreshCw className="spin" size={24} /> Loading...
+                </div>
+              }>
+                {activeTab === 'import' && (
+                  <StockImportPage
+                    products={products}
+                    categories={categories}
+                    token={token}
+                    lang={lang}
+                    onProductsUpdated={(updated) => setProducts(updated)}
+                    onBackToPortal={() => setActiveTab('portal')}
+                  />
+                )}
 
-              {activeTab === 'inventory' && (
-                <LightStockManager
-                  products={products}
-                  categories={categories}
-                  token={token}
-                  lang={lang}
-                  onProductsUpdated={(updated) => setProducts(updated)}
-                  onOpenAddItem={() => {
-                    setEditingItem(null);
-                    setIsItemModalOpen(true);
-                  }}
-                  onEditItem={(item) => {
-                    setEditingItem(item);
-                    setIsItemModalOpen(true);
-                  }}
-                  onDeleteItem={handleDeleteProduct}
-                  onQuickAdjustStock={handleQuickAdjustStock}
-                />
-              )}
+                {activeTab === 'inventory' && (
+                  <LightStockManager
+                    products={products}
+                    categories={categories}
+                    token={token}
+                    lang={lang}
+                    onProductsUpdated={(updated) => setProducts(updated)}
+                    onOpenAddItem={() => {
+                      setEditingItem(null);
+                      setIsItemModalOpen(true);
+                    }}
+                    onEditItem={(item) => {
+                      setEditingItem(item);
+                      setIsItemModalOpen(true);
+                    }}
+                    onDeleteItem={handleDeleteProduct}
+                    onQuickAdjustStock={handleQuickAdjustStock}
+                  />
+                )}
 
-              {activeTab === 'pos' && (
-                <POSTerminal
-                  products={products}
-                  categories={categories}
-                  lang={lang}
-                  onOpenPayment={(data) => setPaymentData(data)}
-                />
-              )}
+                {activeTab === 'pos' && (
+                  <POSTerminal
+                    products={products}
+                    categories={categories}
+                    lang={lang}
+                    onOpenPayment={(data) => setPaymentData(data)}
+                  />
+                )}
 
-              {activeTab === 'orders' && (
-                <OrdersLog
-                  orders={orders}
-                  onReprintReceipt={(order) => setActiveReceipt(order)}
-                />
-              )}
+                {activeTab === 'orders' && (
+                  <OrdersLog
+                    orders={orders}
+                    onReprintReceipt={(order) => setActiveReceipt(order)}
+                  />
+                )}
 
-              {activeTab === 'settings' && (
-                <SettingsPage
-                  token={token}
-                  user={user}
-                  lang={lang}
-                  setLang={setLang}
-                  onBackToPortal={() => setActiveTab('portal')}
-                  onProductsUpdated={(updated) => setProducts(updated)}
-                />
-              )}
+                {activeTab === 'settings' && (
+                  <SettingsPage
+                    token={token}
+                    user={user}
+                    lang={lang}
+                    setLang={setLang}
+                    onBackToPortal={() => setActiveTab('portal')}
+                    onProductsUpdated={(updated) => setProducts(updated)}
+                  />
+                )}
+              </Suspense>
             </>
           )}
         </div>
