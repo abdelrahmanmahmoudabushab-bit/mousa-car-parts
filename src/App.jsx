@@ -28,11 +28,11 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: '#ffffff', fontFamily: "'Cairo', sans-serif", padding: '2rem', textAlign: 'center' }}>
-          <div style={{ background: '#1e293b', border: '1px solid #d97706', padding: '2rem', borderRadius: '20px', maxWidth: '500px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-            <h2 style={{ fontSize: '1.4rem', color: '#f59e0b', marginBottom: '1rem' }}>⚠️ جاري تحديث التطبيق... (App Auto Recovery)</h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.92rem', marginBottom: '1.5rem' }}>حدث تحديث في البيانات. انقر أدناه لإعادة التحميل التلقائي.</p>
-            <button onClick={() => window.location.reload()} style={{ padding: '0.75rem 1.75rem', background: '#d97706', color: '#ffffff', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: '800', cursor: 'pointer' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', color: '#0f172a', fontFamily: "'Cairo', sans-serif", padding: '2rem', textAlign: 'center' }}>
+          <div style={{ background: '#ffffff', border: '2px solid #e2e8f0', padding: '2.5rem', borderRadius: '24px', maxWidth: '520px', boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: '#d97706', marginBottom: '1rem' }}>⚠️ جاري إعادة تحميل الصفحة تلقائياً...</h2>
+            <p style={{ color: '#64748b', fontSize: '0.92rem', marginBottom: '1.5rem', fontWeight: '600' }}>حدث تحديث مؤقت في النظام. انقر أدناه لمتابعة العمل.</p>
+            <button onClick={() => window.location.reload()} className="btn-sand" style={{ padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: '800' }}>
               إعادة التحميل الآن 🔄
             </button>
           </div>

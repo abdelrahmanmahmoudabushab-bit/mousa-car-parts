@@ -57,42 +57,41 @@ export default function LoginScreen({ onLoginSuccess }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%)',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
       fontFamily: 'var(--font-body)',
       padding: '1.5rem'
     }}>
       <div style={{
         width: '100%',
         maxWidth: '440px',
-        background: 'rgba(30, 41, 59, 0.7)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        borderRadius: '20px',
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        borderRadius: '24px',
         padding: '2.5rem 2rem',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-        color: '#f8fafc'
+        boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)',
+        color: '#0f172a'
       }}>
         {/* Header Branding */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
             width: '64px',
             height: '64px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            borderRadius: '18px',
+            background: '#0f172a',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 1rem',
-            boxShadow: '0 10px 25px rgba(37, 99, 235, 0.4)'
+            boxShadow: '0 8px 20px rgba(15, 23, 42, 0.2)'
           }}>
             <Car size={34} style={{ color: 'white' }} />
           </div>
 
-          <h1 style={{ fontSize: '1.5rem', fontWeight: '800', fontFamily: 'var(--font-heading)', color: 'white', margin: '0 0 0.3rem' }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: '900', fontFamily: 'var(--font-heading)', color: '#0f172a', margin: '0 0 0.3rem' }}>
             MOUSA CAR PARTS
           </h1>
-          <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-            Auto Parts Inventory & POS System (موسى لقطع السيارات)
+          <p style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', margin: 0 }}>
+            Auto Parts Inventory & POS System · موسى لقطع السيارات
           </p>
         </div>
 
