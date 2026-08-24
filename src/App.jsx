@@ -379,7 +379,7 @@ function App() {
                     </p>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', width: '100%', maxWidth: '1400px' }}>
+                  <div className="portal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', width: '100%', maxWidth: '1400px' }}>
                     
                     {/* CHOICE 1: POS COUNTER */}
                     <div

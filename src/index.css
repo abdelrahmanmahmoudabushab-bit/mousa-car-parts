@@ -524,15 +524,19 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Mobile Responsiveness Media Queries */
+/* Mobile Responsiveness Media Queries for Smartphones & Tablets */
 @media (max-width: 900px) {
   .top-header {
     height: auto !important;
-    padding: 0.85rem 1rem !important;
+    padding: 0.75rem 1rem !important;
     flex-wrap: wrap !important;
-    gap: 0.75rem !important;
+    gap: 0.6rem !important;
   }
   
+  .portal-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  }
+
   .pos-grid {
     grid-template-columns: 1fr !important;
     height: auto !important;
@@ -542,7 +546,7 @@ h1, h2, h3, h4 {
   .cart-section {
     border-left: none !important;
     border-top: 2px solid var(--border-color) !important;
-    max-height: 520px !important;
+    max-height: 550px !important;
   }
 
   .modal-content {
@@ -577,14 +581,20 @@ h1, h2, h3, h4 {
     min-height: 44px; /* Touch-friendly tap target for smartphones */
   }
 
+  .portal-grid {
+    grid-template-columns: 1fr !important;
+  }
+
   .top-header {
     flex-direction: column !important;
     align-items: stretch !important;
+    padding: 0.75rem !important;
   }
 
   .top-header > div {
     justify-content: space-between !important;
     width: 100% !important;
     flex-wrap: wrap !important;
+    gap: 0.5rem !important;
   }
 }
