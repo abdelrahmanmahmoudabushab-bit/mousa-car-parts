@@ -283,6 +283,11 @@ class RelationalDatabase {
 
   saveProduct(productData) {
     productData.lastUpdated = new Date().toISOString();
+    productData.costPrice = Math.max(0, parseFloat(productData.costPrice || 0) || 0);
+    productData.unitPrice = Math.max(0, parseFloat(productData.unitPrice || 0) || 0);
+    productData.quantity = Math.max(0, parseInt(productData.quantity || 0, 10) || 0);
+    productData.minLevel = Math.max(0, parseInt(productData.minLevel || 5, 10) || 5);
+
     if (productData.id) {
       const idx = this.tables.products.findIndex(p => p.id === productData.id);
       if (idx !== -1) {
