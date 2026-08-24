@@ -23,6 +23,11 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     const modelQ = selectedModel;
     const yearQ = selectedYear;
 
+    // Fast Cashier POS: Require search query, category filter, or model filter to render items
+    if (!q && selectedCat === 'all' && modelQ === 'all' && yearQ === 'all') {
+      return [];
+    }
+
     return products.filter(p => {
       const matchesCat = selectedCat === 'all' || p.categoryId === selectedCat;
       if (!matchesCat) return false;
@@ -192,69 +197,102 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
           </div>
         )}
 
-        {/* Product Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
-          {currentProducts.map(product => (
-            <div
-              key={product.id}
-              onClick={() => addToCart(product)}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '16px',
-                padding: '1.1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.05)',
-                transition: 'transform 0.15s ease, border-color 0.15s ease'
-              }}
-            >
-              <div>
-                <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#d97706', marginBottom: '0.35rem' }}>
-                  {product.oem}
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: '800', lineHeight: '1.35', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>
-                  {(!product.arName || product.arName.trim() === '()' || product.arName.trim() === 'أصلي ( أصلي )') ? 'قطع غيار أصلي المصنع' : product.arName}
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', fontWeight: '600' }}>
-                  <MapPin size={13} style={{ color: '#d97706' }} />
-                  <span>{product.location}</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.85rem', paddingTop: '0.65rem', borderTop: '1px solid #f1f5f9' }}>
-                <div>
-                  <div style={{ fontFamily: "'Cairo', sans-serif", fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
-                    ${(Number(product.unitPrice) || 0).toFixed(2)}
-                  </div>
-                  <div style={{ fontSize: '0.74rem', color: product.quantity <= product.minLevel ? '#b91c1c' : '#475569', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
-                    المتوفر: {product.quantity} قطعة
-                  </div>
-                </div>
-                <button
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    background: '#0f172a',
-                    border: 'none',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 10px rgba(15, 23, 42, 0.25)'
-                  }}
-                >
-                  <Plus size={18} />
-                </button>
-              </div>
+        {/* Clean Search Prompt Hero or Product Results */}
+        {currentProducts.length === 0 ? (
+          <div style={{ background: '#ffffff', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '3rem 2rem', textAlign: 'center', margin: '1rem 0', boxShadow: '0 4px 20px rgba(15, 23, 42, 0.03)' }}>
+            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto' }}>
+              <Search size={34} />
             </div>
-          ))}
-        </div>
+
+            <h3 style={{ fontSize: '1.35rem', color: '#0f172a', fontWeight: '900', marginBottom: '0.5rem', fontFamily: "'Cairo', sans-serif" }}>
+              {!search.trim() ? 'شاشة الكاشير السريعة · ابحث عن قطعة غيار 🔍' : `لا توجد نتائج مطابقة لـ "${search}"`}
+            </h3>
+
+            <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto 1.5rem auto', lineHeight: '1.6', fontFamily: "'Cairo', sans-serif" }}>
+              {!search.trim() 
+                ? 'استخدم شريط البحث الأكبر أعلاه لإدخال اسم القطعة، كود OEM، رقم الشاسي VIN، أو مسح الباركوم بالكاميرا لإظهار القطع وإضافتها للفاتورة مباشرة.' 
+                : 'تأكد من كود القطعة OEM أو جرب البحث بكلمات عامة مثل (باب، صدام، شمعة).'}
+            </p>
+
+            {!search.trim() && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', color: '#94a3b8', alignSelf: 'center', fontWeight: '700' }}>عينة سريعة:</span>
+                {['EQEA-5402841', 'ST-6206109', 'EQEA-2803411', 'حافة الباب'].map((sample, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleFilterChange(setSearch, sample)}
+                    style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#0f172a', padding: '0.35rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}
+                  >
+                    🔍 {sample}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+            {currentProducts.map(product => (
+              <div
+                key={product.id}
+                onClick={() => addToCart(product)}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '16px',
+                  padding: '1.1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.05)',
+                  transition: 'transform 0.15s ease, border-color 0.15s ease'
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#d97706', marginBottom: '0.35rem' }}>
+                    {product.oem}
+                  </div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: '800', lineHeight: '1.35', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>
+                    {(!product.arName || product.arName.trim() === '()' || product.arName.trim() === 'أصلي ( أصلي )') ? 'قطع غيار أصلي المصنع' : product.arName}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', fontWeight: '600' }}>
+                    <MapPin size={13} style={{ color: '#d97706' }} />
+                    <span>{product.location}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.85rem', paddingTop: '0.65rem', borderTop: '1px solid #f1f5f9' }}>
+                  <div>
+                    <div style={{ fontFamily: "'Cairo', sans-serif", fontSize: '1.2rem', fontWeight: '800', color: '#0f172a' }}>
+                      ${(Number(product.unitPrice) || 0).toFixed(2)}
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: product.quantity <= product.minLevel ? '#b91c1c' : '#475569', fontWeight: '700', fontFamily: "'Cairo', sans-serif" }}>
+                      المتوفر: {product.quantity} قطعة
+                    </div>
+                  </div>
+                  <button
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: '#0f172a',
+                      border: 'none',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 10px rgba(15, 23, 42, 0.25)'
+                    }}
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Right Cart Section */}
