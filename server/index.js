@@ -370,17 +370,12 @@ app.post('/api/sync-now', async (req, res) => {
 const distPath = path.join(__dirname, '..', 'dist');
 const distCustomerPath = path.join(__dirname, '..', 'dist-customer');
 
-// Serve Customer Web Store at /customer
-if (fs.existsSync(distCustomerPath)) {
-  app.use('/customer', express.static(distCustomerPath));
-}
-
-// Serve Cashier Counter POS Terminal at /pos
+// Serve static assets from dist/ and dist-customer/ at top-level
 if (fs.existsSync(distPath)) {
-  app.use('/pos', express.static(distPath));
-  app.get('/pos/*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
+  app.use(express.static(distPath));
+}
+if (fs.existsSync(distCustomerPath)) {
+  app.use(express.static(distCustomerPath));
 }
 
 // Health check endpoint for Railway & Render
