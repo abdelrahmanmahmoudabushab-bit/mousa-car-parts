@@ -338,29 +338,29 @@ export default function StockImportPage({ products = [], categories = [], token,
   };
 
   return (
-    <div style={{ minHeight: '100vh', width: '100%', background: '#ffffff', color: '#0f172a', fontFamily: "'Cairo', sans-serif", padding: '2rem 1.5rem', overflowY: 'auto' }}>
+    <div className="stock-import-container" style={{ minHeight: '100vh', width: '100%', background: '#ffffff', color: '#0f172a', fontFamily: "'Cairo', sans-serif", padding: '1.5rem', overflowY: 'auto' }}>
       
       {/* Top Header Controls */}
-      <div style={{ maxWidth: '1000px', margin: '0 auto 2rem auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #f1f5f9', paddingBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="stock-import-header" style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #f1f5f9', paddingBottom: '1rem' }}>
+        <div className="stock-import-title-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="stock-import-icon-box" style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <UploadCloud size={24} />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: '800', margin: 0, color: '#0f172a' }}>
+            <h1 style={{ fontSize: '1.4rem', fontWeight: '800', margin: 0, color: '#0f172a', lineHeight: '1.3' }}>
               إدخال وسحب المخزون (Stock Entry Portal)
             </h1>
-            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '0.15rem 0 0 0', fontWeight: '600' }}>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.15rem 0 0 0', fontWeight: '600' }}>
               اختر طريقة الإدخال المناسبة لقطع الغيار الجديدة
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="stock-import-header-actions" style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => setIsSmartIngestionOpen(true)}
             className="btn-sand"
-            style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+            style={{ padding: '0.55rem 1rem', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
           >
             <Camera size={16} /> تشغيل الماسح الذكي 📦📷
           </button>
@@ -368,7 +368,7 @@ export default function StockImportPage({ products = [], categories = [], token,
           {onBackToPortal && (
             <button
               onClick={() => { stopCameraScanner(); onBackToPortal(); }}
-              style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+              style={{ padding: '0.55rem 1rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '800', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
             >
               <ArrowRight size={16} /> العودة للرئيسية
             </button>
@@ -381,16 +381,17 @@ export default function StockImportPage({ products = [], categories = [], token,
 
         {/* 2 MAIN CHOICE CARDS */}
         {activeChoice === 'menu' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem', margin: '2rem 0' }}>
+          <div className="stock-import-choice-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', margin: '1.5rem 0' }}>
             
             {/* CHOICE 1: PULL FROM PDF / EXCEL */}
             <div
+              className="stock-import-card"
               onClick={() => setActiveChoice('pdf')}
               style={{
                 background: '#ffffff',
                 border: '2px solid #2563eb',
-                borderRadius: '24px',
-                padding: '2.5rem 2rem',
+                borderRadius: '20px',
+                padding: '2rem 1.5rem',
                 boxShadow: '0 10px 30px rgba(37, 99, 235, 0.08)',
                 cursor: 'pointer',
                 display: 'flex',
@@ -400,30 +401,31 @@ export default function StockImportPage({ products = [], categories = [], token,
               }}
             >
               <div>
-                <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: '#eff6ff', border: '1px solid #bfdbfe', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                  <FileText size={32} />
+                <div className="stock-import-icon-box" style={{ width: '54px', height: '54px', borderRadius: '14px', background: '#eff6ff', border: '1px solid #bfdbfe', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                  <FileText size={28} />
                 </div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
+                <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
                   📄 سحب وتصدير من ملف PDF / Excel
                 </h2>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.6', margin: 0, fontWeight: '600' }}>
+                <p style={{ color: '#64748b', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
                   ارفع فواتير الشراء وملفات قطع الغيار بضغطة واحدة، وسيقوم النظام بتفعيل واستخراج أرقام OEM والأسعار والترجمة التلقائية إلى اللغة العربية.
                 </p>
               </div>
 
-              <button className="btn-primary" style={{ marginTop: '2rem', padding: '0.9rem', fontSize: '1rem', fontWeight: '800', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <FileText size={20} /> سحب قطع الغيار من ملف 📄
+              <button className="btn-primary" style={{ marginTop: '1.5rem', padding: '0.8rem', fontSize: '0.92rem', fontWeight: '800', width: '100%', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+                <FileText size={18} /> سحب قطع الغيار من ملف 📄
               </button>
             </div>
 
             {/* CHOICE 2: SCAN QR / BARCODE */}
             <div
+              className="stock-import-card"
               onClick={() => setIsSmartIngestionOpen(true)}
               style={{
                 background: '#ffffff',
                 border: '2px solid #d97706',
-                borderRadius: '24px',
-                padding: '2.5rem 2rem',
+                borderRadius: '20px',
+                padding: '2rem 1.5rem',
                 boxShadow: '0 10px 30px rgba(217, 119, 6, 0.08)',
                 cursor: 'pointer',
                 display: 'flex',
@@ -433,19 +435,19 @@ export default function StockImportPage({ products = [], categories = [], token,
               }}
             >
               <div>
-                <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: '#fffbeb', border: '1px solid #fde68a', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                  <QrCode size={32} />
+                <div className="stock-import-icon-box" style={{ width: '54px', height: '54px', borderRadius: '14px', background: '#fffbeb', border: '1px solid #fde68a', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                  <QrCode size={28} />
                 </div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
+                <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
                   📷 مسح البار كود / QR (كاميرا الهاتف & السيريال)
                 </h2>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: '1.6', margin: 0, fontWeight: '600' }}>
+                <p style={{ color: '#64748b', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
                   افتح كاميرا الهاتف المحمول لقراءة الباركود والسيريال كود سريعًا في التو واللحظة لتحديث كميات المستودع وتأكيد الشحنات الواردة.
                 </p>
               </div>
 
-              <button className="btn-sand" style={{ marginTop: '2rem', padding: '0.9rem', fontSize: '1rem', fontWeight: '800', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <Camera size={20} /> مسح بواسطة كاميرا الهاتف 📷
+              <button className="btn-sand" style={{ marginTop: '1.5rem', padding: '0.8rem', fontSize: '0.92rem', fontWeight: '800', width: '100%', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+                <Camera size={18} /> مسح بواسطة كاميرا الهاتف 📷
               </button>
             </div>
 
