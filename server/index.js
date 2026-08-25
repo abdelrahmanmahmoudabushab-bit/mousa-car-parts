@@ -382,27 +382,29 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-// Root / Serves Customer Store Directly
-if (fs.existsSync(distCustomerPath)) {
-  app.use(express.static(distCustomerPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/pos')) {
-      return next();
-    }
-    res.sendFile(path.join(distCustomerPath, 'customer.html'));
-  });
-} else if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-}
+// Health check endpoint for Railway & Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
-const PORT = process.env.PORT || 5000;
+// Root / Serves Main React Application or Customer Store
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  
+  if (fs.existsSync(distCustomerPath) && (req.path.startsWith('/customer') || req.path === '/store')) {
+    return res.sendFile(path.join(distCustomerPath, 'customer.html'));
+  }
+  
+  if (fs.existsSync(distPath)) {
+    return res.sendFile(path.join(distPath, 'index.html'));
+  }
+  
+  res.status(200).send('<h2 style="font-family:sans-serif;text-align:center;margin-top:20%">⚡ Mousa Auto Parts Backend API Online!</h2>');
+});
+
+const PORT = parseInt(process.env.PORT || '5000', 10);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`⚡ Mousa Auto Parts Server running on http://0.0.0.0:${PORT}`);
   console.log(`   - Cashier POS Counter: http://localhost:${PORT}/pos`);
   console.log(`   - Customer Web Store:  http://localhost:${PORT}/`);
-  console.log(`   - Mobile Wi-Fi Access: http://192.168.100.54:${PORT}/pos`);
 });
