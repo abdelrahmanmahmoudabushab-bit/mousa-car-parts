@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Camera, X, RefreshCw, Volume2, CheckCircle, Keyboard } from 'lucide-react';
+import { parseSmartSerialNumber } from '../utils/documentParser';
 
-export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماسح الكاميرا · QR Code & Barcode' }) {
+export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماسح الكاميرا الذكي · Smart Serial Scanner 📷' }) {
   const [scanResult, setScanResult] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [manualCode, setManualCode] = useState('');
@@ -33,8 +34,8 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     scannerRef.current = html5Qrcode;
 
     const config = {
-      fps: 15,
-      qrbox: { width: 260, height: 260 },
+      fps: 20, // Ultra-fast 20 FPS scanning
+      qrbox: { width: 270, height: 270 },
       aspectRatio: 1.0
     };
 
@@ -42,18 +43,19 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
       { facingMode: 'environment' }, // Default rear camera on mobile
       config,
       (decodedText) => {
+        const cleanSerial = parseSmartSerialNumber(decodedText) || decodedText;
         playBeepSound();
-        setScanResult(decodedText);
+        setScanResult(cleanSerial);
         setIsScanning(false);
         if (onScanSuccess) {
-          onScanSuccess(decodedText);
+          onScanSuccess(cleanSerial);
         }
         // Auto close after brief success confirmation
         setTimeout(() => {
           html5Qrcode.stop().catch(() => {}).finally(() => {
             onClose();
           });
-        }, 600);
+        }, 500);
       },
       (error) => {
         // Scanning errors are expected while frame searching
@@ -73,8 +75,9 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
   const handleManualSubmit = (e) => {
     e.preventDefault();
     if (!manualCode.trim()) return;
+    const clean = parseSmartSerialNumber(manualCode.trim()) || manualCode.trim();
     playBeepSound();
-    onScanSuccess(manualCode.trim());
+    onScanSuccess(clean);
     onClose();
   };
 

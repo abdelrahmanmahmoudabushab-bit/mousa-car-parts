@@ -39,6 +39,39 @@ export function normalizeSearchCode(code) {
 }
 
 /**
+ * Smart Serial & OEM Part Number Extractor
+ * Automatically extracts clean OEM codes, serial numbers, or VIN patterns from raw camera QR/barcode text
+ */
+export function parseSmartSerialNumber(rawText) {
+  if (!rawText) return '';
+  const text = String(rawText).trim();
+
+  // Pattern 1: Standard BYD OEM Code (e.g. EQEA-5402841, ST-6206109, EQEA-8403019/70)
+  const bydPattern = /\b([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{4,12}(?:\/\d+)?)\b/;
+  const bydMatch = text.match(bydPattern);
+  if (bydMatch) {
+    return bydMatch[1].toUpperCase();
+  }
+
+  // Pattern 2: Serial after keywords like SN:, S/N:, OEM:, ITEM:, P/N:
+  const keywordPattern = /(?:SN|S\/N|OEM|PN|P\/N|ITEM|PART)[:\s-]*([A-Za-z0-9\/-]{4,20})/i;
+  const kwMatch = text.match(keywordPattern);
+  if (kwMatch) {
+    return kwMatch[1].toUpperCase();
+  }
+
+  // Pattern 3: Standalone alphanumeric serial string (5 to 22 characters)
+  const serialPattern = /\b([A-Za-z0-9]{5,22})\b/;
+  const serialMatch = text.match(serialPattern);
+  if (serialMatch) {
+    return serialMatch[1].toUpperCase();
+  }
+
+  // Fallback: Strip leading/trailing non-alphanumeric noise
+  return text.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
+}
+
+/**
  * High-Accuracy Smart Multi-Token Search Helper
  */
 export function matchProductSearch(product, searchQuery) {

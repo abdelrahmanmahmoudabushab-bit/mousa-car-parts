@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, ShoppingCart, Trash2, Plus, Minus, MapPin, Car, Camera } from 'lucide-react';
 import VinLookupBar from './VinLookupBar';
 import QrScannerModal from './QrScannerModal';
-import { matchProductSearch } from '../utils/documentParser';
+import { matchProductSearch, parseSmartSerialNumber, normalizeSearchCode } from '../utils/documentParser';
 
 export default function POSTerminal({ products, categories, onOpenPayment, lang }) {
   const [search, setSearch] = useState('');
@@ -110,18 +110,28 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
 
   const handleDirectBarcodeScan = useCallback((code) => {
     if (!code) return;
-    const clean = code.trim().toLowerCase();
-    const exactMatch = products.find(p => 
-      (p.oem && p.oem.toLowerCase() === clean) ||
-      (p.sku && p.sku.toLowerCase() === clean) ||
-      (p.id && p.id.toLowerCase() === clean)
-    );
+    const cleanSerial = parseSmartSerialNumber(code) || String(code).trim();
+    const cleanCode = normalizeSearchCode(cleanSerial);
+
+    // Smart Match: compare normalized serials ignoring hyphens, spaces, and slashes
+    const exactMatch = products.find(p => {
+      const oemClean = normalizeSearchCode(p.oem);
+      const skuClean = normalizeSearchCode(p.sku);
+      const idClean = normalizeSearchCode(p.id);
+
+      return (
+        (cleanCode && oemClean === cleanCode) ||
+        (cleanCode && skuClean === cleanCode) ||
+        (cleanCode && idClean === cleanCode) ||
+        (cleanCode.length >= 5 && (oemClean.includes(cleanCode) || skuClean.includes(cleanCode)))
+      );
+    });
 
     if (exactMatch) {
       addToCart(exactMatch);
       setMobilePosTab('cart');
     } else {
-      setSearch(code);
+      setSearch(cleanSerial);
     }
   }, [products, addToCart]);
 
