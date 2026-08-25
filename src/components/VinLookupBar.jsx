@@ -1,7 +1,10 @@
-import React from 'react';
-import { Car, Search, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Car, Search, XCircle, Camera } from 'lucide-react';
+import QrScannerModal from './QrScannerModal';
 
 export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit, selectedModel, onModelChange, selectedYear, onYearChange, matchedCount, totalCount }) {
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
   const models = [
     { id: 'all', name: 'جميع موديلات BYD' },
     { id: 'BYD Seagull', name: 'بي واي دي سيجول (BYD Seagull)' },
@@ -20,6 +23,13 @@ export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit
   };
 
   const isFiltered = searchVal || selectedModel !== 'all' || selectedYear !== 'all';
+
+  const handleScanSuccess = (scannedCode) => {
+    onSearchChange(scannedCode);
+    if (onSearchSubmit) {
+      onSearchSubmit();
+    }
+  };
 
   return (
     <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1rem 1.15rem', boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -51,6 +61,30 @@ export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit
             }}
           />
         </div>
+
+        <button
+          onClick={() => setIsScannerOpen(true)}
+          style={{
+            minHeight: '46px',
+            padding: '0 1rem',
+            borderRadius: '12px',
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            color: '#b45309',
+            fontSize: '0.88rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            whiteSpace: 'nowrap',
+            fontWeight: '800',
+            cursor: 'pointer',
+            flexShrink: 0
+          }}
+          title="Scan QR / Barcode with Camera"
+        >
+          <Camera size={18} /> مسح الكاميرا 📷
+        </button>
+
         <button
           onClick={() => { if (onSearchSubmit) onSearchSubmit(); }}
           className="btn-sand"
@@ -59,6 +93,14 @@ export default function VinLookupBar({ searchVal, onSearchChange, onSearchSubmit
           <Search size={18} /> بحث 🔍
         </button>
       </div>
+
+      {isScannerOpen && (
+        <QrScannerModal
+          onClose={() => setIsScannerOpen(false)}
+          onScanSuccess={handleScanSuccess}
+          title="مسح كود OEM أو باركود القطعة 📷"
+        />
+      )}
 
       {/* FILTER CONTROLS & TOTAL COUNT */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem', paddingTop: '0.1rem' }}>

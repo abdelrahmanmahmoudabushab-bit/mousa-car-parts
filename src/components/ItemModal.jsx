@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, Camera } from 'lucide-react';
+import QrScannerModal from './QrScannerModal';
 
 export default function ItemModal({ item, categories, onClose, onSave }) {
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [formData, setFormData] = useState({
     oem: '',
     sku: '',
@@ -68,7 +70,16 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>رقم القطعة (OEM Code) *</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>رقم القطعة (OEM Code) *</label>
+                <button
+                  type="button"
+                  onClick={() => setIsScannerOpen(true)}
+                  style={{ background: 'none', border: 'none', color: '#d97706', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                >
+                  <Camera size={14} /> مسح 📷
+                </button>
+              </div>
               <input
                 type="text"
                 placeholder="مثال: EQEA-5402841"
@@ -79,6 +90,14 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
                 required
               />
             </div>
+
+            {isScannerOpen && (
+              <QrScannerModal
+                onClose={() => setIsScannerOpen(false)}
+                onScanSuccess={(code) => setFormData(prev => ({ ...prev, oem: code, sku: code }))}
+                title="مسح OEM باركود القطعة 📷"
+              />
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
               <label style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600' }}>الموديل المتوافق</label>

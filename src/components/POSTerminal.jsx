@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Search, ShoppingCart, Trash2, Plus, Minus, MapPin, Car } from 'lucide-react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { Search, ShoppingCart, Trash2, Plus, Minus, MapPin, Car, Camera } from 'lucide-react';
 import VinLookupBar from './VinLookupBar';
+import QrScannerModal from './QrScannerModal';
 import { matchProductSearch } from '../utils/documentParser';
 
 export default function POSTerminal({ products, categories, onOpenPayment, lang }) {
@@ -11,6 +12,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
   const [cart, setCart] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [mobilePosTab, setMobilePosTab] = useState('catalog');
+  const [isPosScannerOpen, setIsPosScannerOpen] = useState(false);
   const ITEMS_PER_PAGE = 40;
 
   // Reset to page 1 whenever filters change
@@ -18,6 +20,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     setter(val);
     setCurrentPage(1);
   };
+
 
   const filteredProducts = useMemo(() => {
     const q = search.trim();
@@ -104,6 +107,24 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
   const removeFromCart = useCallback((id) => {
     setCart(prev => prev.filter(item => item.id !== id));
   }, []);
+
+  const handleDirectBarcodeScan = useCallback((code) => {
+    if (!code) return;
+    const clean = code.trim().toLowerCase();
+    const exactMatch = products.find(p => 
+      (p.oem && p.oem.toLowerCase() === clean) ||
+      (p.sku && p.sku.toLowerCase() === clean) ||
+      (p.id && p.id.toLowerCase() === clean)
+    );
+
+    if (exactMatch) {
+      addToCart(exactMatch);
+      setMobilePosTab('cart');
+    } else {
+      setSearch(code);
+    }
+  }, [products, addToCart]);
+
 
   const { subtotal, tax, total } = useMemo(() => {
     const sub = cart.reduce((acc, item) => acc + item.unitPrice * item.qty, 0);
@@ -351,12 +372,31 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
             </div>
             <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}>فاتورة البيع الحالية 🛒</h3>
           </div>
-          {cart.length > 0 && (
-            <button onClick={() => setCart([])} style={{ background: 'transparent', border: 'none', color: '#b91c1c', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', fontFamily: "'Cairo', sans-serif" }}>
-              مسح الفاتورة
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              onClick={() => setIsPosScannerOpen(true)}
+              style={{ background: '#fffbeb', border: '1px solid #fde68a', color: '#b45309', padding: '0.35rem 0.65rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+              title="Scan part barcode with camera"
+            >
+              <Camera size={14} /> مسح الكاميرا 📷
             </button>
-          )}
+
+            {cart.length > 0 && (
+              <button onClick={() => setCart([])} style={{ background: 'transparent', border: 'none', color: '#b91c1c', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', fontFamily: "'Cairo', sans-serif" }}>
+                مسح الفاتورة
+              </button>
+            )}
+          </div>
         </div>
+
+        {isPosScannerOpen && (
+          <QrScannerModal
+            onClose={() => setIsPosScannerOpen(false)}
+            onScanSuccess={handleDirectBarcodeScan}
+            title="إضافة قطعة للفاتورة عبر مسح الباركود 📷"
+          />
+        )}
 
         {/* Cart Items */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
