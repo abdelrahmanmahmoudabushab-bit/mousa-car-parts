@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Store, Percent, Users, Database, Download, Languages, Save, CheckCircle, RefreshCw, UserPlus, Trash2, ShieldCheck, FileSpreadsheet, HardDrive, Globe } from 'lucide-react';
+import { Settings, Store, Percent, Users, Database, Download, Languages, Save, CheckCircle, RefreshCw, UserPlus, Trash2, ShieldCheck, FileSpreadsheet, HardDrive, Globe, GitBranch } from 'lucide-react';
+import SystemTreeTab from './SystemTreeTab';
 
 export default function SettingsPage({ token, user, lang, setLang, onBackToPortal, onProductsUpdated }) {
-  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'tax' | 'users' | 'database' | 'backup'
+  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'tax' | 'users' | 'database' | 'backup' | 'tree'
   const [savedSuccess, setSavedSuccess] = useState('');
 
   // Store Settings (saved in localStorage for persistence across reloads)
@@ -230,6 +231,7 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
           { id: 'users', labelAr: 'حسابات المستخدمين 👥', labelEn: 'User Accounts', icon: Users },
           { id: 'database', labelAr: 'قاعدة البيانات والمزامنة ⚡', labelEn: 'Database & Sync', icon: Database },
           { id: 'backup', labelAr: 'النسخ الاحتياطي وإعادة الضبط 💾', labelEn: 'Backup & Reset', icon: Download },
+          { id: 'tree', labelAr: 'شجرة النظام والملفات 🌳', labelEn: 'System Tree & Architecture', icon: GitBranch },
         ].map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -601,6 +603,11 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
             </button>
           </div>
         </div>
+      )}
+
+      {/* TAB 6: SYSTEM TREE & ARCHITECTURE */}
+      {activeTab === 'tree' && (
+        <SystemTreeTab lang={lang} />
       )}
     </div>
   );
