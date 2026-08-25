@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Store, Percent, Users, Database, Download, Languages, Save, CheckCircle, RefreshCw, UserPlus, Trash2, ShieldCheck, FileSpreadsheet, HardDrive, Globe, GitBranch } from 'lucide-react';
-import SystemTreeTab from './SystemTreeTab';
+import { Settings, Store, Percent, Users, Database, Download, Languages, Save, CheckCircle, RefreshCw, UserPlus, Trash2, ShieldCheck, FileSpreadsheet, HardDrive, Globe } from 'lucide-react';
 
 export default function SettingsPage({ token, user, lang, setLang, onBackToPortal, onProductsUpdated }) {
-  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'tax' | 'users' | 'database' | 'backup' | 'tree'
+  const [activeTab, setActiveTab] = useState('store'); // 'store' | 'tax' | 'users' | 'database' | 'backup'
   const [savedSuccess, setSavedSuccess] = useState('');
 
   // Store Settings (saved in localStorage for persistence across reloads)
@@ -169,8 +168,8 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
 
   const handleClearAllData = async () => {
     const confirmationPrompt = window.prompt(
-      lang === 'ar' 
-        ? '⚠️ تحذير شديد: سيتم مسح كافة قطع الغيار وفواتير المبيعات بالكامل!\n\nللتأكيد وإتمام المسح اكتب كلمة: DELETE' 
+      lang === 'ar'
+        ? '⚠️ تحذير شديد: سيتم مسح كافة قطع الغيار وفواتير المبيعات بالكامل!\n\nللتأكيد وإتمام المسح اكتب كلمة: DELETE'
         : '⚠️ DANGER: This will permanently delete ALL products and sales order history!\n\nType DELETE to confirm wiping all data:'
     );
 
@@ -199,7 +198,7 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
 
   return (
     <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto', background: '#f8fafc', fontFamily: "'Cairo', sans-serif" }}>
-      
+
       {/* Top Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '1.25rem 1.5rem', boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -231,7 +230,6 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
           { id: 'users', labelAr: 'حسابات المستخدمين 👥', labelEn: 'User Accounts', icon: Users },
           { id: 'database', labelAr: 'قاعدة البيانات والمزامنة ⚡', labelEn: 'Database & Sync', icon: Database },
           { id: 'backup', labelAr: 'النسخ الاحتياطي وإعادة الضبط 💾', labelEn: 'Backup & Reset', icon: Download },
-          { id: 'tree', labelAr: 'شجرة النظام والملفات 🌳', labelEn: 'System Tree & Architecture', icon: GitBranch },
         ].map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -575,8 +573,8 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
             </div>
 
             <p style={{ fontSize: '0.88rem', color: '#991b1b', margin: '0 0 1.25rem 0', lineHeight: '1.5', fontWeight: '600' }}>
-              {lang === 'ar' 
-                ? 'سيؤدي النقر على زر المسح أدناه إلى حذف كافة قطع الغيار المخزنة وسجل فواتير المبيعات بالكامل من قاعدة البيانات. يتم إنشاء نسخة احتياطية تلقائياً قبل المسح.' 
+              {lang === 'ar'
+                ? 'سيؤدي النقر على زر المسح أدناه إلى حذف كافة قطع الغيار المخزنة وسجل فواتير المبيعات بالكامل من قاعدة البيانات. يتم إنشاء نسخة احتياطية تلقائياً قبل المسح.'
                 : 'Clicking the wipe button below will permanently delete all inventory products and sales order history from the database. An automated backup is created first.'}
             </p>
 
@@ -603,11 +601,6 @@ export default function SettingsPage({ token, user, lang, setLang, onBackToPorta
             </button>
           </div>
         </div>
-      )}
-
-      {/* TAB 6: SYSTEM TREE & ARCHITECTURE */}
-      {activeTab === 'tree' && (
-        <SystemTreeTab lang={lang} />
       )}
     </div>
   );
