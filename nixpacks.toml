@@ -1,5 +1,11 @@
-[build]
-cmds = ['npm install --include=dev', 'npm run build']
+[phases.setup]
+nixPkgs = ['nodejs-20_x']
+
+[phases.install]
+cmds = ['npm install --production=false']
+
+[phases.build]
+cmds = ['npm run build']
 
 [start]
 cmd = 'node server/index.js'
