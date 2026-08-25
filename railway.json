@@ -1,6 +1,6 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
-  "projectId": "fd24d88f-e303-4a35-a2dd-b72638fbb825",
+  "projectId": "34d97682-3413-4fd2-901b-389163ef3440",
   "build": {
     "builder": "NIXPACKS"
   },
