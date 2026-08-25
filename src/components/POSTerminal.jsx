@@ -27,11 +27,6 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     const modelQ = selectedModel;
     const yearQ = selectedYear;
 
-    // Fast Cashier POS: Require search query, category filter, or model filter to render items
-    if (!q && selectedCat === 'all' && modelQ === 'all' && yearQ === 'all') {
-      return [];
-    }
-
     return products.filter(p => {
       const matchesCat = selectedCat === 'all' || p.categoryId === selectedCat;
       if (!matchesCat) return false;
@@ -292,19 +287,15 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
 
         {/* Clean Search Prompt Hero or Product Results */}
         {currentProducts.length === 0 ? (
-          <div style={{ background: '#ffffff', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '3rem 2rem', textAlign: 'center', margin: '1rem 0', boxShadow: '0 4px 20px rgba(15, 23, 42, 0.03)' }}>
-            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto' }}>
-              <Search size={34} />
+          <div style={{ background: '#ffffff', border: '1px dashed #cbd5e1', borderRadius: '16px', padding: '2rem 1rem', textAlign: 'center', margin: '1rem 0' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem auto' }}>
+              <Search size={24} />
             </div>
-
-            <h3 style={{ fontSize: '1.35rem', color: '#0f172a', fontWeight: '900', marginBottom: '0.5rem', fontFamily: "'Cairo', sans-serif" }}>
-              {!search.trim() ? 'شاشة الكاشير السريعة · ابحث عن قطعة غيار 🔍' : `لا توجد نتائج مطابقة لـ "${search}"`}
+            <h3 style={{ fontSize: '1rem', color: '#0f172a', fontWeight: '800', margin: 0, fontFamily: "'Cairo', sans-serif" }}>
+              {products.length === 0 ? 'المستودع فارغ حالياً' : `لا توجد نتائج مطابقة لبحثك "${search}"`}
             </h3>
-
-            <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6', fontFamily: "'Cairo', sans-serif" }}>
-              {!search.trim() 
-                ? 'استخدم شريط البحث الأكبر أعلاه لإدخال اسم القطعة، كود OEM، رقم الشاسي VIN، أو مسح الباركوم بالكاميرا لإظهار القطع وإضافتها للفاتورة مباشرة.' 
-                : 'تأكد من كود القطعة OEM أو جرب البحث بكلمات عامة مثل (باب، صدام، شمعة).'}
+            <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0.25rem 0 0 0', fontFamily: "'Cairo', sans-serif" }}>
+              {products.length === 0 ? 'يرجى استيراد قطع غيار أو إضافتها إلى المخزون.' : 'تأكد من كتابة كود OEM بشكل صحيح أو جرب كلمات عامة.'}
             </p>
           </div>
         ) : (
