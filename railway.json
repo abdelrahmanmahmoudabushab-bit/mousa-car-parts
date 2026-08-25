@@ -1,5 +1,6 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
+  "projectId": "fd24d88f-e303-4a35-a2dd-b72638fbb825",
   "build": {
     "builder": "NIXPACKS"
   },
@@ -9,3 +10,4 @@
     "restartPolicyMaxRetries": 10
   }
 }
+
