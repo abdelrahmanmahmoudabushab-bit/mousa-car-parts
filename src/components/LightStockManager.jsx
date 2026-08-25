@@ -240,19 +240,21 @@ export default function LightStockManager({ products, categories, token, onProdu
             />
           </div>
 
-          <button onClick={() => setIsSmartIngestionOpen(true)} style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#047857', minHeight: '48px', padding: '0 1.25rem', fontSize: '0.95rem', fontWeight: '900', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', flexShrink: 0 }}>
-            <PackagePlus size={20} /> إدخال مخزون بالباركود 📦📷
-          </button>
+          <div className="stock-actions-grid">
+            <button onClick={() => setIsSmartIngestionOpen(true)} style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#047857', minHeight: '44px', padding: '0 1rem', fontSize: '0.88rem', fontWeight: '900', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+              <PackagePlus size={18} /> إدخال مخزون بالباركود 📦📷
+            </button>
 
-          <button onClick={onOpenAddItem} className="btn-sand" style={{ minHeight: '48px', padding: '0 1.25rem', fontSize: '0.95rem', fontWeight: '800', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-            <Plus size={20} /> إضافة قطعة ➕
-          </button>
+            <button onClick={onOpenAddItem} className="btn-sand" style={{ minHeight: '44px', padding: '0 1rem', fontSize: '0.88rem', fontWeight: '900', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+              <Plus size={18} /> إضافة قطعة ➕
+            </button>
+          </div>
         </div>
 
         {/* Toolbar Sub-Filters Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', flexWrap: 'wrap', gap: '0.6rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flex: '1 1 140px' }}>
+          <div className="stock-sub-filters">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#64748b', whiteSpace: 'nowrap' }}>القسم:</span>
               <select
                 value={selectedCat}
@@ -266,7 +268,7 @@ export default function LightStockManager({ products, categories, token, onProdu
               </select>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flex: '1 1 160px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#64748b', whiteSpace: 'nowrap' }}>الموديل:</span>
               <select
                 value={selectedModel}
@@ -286,7 +288,7 @@ export default function LightStockManager({ products, categories, token, onProdu
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: '0.2rem' }}>
             <button
               onClick={handleExportCurrentToExcel}
-              style={{ padding: '0.4rem 0.85rem', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontWeight: '800', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+              style={{ padding: '0.4rem 0.85rem', borderRadius: '10px', background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#047857', fontWeight: '800', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
             >
               <Download size={15} /> تصدير Excel 📊
             </button>
@@ -305,11 +307,11 @@ export default function LightStockManager({ products, categories, token, onProdu
         <div style={{ height: '4px', background: '#107c41', width: '100%' }}></div>
 
         {/* Table Top Header & Pagination Bar */}
-        <div style={{ background: '#ffffff', padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <FileSpreadsheet size={20} style={{ color: '#107c41' }} />
-            <span style={{ fontSize: '1rem', color: '#0f172a', fontWeight: '800' }}>
-              جدول بيانات المستودع التفاعلي (Excel Sheet View)
+        <div className="stock-table-card-header" style={{ background: '#ffffff', padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <FileSpreadsheet size={20} style={{ color: '#107c41', flexShrink: 0 }} />
+            <span style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: '800' }}>
+              جدول بيانات المستودع (Excel Sheet View)
             </span>
             <span style={{ fontSize: '0.78rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', padding: '0.15rem 0.55rem', borderRadius: '6px', fontWeight: '800' }}>
               {filteredProducts.length} صنف متاح
@@ -340,8 +342,8 @@ export default function LightStockManager({ products, categories, token, onProdu
         </div>
 
         {/* CRISP EXCEL GRID DATA TABLE */}
-        <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, background: '#ffffff' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', textWrap: 'nowrap' }}>
+        <div className="stock-table-scroll-container" style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, background: '#ffffff' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
             <thead>
               <tr style={{ background: '#0f172a', color: '#ffffff', fontSize: '0.86rem', fontWeight: '800', borderBottom: '3px solid #107c41' }}>
                 <th style={{ padding: '0.75rem', width: '45px', textAlign: 'center', borderRight: '1px solid #334155' }}>#</th>

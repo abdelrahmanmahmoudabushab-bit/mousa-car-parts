@@ -608,24 +608,48 @@ html, body {
     padding: 0.5rem !important;
   }
 
+  /* POS Terminal Mobile View Switcher */
   .pos-grid {
     grid-template-columns: 1fr !important;
     height: auto !important;
     overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .pos-layout-responsive {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  .catalog-section.mobile-hidden,
+  .cart-section.mobile-hidden {
+    display: none !important;
+  }
+
+  .catalog-section.mobile-active,
+  .cart-section.mobile-active {
+    display: flex !important;
+    width: 100% !important;
   }
 
   .catalog-section {
     padding: 0.75rem !important;
     gap: 0.75rem !important;
+    width: 100% !important;
   }
 
   .cart-section {
+    width: 100% !important;
     border-left: none !important;
     border-top: 1px solid var(--border-color) !important;
     max-height: none !important;
     height: auto !important;
-    border-radius: 12px !important;
-    margin-top: 0.5rem !important;
+    border-radius: 16px !important;
+    margin-top: 0.25rem !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
   }
 
   .modal-overlay {
@@ -658,6 +682,58 @@ html, body {
 
   .metrics-row {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Light Stock Manager Mobile Responsive Improvements */
+  .stock-actions-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .stock-actions-grid button {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 0.45rem 0.5rem !important;
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    border-radius: 10px !important;
+  }
+
+  .stock-sub-filters {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+  }
+
+  .stock-sub-filters-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+
+  .stock-table-card-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .stock-table-scroll-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+    width: 100% !important;
+  }
+
+  .stock-table-scroll-container table {
+    min-width: 780px !important;
+    white-space: nowrap !important;
   }
 }
 

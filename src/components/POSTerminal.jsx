@@ -204,7 +204,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', flex: 1, width: '100%', overflow: 'hidden' }} className="pos-layout-responsive">
         
         {/* Left Catalog View */}
-        <div className="catalog-section" style={{ display: mobilePosTab === 'catalog' ? 'flex' : undefined }}>
+        <div className={`catalog-section ${mobilePosTab === 'catalog' ? 'mobile-active' : 'mobile-hidden'}`}>
 
         {/* Unified Search & Vehicle Compatibility Bar */}
         <VinLookupBar 
@@ -374,7 +374,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
       </div>
 
       {/* Right Cart Section */}
-      <div className="cart-section" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', display: mobilePosTab === 'cart' ? 'flex' : undefined }}>
+      <div className={`cart-section ${mobilePosTab === 'cart' ? 'mobile-active' : 'mobile-hidden'}`}>
         <div style={{ padding: '1.1rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
