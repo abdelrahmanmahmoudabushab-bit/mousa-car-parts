@@ -552,17 +552,33 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Hardware-Accelerated Mobile Smooth Touch Scrolling & Touch Optimization */
+html, body {
+  min-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-container {
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Mobile Responsiveness Media Queries for Smartphones & Tablets */
 @media (max-width: 900px) {
   .top-header {
     height: auto !important;
-    padding: 0.75rem 1rem !important;
-    flex-wrap: wrap !important;
-    gap: 0.6rem !important;
+    padding: 0.6rem 0.85rem !important;
+    gap: 0.5rem !important;
   }
   
   .portal-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+    gap: 1rem !important;
   }
 
   .pos-grid {
@@ -579,10 +595,12 @@ h1, h2, h3, h4 {
 
   .modal-content {
     width: 95vw !important;
-    max-height: 92vh !important;
-    padding: 1.15rem !important;
+    max-height: 90dvh !important;
+    padding: 1rem !important;
     margin: auto !important;
-    border-radius: 16px !important;
+    border-radius: 14px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .data-table th, .data-table td {
@@ -602,7 +620,7 @@ h1, h2, h3, h4 {
 
 @media (max-width: 640px) {
   body {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 
   button, input, select {
@@ -611,18 +629,43 @@ h1, h2, h3, h4 {
 
   .portal-grid {
     grid-template-columns: 1fr !important;
+    width: 100% !important;
   }
 
   .top-header {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    padding: 0.75rem !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.5rem 0.75rem !important;
   }
 
-  .top-header > div {
-    justify-content: space-between !important;
-    width: 100% !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
+  .top-header-actions {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding-bottom: 0.2rem !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Touch-Screen UI Lag Optimization: Disable Heavy Blur & Hover Translate on Mobile */
+@media (hover: none) and (pointer: coarse) {
+  .glow-card-blue, .glow-card-emerald, .glow-card-amber, .glow-card {
+    transform: none !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+  }
+  
+  .glow-card-blue:active {
+    border-color: #2563eb !important;
+    background: #f8fafc !important;
+  }
+  
+  .glow-card-emerald:active {
+    border-color: #059669 !important;
+    background: #ecfdf5 !important;
+  }
+  
+  .glow-card-amber:active {
+    border-color: #d97706 !important;
+    background: #fffbeb !important;
   }
 }

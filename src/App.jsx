@@ -254,36 +254,36 @@ function App() {
   };
 
   return (
-    <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ flexDirection: 'column', height: '100vh', width: '100vw', background: '#f4f6f9' }}>
+    <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ flexDirection: 'column', minHeight: '100dvh', width: '100%', background: '#f4f6f9', display: 'flex' }}>
       {/* Clean Full-Width Top Header Bar */}
       <header className="top-header" style={{
-        minHeight: '68px',
+        minHeight: '60px',
         background: '#ffffff',
         borderBottom: '1px solid var(--border-color)',
-        padding: '0.5rem 1.5rem',
+        padding: '0.5rem 1.25rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.75rem',
+        gap: '0.5rem',
         boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
         zIndex: 50
       }}>
         {/* Brand & Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '1.3rem' }}>🚗</span>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.25rem' }}>🚗</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.15rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
             MOUSA CAR PARTS
           </span>
         </div>
 
         {/* Top Header Actions & Portal Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div className="top-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {activeTab !== 'portal' && (
             <button
               onClick={() => setActiveTab('portal')}
               style={{
-                padding: '0.45rem 0.85rem',
+                padding: '0.4rem 0.75rem',
                 borderRadius: '8px',
                 background: '#eff6ff',
                 border: '1px solid #bfdbfe',
@@ -304,7 +304,7 @@ function App() {
           <button
             onClick={() => setActiveTab('orders')}
             style={{
-              padding: '0.45rem 0.85rem',
+              padding: '0.4rem 0.75rem',
               borderRadius: '8px',
               background: activeTab === 'orders' ? '#0f172a' : '#f8fafc',
               color: activeTab === 'orders' ? '#ffffff' : '#475569',
@@ -324,7 +324,7 @@ function App() {
           <button
             onClick={() => setActiveTab('settings')}
             style={{
-              padding: '0.45rem 0.85rem',
+              padding: '0.4rem 0.75rem',
               borderRadius: '8px',
               background: activeTab === 'settings' ? '#0f172a' : '#f8fafc',
               color: activeTab === 'settings' ? '#ffffff' : '#475569',
@@ -344,7 +344,7 @@ function App() {
           <button
             onClick={toggleLanguage}
             style={{
-              padding: '0.45rem 0.85rem',
+              padding: '0.4rem 0.75rem',
               borderRadius: '8px',
               background: '#f8fafc',
               border: '1px solid #cbd5e1',
@@ -362,16 +362,16 @@ function App() {
             {lang === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English'}
           </button>
 
-          <div style={{ height: '24px', width: '1px', background: '#cbd5e1', margin: '0 0.25rem' }} />
+          <div style={{ height: '20px', width: '1px', background: '#cbd5e1', margin: '0 0.2rem' }} />
 
           {/* User & Logout */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <User size={15} style={{ color: '#2563eb' }} /> {user.name || user.username}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <User size={14} style={{ color: '#2563eb' }} /> {user.name || user.username}
             </div>
             <button
               onClick={handleLogout}
-              style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.4rem 0.65rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: '700' }}
+              style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.35rem 0.6rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: '700' }}
               title="Log Out"
             >
               <LogOut size={14} /> {lang === 'ar' ? 'خروج' : 'Logout'}
@@ -381,10 +381,10 @@ function App() {
       </header>
 
       {/* Main Screen Full Width Container */}
-      <div className="main-content" style={{ flex: 1, width: '100%', overflow: 'hidden' }}>
+      <div className="main-content" style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
 
         {/* Tab Views */}
-        <div style={{ flex: 1, overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflowY: 'auto' }}>
           {loading || bootstrapError ? (
             <WaitingScreen
               lang={lang}
@@ -394,12 +394,12 @@ function App() {
           ) : (
             <>
               {activeTab === 'portal' && (
-                <div style={{ flex: 1, padding: '3rem 2rem', background: '#f4f6f9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', overflowY: 'auto' }}>
-                  <div style={{ textAlign: 'center', marginBottom: '2.5rem', maxWidth: '600px' }}>
-                    <h1 style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>
+                <div style={{ flex: 1, padding: '2rem 1rem', background: '#f4f6f9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', minHeight: '100%', overflowY: 'auto' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '2rem', maxWidth: '600px', width: '100%' }}>
+                    <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)', letterSpacing: '-0.02em' }}>
                       {lang === 'ar' ? 'اختر وجهة العمل المطلوبة' : 'Select Work Portal'}
                     </h1>
-                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0.5rem 0 0 0' }}>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0.4rem 0 0 0' }}>
                       {lang === 'ar' ? 'اختر بين نقطة البيع الكاشير، دليل المخزون العام، أو إدخال وسحب المخزون' : 'Choose between Counter POS, Inventory Directory, or Stock Import.'}
                     </p>
                   </div>
