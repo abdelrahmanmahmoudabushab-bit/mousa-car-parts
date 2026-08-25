@@ -32,9 +32,26 @@ export default function SmartStockIngestionModal({ products, categories, token, 
   });
   const [isTranslating, setIsTranslating] = useState(false);
 
+  // Play audio beep feedback on barcode scan
+  const playBeep = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch (e) {}
+  };
+
   // Handle Barcode Search / Lookup
   const handleProcessBarcode = useCallback((rawCode) => {
     if (!rawCode || !rawCode.trim()) return;
+    playBeep();
     const cleanSerial = parseSmartSerialNumber(rawCode) || rawCode.trim().toUpperCase();
     const normalized = normalizeSearchCode(cleanSerial);
 
