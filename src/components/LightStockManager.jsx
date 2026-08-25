@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { UploadCloud, Download, CheckCircle2, RefreshCw, Languages, Search, Plus, Trash2, Edit2, Sparkles, MapPin, PackageCheck, AlertTriangle, Car, ShieldCheck, FileSpreadsheet } from 'lucide-react';
+import { UploadCloud, Download, CheckCircle2, RefreshCw, Languages, Search, Plus, Trash2, Edit2, Sparkles, MapPin, PackageCheck, AlertTriangle, Car, ShieldCheck, FileSpreadsheet, PackagePlus, Camera } from 'lucide-react';
 import { parseExcelFile, parsePdfFile, matchProductSearch } from '../utils/documentParser';
 import VinLookupBar from './VinLookupBar';
+import SmartStockIngestionModal from './SmartStockIngestionModal';
 
-export default function LightStockManager({ products, categories, token, onProductsUpdated, onOpenAddItem, onEditItem, onDeleteItem, onQuickAdjustStock }) {
+export default function LightStockManager({ products, categories, token, onProductsUpdated, onOpenAddItem, onEditItem, onDeleteItem, onQuickAdjustStock, onSaveProduct }) {
   // View Mode State ('grid' | 'table')
   const [viewMode, setViewMode] = useState('grid');
+  const [isSmartIngestionOpen, setIsSmartIngestionOpen] = useState(false);
 
   // Directory Search & Filter State
   const [search, setSearch] = useState('');
@@ -238,6 +240,10 @@ export default function LightStockManager({ products, categories, token, onProdu
             />
           </div>
 
+          <button onClick={() => setIsSmartIngestionOpen(true)} style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#047857', minHeight: '48px', padding: '0 1.25rem', fontSize: '0.95rem', fontWeight: '900', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', flexShrink: 0 }}>
+            <PackagePlus size={20} /> إدخال مخزون بالباركود 📦📷
+          </button>
+
           <button onClick={onOpenAddItem} className="btn-sand" style={{ minHeight: '48px', padding: '0 1.25rem', fontSize: '0.95rem', fontWeight: '800', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
             <Plus size={20} /> إضافة قطعة ➕
           </button>
@@ -426,6 +432,16 @@ export default function LightStockManager({ products, categories, token, onProdu
         </div>
 
       </div>
+
+      {isSmartIngestionOpen && (
+        <SmartStockIngestionModal
+          products={products}
+          categories={categories}
+          token={token}
+          onClose={() => setIsSmartIngestionOpen(false)}
+          onSaveProduct={onSaveProduct}
+        />
+      )}
     </div>
   );
 }

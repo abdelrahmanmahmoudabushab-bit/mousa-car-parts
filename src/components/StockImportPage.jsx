@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, QrCode, UploadCloud, Download, Search, CheckCircle2, RefreshCw, ArrowRight, Barcode, Plus, Trash2, ShieldCheck, MapPin, Camera, CameraOff, Volume2 } from 'lucide-react';
 import { parseExcelFile, parsePdfFile } from '../utils/documentParser';
+import SmartStockIngestionModal from './SmartStockIngestionModal';
 
-export default function StockImportPage({ products = [], categories = [], token, lang = 'ar', onProductsUpdated, onBackToPortal }) {
+export default function StockImportPage({ products = [], categories = [], token, lang = 'ar', onProductsUpdated, onBackToPortal, onSaveProduct }) {
   const [activeChoice, setActiveChoice] = useState('menu'); // 'menu' | 'pdf' | 'qr'
+  const [isSmartIngestionOpen, setIsSmartIngestionOpen] = useState(false);
 
   // PDF/Excel Import state
   const [file, setFile] = useState(null);
@@ -354,14 +356,24 @@ export default function StockImportPage({ products = [], categories = [], token,
           </div>
         </div>
 
-        {onBackToPortal && (
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
-            onClick={() => { stopCameraScanner(); onBackToPortal(); }}
-            style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+            onClick={() => setIsSmartIngestionOpen(true)}
+            className="btn-sand"
+            style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
           >
-            <ArrowRight size={16} /> العودة للرئيسية
+            <Camera size={16} /> تشغيل الماسح الذكي 📦📷
           </button>
-        )}
+
+          {onBackToPortal && (
+            <button
+              onClick={() => { stopCameraScanner(); onBackToPortal(); }}
+              style={{ padding: '0.55rem 1.15rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: '800', cursor: 'pointer', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+            >
+              <ArrowRight size={16} /> العودة للرئيسية
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Choice Screen */}
@@ -406,7 +418,7 @@ export default function StockImportPage({ products = [], categories = [], token,
 
             {/* CHOICE 2: SCAN QR / BARCODE */}
             <div
-              onClick={() => setActiveChoice('qr')}
+              onClick={() => setIsSmartIngestionOpen(true)}
               style={{
                 background: '#ffffff',
                 border: '2px solid #d97706',
@@ -769,6 +781,16 @@ export default function StockImportPage({ products = [], categories = [], token,
         )}
 
       </div>
+
+      {isSmartIngestionOpen && (
+        <SmartStockIngestionModal
+          products={products}
+          categories={categories}
+          token={token}
+          onClose={() => setIsSmartIngestionOpen(false)}
+          onSaveProduct={onSaveProduct}
+        />
+      )}
     </div>
   );
 }

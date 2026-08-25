@@ -611,6 +611,7 @@ function App() {
                     token={token}
                     lang={lang}
                     onProductsUpdated={(updated) => setProducts(updated)}
+                    onSaveProduct={handleSaveProduct}
                     onBackToPortal={() => setActiveTab('portal')}
                   />
                 )}
@@ -632,6 +633,7 @@ function App() {
                     }}
                     onDeleteItem={handleDeleteProduct}
                     onQuickAdjustStock={handleQuickAdjustStock}
+                    onSaveProduct={handleSaveProduct}
                   />
                 )}
 
