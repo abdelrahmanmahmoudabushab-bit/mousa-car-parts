@@ -399,6 +399,9 @@ app.get('*', (req, res, next) => {
     return res.sendFile(path.join(distPath, 'index.html'));
   }
   
+  res.status(200).send('<h2 style="font-family:sans-serif;text-align:center;margin-top:20%">⚡ Mousa Auto Parts Backend API Online!</h2>');
+});
+
 const PORT = parseInt(process.env.PORT || '5000', 10);
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`⚡ Mousa Auto Parts Server running on http://0.0.0.0:${PORT}`);
