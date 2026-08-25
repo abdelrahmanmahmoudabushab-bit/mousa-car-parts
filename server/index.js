@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
@@ -402,12 +403,19 @@ app.get('*', (req, res, next) => {
   res.status(200).send('<h2 style="font-family:sans-serif;text-align:center;margin-top:20%">⚡ Mousa Auto Parts Backend API Online!</h2>');
 });
 
-const PORT = parseInt(process.env.PORT || '5000', 10);
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`⚡ Mousa Auto Parts Server running on http://0.0.0.0:${PORT}`);
-  console.log(`   - Cashier POS Counter: http://localhost:${PORT}/pos`);
-  console.log(`   - Customer Web Store:  http://localhost:${PORT}/`);
-});
-server.on('error', (err) => {
-  console.error('Server listen error:', err);
+const mainPort = parseInt(process.env.PORT || '5000', 10);
+const portsToListen = Array.from(new Set([mainPort, 5173, 8080, 5000]));
+
+portsToListen.forEach(port => {
+  try {
+    const s = http.createServer(app);
+    s.on('error', (err) => {
+      // Gracefully ignore EADDRINUSE if port is already bound
+    });
+    s.listen(port, '0.0.0.0', () => {
+      console.log(`⚡ Mousa Auto Parts Server listening on http://0.0.0.0:${port}`);
+    });
+  } catch (err) {
+    // Ignore error
+  }
 });
