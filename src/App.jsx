@@ -205,11 +205,13 @@ function App() {
       });
 
       const data = await res.json();
-      if (data.order) {
+      if (res.ok && data.order) {
         setOrders(prev => [data.order, ...prev]);
         if (data.products) setProducts(data.products);
         setPaymentData(null);
         setActiveReceipt(data.order);
+      } else {
+        alert(data.error || 'Error recording checkout sale');
       }
     } catch (err) {
       alert('Error recording checkout sale: ' + err.message);

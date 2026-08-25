@@ -180,64 +180,87 @@ app.get('/api/products/vin-lookup', (req, res) => {
 
 // POST Save or Edit Product (Manager or Admin)
 app.post('/api/products/save', authenticateToken, requireRole(['Admin', 'Manager']), (req, res) => {
-  const product = req.body;
-  const products = db.saveProduct(product);
-  res.json({ success: true, products });
+  try {
+    const product = req.body;
+    const products = db.saveProduct(product);
+    memoryCache.lastUpdated = 0; // Invalidate cache
+    res.json({ success: true, products });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // POST Quick Stock Adjust (+1 or -1)
 app.post('/api/products/adjust-stock', authenticateToken, requireRole(['Admin', 'Manager', 'Cashier']), (req, res) => {
-  const { productId, delta } = req.body;
-  const products = db.adjustStock(productId, delta);
-  res.json({ success: true, products });
+  try {
+    const { productId, delta } = req.body;
+    const products = db.adjustStock(productId, delta);
+    memoryCache.lastUpdated = 0; // Invalidate cache
+    res.json({ success: true, products });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // DELETE Product (Admin Only)
 app.delete('/api/products/:id', authenticateToken, requireRole(['Admin']), (req, res) => {
-  const { id } = req.params;
-  const products = db.deleteProduct(id);
-  res.json({ success: true, products });
+  try {
+    const { id } = req.params;
+    const products = db.deleteProduct(id);
+    memoryCache.lastUpdated = 0; // Invalidate cache
+    res.json({ success: true, products });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // POST Checkout Order (POS Counter & Online Customer Store)
 app.post('/api/orders', async (req, res) => {
-  const order = req.body;
+  try {
+    const order = req.body;
 
-  // Validate order has items
-  if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
-    return res.status(400).json({ error: 'Cannot create order with empty items.' });
-  }
+    // Validate order has items
+    if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+      return res.status(400).json({ error: 'Cannot create order with empty items.' });
+    }
 
-  // If request has auth token header, attach user name
-  const authHeader = req.headers['authorization'];
-  const authToken = authHeader && authHeader.split(' ')[1];
-  if (authToken) {
-    try {
-      const decoded = verifyJwt(authToken);
-      if (decoded) {
-        order.cashier = order.cashier || decoded.name || decoded.username;
+    // If request has auth token header, attach user name
+    const authHeader = req.headers['authorization'];
+    const authToken = authHeader && authHeader.split(' ')[1];
+    if (authToken) {
+      try {
+        const decoded = verifyJwt(authToken);
+        if (decoded) {
+          order.cashier = order.cashier || decoded.name || decoded.username;
+        }
+      } catch (e) {
+        // Ignore token decode error for guest online customer store orders
       }
-    } catch (e) {
-      // Ignore token decode error for guest online customer store orders
     }
-  }
 
-  if (!order.cashier) {
-    order.cashier = order.source || 'Online Customer Store';
-  }
-
-  const result = db.createOrder(order);
-
-  // Sync with Supabase PostgreSQL if configured
-  if (isSupabaseConfigured()) {
-    try {
-      await saveSupabaseOrder(result.order);
-    } catch (err) {
-      console.error('Supabase order sync error:', err.message);
+    if (!order.cashier) {
+      order.cashier = order.source || 'Online Customer Store';
     }
-  }
 
-  res.status(201).json({ success: true, order: result.order, products: result.products });
+    const result = db.createOrder(order);
+
+    // Invalidate in-memory cache so bootstrap immediately has latest stock & orders
+    memoryCache.lastUpdated = 0;
+
+    // Sync with Supabase PostgreSQL if configured
+    if (isSupabaseConfigured()) {
+      try {
+        await saveSupabaseOrder(result.order);
+      } catch (err) {
+        console.error('Supabase order sync error:', err.message);
+      }
+    }
+
+    res.status(201).json({ success: true, order: result.order, products: result.products });
+  } catch (err) {
+    console.error('Error creating order:', err.message);
+    res.status(400).json({ error: err.message || 'Failed to complete order.' });
+  }
 });
 
 // POST Return Order & Restock Inventory
@@ -305,6 +328,8 @@ app.post('/api/import/confirm-batch', authenticateToken, requireRole(['Admin', '
     }
 
     const result = db.batchImportProducts(items);
+    memoryCache.lastUpdated = 0; // Invalidate memory cache immediately
+
     res.json({
       success: true,
       products: result.products,
