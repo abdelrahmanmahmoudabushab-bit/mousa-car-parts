@@ -555,30 +555,57 @@ h1, h2, h3, h4 {
 /* Hardware-Accelerated Mobile Smooth Touch Scrolling & Touch Optimization */
 html, body {
   min-height: 100dvh;
+  max-width: 100vw;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
+#root {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 .app-container {
   min-height: 100dvh;
   width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
+/* Responsive Utilities */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex !important;
+}
+
 /* Mobile Responsiveness Media Queries for Smartphones & Tablets */
 @media (max-width: 900px) {
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+
   .top-header {
     height: auto !important;
-    padding: 0.6rem 0.85rem !important;
+    min-height: 56px !important;
+    padding: 0.5rem 0.85rem !important;
     gap: 0.5rem !important;
   }
   
   .portal-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+    grid-template-columns: 1fr !important;
     gap: 1rem !important;
+    padding: 0.5rem !important;
   }
 
   .pos-grid {
@@ -587,30 +614,46 @@ html, body {
     overflow: visible !important;
   }
 
+  .catalog-section {
+    padding: 0.75rem !important;
+    gap: 0.75rem !important;
+  }
+
   .cart-section {
     border-left: none !important;
-    border-top: 2px solid var(--border-color) !important;
-    max-height: 550px !important;
+    border-top: 1px solid var(--border-color) !important;
+    max-height: none !important;
+    height: auto !important;
+    border-radius: 12px !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .modal-overlay {
+    padding: 0.5rem !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .modal-content {
     width: 95vw !important;
+    max-width: 95vw !important;
     max-height: 90dvh !important;
     padding: 1rem !important;
     margin: auto !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
 
   .data-table th, .data-table td {
-    padding: 0.65rem 0.75rem !important;
+    padding: 0.6rem 0.65rem !important;
     font-size: 0.8rem !important;
   }
   
   .table-container {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    border-radius: 10px !important;
   }
 
   .metrics-row {
@@ -620,11 +663,11 @@ html, body {
 
 @media (max-width: 640px) {
   body {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   button, input, select {
-    min-height: 44px; /* Touch-friendly tap target for smartphones */
+    min-height: 42px; /* Touch-friendly tap target for smartphones */
   }
 
   .portal-grid {
@@ -636,13 +679,14 @@ html, body {
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 0.5rem 0.75rem !important;
+    padding: 0.4rem 0.65rem !important;
   }
 
   .top-header-actions {
+    width: 100% !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
-    padding-bottom: 0.2rem !important;
+    padding-bottom: 0.25rem !important;
     -webkit-overflow-scrolling: touch !important;
   }
 }
@@ -669,3 +713,4 @@ html, body {
     background: #fffbeb !important;
   }
 }
+

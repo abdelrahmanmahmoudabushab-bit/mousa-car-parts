@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component, lazy, Suspense } from 'react';
-import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud, Settings } from 'lucide-react';
+import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud, Settings, Menu, X } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
@@ -57,6 +57,8 @@ function App() {
   });
 
   const [activeTab, setActiveTab] = useState('portal');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -255,30 +257,48 @@ function App() {
 
   return (
     <div className="app-container" dir={lang === 'ar' ? 'rtl' : 'ltr'} style={{ flexDirection: 'column', minHeight: '100dvh', width: '100%', background: '#f4f6f9', display: 'flex' }}>
-      {/* Clean Full-Width Top Header Bar */}
+      {/* Clean Responsive Top Header Bar */}
       <header className="top-header" style={{
-        minHeight: '60px',
+        minHeight: '56px',
         background: '#ffffff',
         borderBottom: '1px solid var(--border-color)',
-        padding: '0.5rem 1.25rem',
+        padding: '0.4rem 1rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '0.5rem',
         boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
-        zIndex: 50
+        zIndex: 50,
+        position: 'relative'
       }}>
         {/* Brand & Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1.25rem' }}>🚗</span>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.15rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => { setActiveTab('portal'); setMobileMenuOpen(false); }}>
+          <span style={{ fontSize: '1.2rem' }}>🚗</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: '900', fontSize: '1.05rem', color: '#0f172a', letterSpacing: '-0.02em' }}>
             MOUSA CAR PARTS
           </span>
         </div>
 
-        {/* Top Header Actions & Portal Links */}
-        <div className="top-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+        {/* Mobile Hamburger Toggle Button (< 768px) */}
+        <button
+          className="mobile-only"
+          onClick={() => setMobileMenuOpen(prev => !prev)}
+          style={{
+            background: '#f8fafc',
+            border: '1px solid #cbd5e1',
+            borderRadius: '8px',
+            padding: '0.4rem 0.6rem',
+            color: '#0f172a',
+            cursor: 'pointer',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          aria-label="Toggle Menu"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+
+        {/* Desktop Top Header Actions & Links */}
+        <div className="top-header-actions desktop-only" style={{ alignItems: 'center', gap: '0.5rem' }}>
           {activeTab !== 'portal' && (
             <button
               onClick={() => setActiveTab('portal')}
@@ -379,6 +399,74 @@ function App() {
           </div>
         </div>
       </header>
+
+      {/* Collapsible Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div style={{ background: '#ffffff', borderBottom: '2px solid #2563eb', padding: '0.85rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', boxShadow: '0 8px 20px rgba(0,0,0,0.1)', zIndex: 40, animation: 'fadeIn 0.15s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <User size={15} style={{ color: '#2563eb' }} /> {user.name || user.username} ({user.role})
+            </div>
+            <button
+              onClick={toggleLanguage}
+              style={{ padding: '0.3rem 0.6rem', borderRadius: '6px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '700' }}
+            >
+              {lang === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English'}
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <button
+              onClick={() => { setActiveTab('portal'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'portal' ? '#2563eb' : '#f8fafc', color: activeTab === 'portal' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <LayoutDashboard size={16} /> {lang === 'ar' ? 'الرئيسية' : 'Home'}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('pos'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'pos' ? '#2563eb' : '#f8fafc', color: activeTab === 'pos' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <ShoppingCart size={16} /> {lang === 'ar' ? 'نقطة البيع' : 'POS'}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('inventory'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'inventory' ? '#059669' : '#f8fafc', color: activeTab === 'inventory' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <Package size={16} /> {lang === 'ar' ? 'المخزون' : 'Inventory'}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('import'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'import' ? '#d97706' : '#f8fafc', color: activeTab === 'import' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <UploadCloud size={16} /> {lang === 'ar' ? 'إدخال مخزون' : 'Import'}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('orders'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'orders' ? '#0f172a' : '#f8fafc', color: activeTab === 'orders' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <History size={16} /> {lang === 'ar' ? 'المبيعات' : 'Sales Log'}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('settings'); setMobileMenuOpen(false); }}
+              style={{ padding: '0.6rem', borderRadius: '8px', background: activeTab === 'settings' ? '#0f172a' : '#f8fafc', color: activeTab === 'settings' ? '#ffffff' : '#0f172a', border: '1px solid #cbd5e1', fontWeight: '800', fontSize: '0.82rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <Settings size={16} /> {lang === 'ar' ? 'الإعدادات' : 'Settings'}
+            </button>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            style={{ width: '100%', marginTop: '0.2rem', padding: '0.55rem', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', fontWeight: '800', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
+          >
+            <LogOut size={16} /> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
+          </button>
+        </div>
+      )}
 
       {/* Main Screen Full Width Container */}
       <div className="main-content" style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>

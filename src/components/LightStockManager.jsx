@@ -211,23 +211,23 @@ export default function LightStockManager({ products, categories, token, onProdu
       )}
 
       {/* 🔍 GIANT PROMINENT SEARCH BAR AT THE VERY TOP */}
-      <div style={{ background: '#ffffff', border: '2px solid #d97706', borderRadius: '20px', padding: '1.25rem', boxShadow: '0 8px 30px rgba(217, 119, 6, 0.08)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ flex: 1, position: 'relative' }}>
-            <Search size={28} style={{ position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: '#d97706' }} />
+      <div style={{ background: '#ffffff', border: '2px solid #d97706', borderRadius: '16px', padding: '1rem', boxShadow: '0 8px 30px rgba(217, 119, 6, 0.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 220px', position: 'relative' }}>
+            <Search size={22} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#d97706' }} />
             <input
               type="text"
               autoFocus
               value={search}
               onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-              placeholder="🔍 ابحث برقم OEM، اسم القطعة بالعربي، أو كود السيريال (مثل: EQEA-5402841 أو فحمات)..."
+              placeholder="🔍 ابحث OEM، اسم القطعة، أو السيريال (EQEA-5402841)..."
               style={{
                 width: '100%',
-                height: '64px',
-                padding: '0 3.8rem 0 1.5rem',
-                fontSize: '1.25rem',
+                minHeight: '48px',
+                padding: '0 3.2rem 0 1rem',
+                fontSize: '1rem',
                 fontWeight: '800',
-                borderRadius: '14px',
+                borderRadius: '12px',
                 border: '2px solid #e2e8f0',
                 background: '#ffffff',
                 color: '#0f172a',
@@ -238,51 +238,55 @@ export default function LightStockManager({ products, categories, token, onProdu
             />
           </div>
 
-          <button onClick={onOpenAddItem} className="btn-sand" style={{ height: '64px', padding: '0 1.75rem', fontSize: '1.05rem', fontWeight: '800', borderRadius: '14px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Plus size={22} /> إضافة قطعة ➕
+          <button onClick={onOpenAddItem} className="btn-sand" style={{ minHeight: '48px', padding: '0 1.25rem', fontSize: '0.95rem', fontWeight: '800', borderRadius: '12px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+            <Plus size={20} /> إضافة قطعة ➕
           </button>
         </div>
 
         {/* Toolbar Sub-Filters Bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#64748b' }}>قسم القطع:</span>
-            <select
-              value={selectedCat}
-              onChange={(e) => { setSelectedCat(e.target.value); setCurrentPage(1); }}
-              style={{ padding: '0.45rem 0.9rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}
-            >
-              <option value="all">جميع الأقسام ({products.length})</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', flexWrap: 'wrap', gap: '0.6rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flex: '1 1 140px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#64748b', whiteSpace: 'nowrap' }}>القسم:</span>
+              <select
+                value={selectedCat}
+                onChange={(e) => { setSelectedCat(e.target.value); setCurrentPage(1); }}
+                style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}
+              >
+                <option value="all">جميع الأقسام ({products.length})</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
 
-            <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#64748b', marginRight: '0.75rem' }}>الموديل:</span>
-            <select
-              value={selectedModel}
-              onChange={(e) => { setSelectedModel(e.target.value); setCurrentPage(1); }}
-              style={{ padding: '0.45rem 0.9rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}
-            >
-              <option value="all">جميع موديلات BYD</option>
-              <option value="BYD Seagull">بي واي دي سيجول (BYD Seagull)</option>
-              <option value="BYD Dolphin">بي واي دي دولفين (BYD Dolphin)</option>
-              <option value="BYD Atto 3">بي واي دي أتو 3 (BYD Atto 3)</option>
-              <option value="BYD Tang">بي واي دي تانج (BYD Tang)</option>
-              <option value="BYD Han">بي واي دي هان (BYD Han)</option>
-            </select>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flex: '1 1 160px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#64748b', whiteSpace: 'nowrap' }}>الموديل:</span>
+              <select
+                value={selectedModel}
+                onChange={(e) => { setSelectedModel(e.target.value); setCurrentPage(1); }}
+                style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', fontFamily: "'Cairo', sans-serif" }}
+              >
+                <option value="all">جميع موديلات BYD</option>
+                <option value="BYD Seagull">بي واي دي سيجول (BYD Seagull)</option>
+                <option value="BYD Dolphin">بي واي دي دولفين (BYD Dolphin)</option>
+                <option value="BYD Atto 3">بي واي دي أتو 3 (BYD Atto 3)</option>
+                <option value="BYD Tang">بي واي دي تانج (BYD Tang)</option>
+                <option value="BYD Han">بي واي دي هان (BYD Han)</option>
+              </select>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: '0.2rem' }}>
             <button
               onClick={handleExportCurrentToExcel}
-              style={{ padding: '0.45rem 0.95rem', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontWeight: '800', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
+              style={{ padding: '0.4rem 0.85rem', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontWeight: '800', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: "'Cairo', sans-serif" }}
             >
-              <Download size={16} /> تصدير ملف Excel 📊
+              <Download size={15} /> تصدير Excel 📊
             </button>
 
-            <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.35rem 0.85rem', borderRadius: '10px' }}>
-              نتائج البحث: {filteredProducts.length} قطعة
+            <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#047857', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.3rem 0.75rem', borderRadius: '10px' }}>
+              نتائج: {filteredProducts.length} قطعة
             </div>
           </div>
         </div>

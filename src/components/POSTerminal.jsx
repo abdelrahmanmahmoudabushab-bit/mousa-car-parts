@@ -10,6 +10,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
   const [selectedYear, setSelectedYear] = useState('all');
   const [cart, setCart] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobilePosTab, setMobilePosTab] = useState('catalog');
   const ITEMS_PER_PAGE = 40;
 
   // Reset to page 1 whenever filters change
@@ -110,15 +111,70 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     return { subtotal: sub, tax: tx, total: sub + tx };
   }, [cart]);
 
+  const totalCartItemsCount = useMemo(() => cart.reduce((acc, i) => acc + i.qty, 0), [cart]);
+
   const handleCheckoutClick = () => {
     if (cart.length === 0) return;
     onOpenPayment({ cart, totals: { subtotal, tax, total } });
   };
 
   return (
-    <div className="pos-grid">
-      {/* Left Catalog View */}
-      <div className="catalog-section">
+    <div className="pos-grid" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      
+      {/* Mobile Tab Switcher Bar (< 900px) */}
+      <div className="mobile-only" style={{ padding: '0.5rem 0.75rem', background: '#ffffff', borderBottom: '1px solid #e2e8f0', gap: '0.5rem', width: '100%' }}>
+        <button
+          onClick={() => setMobilePosTab('catalog')}
+          style={{
+            flex: 1,
+            padding: '0.6rem',
+            borderRadius: '10px',
+            background: mobilePosTab === 'catalog' ? '#0f172a' : '#f8fafc',
+            color: mobilePosTab === 'catalog' ? '#ffffff' : '#475569',
+            border: mobilePosTab === 'catalog' ? '1px solid #0f172a' : '1px solid #cbd5e1',
+            fontWeight: '800',
+            fontSize: '0.85rem',
+            fontFamily: "'Cairo', sans-serif",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <Search size={16} />
+          {lang === 'ar' ? '🔍 الكتالوج والبحث' : '🔍 Catalog'}
+        </button>
+
+        <button
+          onClick={() => setMobilePosTab('cart')}
+          style={{
+            flex: 1,
+            padding: '0.6rem',
+            borderRadius: '10px',
+            background: mobilePosTab === 'cart' ? '#d97706' : '#f8fafc',
+            color: mobilePosTab === 'cart' ? '#ffffff' : '#475569',
+            border: mobilePosTab === 'cart' ? '1px solid #d97706' : '1px solid #cbd5e1',
+            fontWeight: '800',
+            fontSize: '0.85rem',
+            fontFamily: "'Cairo', sans-serif",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem',
+            position: 'relative'
+          }}
+        >
+          <ShoppingCart size={16} />
+          {lang === 'ar' ? `🛒 الفاتورة (${totalCartItemsCount})` : `🛒 Cart (${totalCartItemsCount})`}
+        </button>
+      </div>
+
+      {/* Main Responsive Container */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', flex: 1, width: '100%', overflow: 'hidden' }} className="pos-layout-responsive">
+        
+        {/* Left Catalog View */}
+        <div className="catalog-section" style={{ display: mobilePosTab === 'catalog' ? 'flex' : undefined }}>
+
         {/* Unified Search & Vehicle Compatibility Bar */}
         <VinLookupBar 
           searchVal={search}
@@ -287,7 +343,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
       </div>
 
       {/* Right Cart Section */}
-      <div className="cart-section" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+      <div className="cart-section" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', display: mobilePosTab === 'cart' ? 'flex' : undefined }}>
         <div style={{ padding: '1.1rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -364,5 +420,6 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
