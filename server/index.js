@@ -400,19 +400,11 @@ app.get('*', (req, res, next) => {
   }
   
 const PORT = parseInt(process.env.PORT || '5000', 10);
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`⚡ Mousa Auto Parts Server running on http://0.0.0.0:${PORT}`);
   console.log(`   - Cashier POS Counter: http://localhost:${PORT}/pos`);
   console.log(`   - Customer Web Store:  http://localhost:${PORT}/`);
 });
-
-// Dual Port Listener for Railway Domain Routing (Port 5173)
-if (PORT !== 5173) {
-  try {
-    app.listen(5173, '0.0.0.0', () => {
-      console.log(`⚡ Dual Port Listener active on http://0.0.0.0:5173 for Railway domain routing.`);
-    });
-  } catch (err) {
-    console.log(`Port 5173 already bound: ${err.message}`);
-  }
-}
+server.on('error', (err) => {
+  console.error('Server listen error:', err);
+});
