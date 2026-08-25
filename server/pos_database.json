@@ -12995,7 +12995,7 @@
       "categoryId": "cat-body",
       "costPrice": 400,
       "unitPrice": 2400,
-      "quantity": 6,
+      "quantity": 4,
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
@@ -14179,7 +14179,7 @@
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
-      "lastUpdated": "2026-08-24T13:14:18.338Z"
+      "lastUpdated": "2026-08-24T16:57:23.718Z"
     },
     {
       "id": "P-6d740244",
@@ -62059,7 +62059,7 @@
       "minLevel": 5,
       "location": "Aisle 1",
       "supplier": "China Direct Import",
-      "lastUpdated": "2026-08-24T13:14:17.927Z"
+      "lastUpdated": "2026-08-24T16:21:23.704Z"
     },
     {
       "id": "P-884e36c2",
@@ -94903,6 +94903,162 @@
     }
   ],
   "orders": [
+    {
+      "cashier": "System Administrator",
+      "customerName": "Walk-in POS Customer",
+      "customerPhone": "N/A",
+      "deliveryMethod": "pickup",
+      "items": [
+        {
+          "id": "P-67a8e39c",
+          "sku": "OEM-5121",
+          "oem": "OEM-5121",
+          "name": "قطع غيار أصلي المصنع (原厂)",
+          "arName": "قطع غيار أصلي المصنع",
+          "cnName": "原厂",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "OEM-5121",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 60,
+          "unitPrice": 600,
+          "quantity": 10,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:18.338Z",
+          "qty": 1
+        }
+      ],
+      "subtotal": 600,
+      "tax": 48,
+      "total": 648,
+      "totalAmount": 648,
+      "paymentMethod": "Credit Card",
+      "source": "POS Counter",
+      "id": "ORD-66c9ac5c",
+      "date": "2026-08-24T16:56:58.981Z",
+      "status": "Returned",
+      "returnedAt": "2026-08-24T16:57:23.718Z",
+      "returnReason": "Customer Return / إرجاع عميل"
+    },
+    {
+      "cashier": "System Administrator",
+      "customerName": "Walk-in POS Customer",
+      "customerPhone": "N/A",
+      "deliveryMethod": "pickup",
+      "items": [
+        {
+          "id": "P-d8435c31",
+          "sku": "TA50-2904020CB",
+          "oem": "TA50-2904020CB",
+          "name": "قطع غيار أصلي المصنع (三角臂)",
+          "arName": "قطع غيار أصلي المصنع",
+          "cnName": "三角臂",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "TA50-2904020CB",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 2904020,
+          "unitPrice": 4356030,
+          "quantity": 100,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:17.927Z",
+          "qty": 1
+        }
+      ],
+      "subtotal": 4356030,
+      "tax": 348482.4,
+      "total": 4704512.4,
+      "totalAmount": 4704512.4,
+      "paymentMethod": "Credit Card",
+      "source": "POS Counter",
+      "id": "ORD-f69d052d",
+      "date": "2026-08-24T16:21:01.244Z",
+      "status": "Returned",
+      "returnedAt": "2026-08-24T16:21:23.704Z",
+      "returnReason": "Customer Return / إرجاع عميل"
+    },
+    {
+      "cashier": "System Administrator",
+      "customerName": "Walk-in POS Customer",
+      "customerPhone": "N/A",
+      "deliveryMethod": "pickup",
+      "items": [
+        {
+          "id": "P-03ae1251",
+          "sku": "OEM-5180",
+          "oem": "OEM-5180",
+          "name": "قطع غيار أصلي المصنع (原厂)",
+          "arName": "قطع غيار أصلي المصنع",
+          "cnName": "原厂",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "OEM-5180",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 400,
+          "unitPrice": 2400,
+          "quantity": 6,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:18.352Z",
+          "qty": 1
+        }
+      ],
+      "subtotal": 2400,
+      "tax": 192,
+      "total": 2592,
+      "totalAmount": 2592,
+      "paymentMethod": "Credit Card",
+      "source": "POS Counter",
+      "id": "ORD-3d544a35",
+      "date": "2026-08-24T13:59:55.463Z",
+      "status": "Completed"
+    },
+    {
+      "cashier": "System Administrator",
+      "customerName": "Walk-in POS Customer",
+      "customerPhone": "N/A",
+      "deliveryMethod": "pickup",
+      "items": [
+        {
+          "id": "P-03ae1251",
+          "sku": "OEM-5180",
+          "oem": "OEM-5180",
+          "name": "قطع غيار أصلي المصنع (原厂)",
+          "arName": "قطع غيار أصلي المصنع",
+          "cnName": "原厂",
+          "vehicleModel": "BYD Seagull",
+          "yearRange": "2023 - 2026",
+          "vinPattern": "OEM-5180",
+          "brand": "BYD OEM Import",
+          "categoryId": "cat-body",
+          "costPrice": 400,
+          "unitPrice": 2400,
+          "quantity": 6,
+          "minLevel": 5,
+          "location": "Aisle 1",
+          "supplier": "China Direct Import",
+          "lastUpdated": "2026-08-24T13:14:18.352Z",
+          "qty": 1
+        }
+      ],
+      "subtotal": 2400,
+      "tax": 192,
+      "total": 2592,
+      "totalAmount": 2592,
+      "paymentMethod": "Credit Card",
+      "source": "POS Counter",
+      "id": "ORD-df19c9cd",
+      "date": "2026-08-24T13:59:53.075Z",
+      "status": "Completed"
+    },
     {
       "cashier": "System Administrator",
       "items": [
