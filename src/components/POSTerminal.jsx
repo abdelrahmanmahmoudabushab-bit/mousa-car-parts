@@ -130,6 +130,43 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     }
   }, [products, addToCart]);
 
+  // Global keydown listener for physical barcode scanner guns in POSTerminal
+  useEffect(() => {
+    let buffer = '';
+    let lastKeyTime = Date.now();
+    let firstKeyChar = '';
+
+    const handleGlobalKeyDown = (e) => {
+      const currentTime = Date.now();
+      const isFast = (currentTime - lastKeyTime) < 50;
+      lastKeyTime = currentTime;
+
+      if (e.key === 'Enter') {
+        if (buffer.trim().length > 2) {
+          e.preventDefault();
+          handleDirectBarcodeScan(buffer.trim());
+          buffer = '';
+          firstKeyChar = '';
+        }
+      } else if (e.key.length === 1) {
+        if (isFast) {
+          if (buffer.length > 0) {
+            buffer += e.key;
+          } else if (firstKeyChar) {
+            buffer = firstKeyChar + e.key;
+            firstKeyChar = '';
+          }
+        } else {
+          firstKeyChar = e.key;
+          buffer = '';
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [handleDirectBarcodeScan]);
+
 
   const { subtotal, tax, total } = useMemo(() => {
     const sub = cart.reduce((acc, item) => acc + item.unitPrice * item.qty, 0);

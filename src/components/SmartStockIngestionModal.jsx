@@ -98,37 +98,31 @@ export default function SmartStockIngestionModal({ products, categories, token, 
   useEffect(() => {
     let buffer = '';
     let lastKeyTime = Date.now();
+    let firstKeyChar = '';
 
     const handleGlobalKeyDown = (e) => {
-      const target = e.target;
-      const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
-
-      // Barcode scanners type characters extremely rapidly (keystrokes typically < 40ms apart).
       const currentTime = Date.now();
-      const isFastTime = (currentTime - lastKeyTime) < 50;
+      const isFast = (currentTime - lastKeyTime) < 50;
       lastKeyTime = currentTime;
-
-      // If user is intentionally typing in an input field slowly, let normal typing proceed.
-      if (isInputField && !isFastTime && e.key !== 'Enter') {
-        return;
-      }
 
       if (e.key === 'Enter') {
         if (buffer.trim().length > 2) {
           e.preventDefault();
           handleProcessBarcode(buffer.trim());
           buffer = '';
+          firstKeyChar = '';
         }
       } else if (e.key.length === 1) {
-        if (isFastTime) {
-          buffer += e.key;
-        } else {
-          // Accumulate slow typing if NOT in an input field (focused outside form)
-          if (!isInputField) {
-            buffer = e.key;
-          } else {
-            buffer = '';
+        if (isFast) {
+          if (buffer.length > 0) {
+            buffer += e.key;
+          } else if (firstKeyChar) {
+            buffer = firstKeyChar + e.key;
+            firstKeyChar = '';
           }
+        } else {
+          firstKeyChar = e.key;
+          buffer = '';
         }
       }
     };
