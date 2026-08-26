@@ -72,47 +72,56 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
       }
     };
 
-    html5Qrcode.start(
-      { facingMode: 'environment' }, // Default rear camera on mobile
-      config,
-      (decodedText) => {
-        const cleanSerial = parseSmartSerialNumber(decodedText) || decodedText;
-        const now = Date.now();
+    const startCamera = (cameraConfig) => {
+      html5Qrcode.start(
+        cameraConfig,
+        config,
+        (decodedText) => {
+          const cleanSerial = parseSmartSerialNumber(decodedText) || String(decodedText).trim();
+          const now = Date.now();
 
-        if (isContinuousRef.current) {
-          if (cleanSerial === lastScannedCodeRef.current && (now - lastScannedTimeRef.current) < 1500) {
-            return; // Ignore duplicate scan within 1.5s
+          if (isContinuousRef.current) {
+            if (cleanSerial === lastScannedCodeRef.current && (now - lastScannedTimeRef.current) < 1500) {
+              return; // Ignore duplicate scan within 1.5s
+            }
+            lastScannedCodeRef.current = cleanSerial;
+            lastScannedTimeRef.current = now;
+            playBeepSound();
+            setBatchCount(prev => prev + 1);
+            setLastScannedSerial(cleanSerial);
+            if (onScanSuccess) {
+              onScanSuccess(cleanSerial);
+            }
+          } else {
+            playBeepSound();
+            setScanResult(cleanSerial);
+            setIsScanning(false);
+            if (onScanSuccess) {
+              onScanSuccess(cleanSerial);
+            }
+            // Auto close after brief success confirmation
+            setTimeout(() => {
+              html5Qrcode.stop().catch(() => {}).finally(() => {
+                onClose();
+              });
+            }, 500);
           }
-          lastScannedCodeRef.current = cleanSerial;
-          lastScannedTimeRef.current = now;
-          playBeepSound();
-          setBatchCount(prev => prev + 1);
-          setLastScannedSerial(cleanSerial);
-          if (onScanSuccess) {
-            onScanSuccess(cleanSerial);
-          }
-        } else {
-          playBeepSound();
-          setScanResult(cleanSerial);
-          setIsScanning(false);
-          if (onScanSuccess) {
-            onScanSuccess(cleanSerial);
-          }
-          // Auto close after brief success confirmation
-          setTimeout(() => {
-            html5Qrcode.stop().catch(() => {}).finally(() => {
-              onClose();
-            });
-          }, 500);
+        },
+        (error) => {
+          // Scanning errors expected while searching video frames
         }
-      },
-      (error) => {
-        // Scanning errors are expected while frame searching
-      }
-    ).catch(err => {
-      console.warn('Camera access error:', err);
-      setErrorMessage('تعذر تشغيل كاميرا الجهاز. يرجى السماح لصلاحيات الكاميرا أو استخدام أدناه للإدخال اليدوي.');
-    });
+      ).catch(err => {
+        console.warn('Primary rear camera start failed, trying fallback camera constraints...', err);
+        // Fallback camera start for older iOS/Android devices
+        if (cameraConfig.facingMode) {
+          startCamera({ facingMode: 'environment' });
+        } else {
+          setErrorMessage('تعذر تشغيل كاميرا الجهاز. يرجى السماح لصلاحيات الكاميرا أو استخدام الإدخال اليدوي.');
+        }
+      });
+    };
+
+    startCamera({ facingMode: { ideal: 'environment' } });
 
     return () => {
       if (scannerRef.current && scannerRef.current.isScanning) {
