@@ -113,6 +113,9 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
     const cleanSerial = parseSmartSerialNumber(rawStr) || rawStr;
     const cleanCode = normalizeSearchCode(cleanSerial);
 
+    // Instantly write the scanned serial number into the search box!
+    setSearch(cleanSerial);
+
     // 1. Try direct OEM/SKU/ID match
     let match = products.find(p => {
       const oemClean = normalizeSearchCode(p.oem);
