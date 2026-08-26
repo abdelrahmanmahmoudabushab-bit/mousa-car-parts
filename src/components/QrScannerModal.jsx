@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { Camera, X, RefreshCw, Volume2, CheckCircle, Keyboard } from 'lucide-react';
+import { Camera, X, RefreshCw, Volume2, CheckCircle, Keyboard, Zap } from 'lucide-react';
 import { parseSmartSerialNumber } from '../utils/documentParser';
 
 export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماسح الباركود الخطي وسيريال القطعة 📷' }) {
@@ -11,6 +11,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
   const [isContinuous, setIsContinuous] = useState(false);
   const [batchCount, setBatchCount] = useState(0);
   const [lastScannedSerial, setLastScannedSerial] = useState('');
+  const [isTorchOn, setIsTorchOn] = useState(false);
 
   const scannerRef = useRef(null);
   const isContinuousRef = useRef(isContinuous);
@@ -116,7 +117,12 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
         if (cameraConfig.facingMode) {
           startCamera({ facingMode: 'environment' });
         } else {
-          setErrorMessage('تعذر تشغيل كاميرا الجهاز. يرجى السماح لصلاحيات الكاميرا أو استخدام الإدخال اليدوي.');
+          const isSecure = window.isSecureContext !== false;
+          if (!isSecure) {
+            setErrorMessage('⚠️ تنبيه: يرجى التوصيل عبر رابط HTTPS مشفر لتفعيل صلاحيات كاميرا الهاتف.');
+          } else {
+            setErrorMessage('تعذر تشغيل كاميرا الجهاز. يرجى التأكد من السماح لصلاحيات الكاميرا أو استخدام الإدخال اليدوي أدناه.');
+          }
         }
       });
     };
@@ -146,6 +152,20 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
       }
     }
     onClose();
+  };
+
+  const handleToggleTorch = async () => {
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try {
+        const nextState = !isTorchOn;
+        await scannerRef.current.applyVideoConstraints({
+          advanced: [{ torch: nextState }]
+        });
+        setIsTorchOn(nextState);
+      } catch (err) {
+        console.warn('Torch not supported on this device:', err);
+      }
+    }
   };
 
   // Instant Confirm & Capture Handler on Camera View
@@ -292,6 +312,32 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
               <CheckCircle size={16} /> تم مسح: {lastScannedSerial} (إجمالي: {batchCount})
             </div>
           )}
+
+          {/* Flashlight LED Torch Toggle Button */}
+          <button
+            type="button"
+            onClick={handleToggleTorch}
+            style={{
+              position: 'absolute',
+              bottom: '12px',
+              right: '12px',
+              background: isTorchOn ? '#d97706' : 'rgba(15, 23, 42, 0.75)',
+              color: '#ffffff',
+              border: isTorchOn ? '2px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '50%',
+              width: '42px',
+              height: '42px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              zIndex: 20
+            }}
+            title="تشغيل كشاف الهاتف 🔦"
+          >
+            <Zap size={20} />
+          </button>
 
           {/* Success Overlay for Single Mode */}
           {!isContinuous && scanResult && (
