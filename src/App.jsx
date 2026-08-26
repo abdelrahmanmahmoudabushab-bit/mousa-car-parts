@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component, lazy, Suspense } from 'react';
-import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud, Settings, Menu, X } from 'lucide-react';
+import { Package, ShoppingCart, History, Plus, Layers, RefreshCw, Languages, Users, LogOut, ShieldCheck, User, Globe, Store, LayoutDashboard, CheckCircle, UploadCloud, Settings, Menu, X, BarChart3 } from 'lucide-react';
 import POSTerminal from './components/POSTerminal';
 import ItemModal from './components/ItemModal';
 import PaymentModal from './components/PaymentModal';
@@ -16,6 +16,7 @@ const StockImportPage = lazy(() => import('./components/StockImportPage'));
 const SettingsPage = lazy(() => import('./components/SettingsPage'));
 const UserManagementModal = lazy(() => import('./components/UserManagementModal'));
 const CustomerStore = lazy(() => import('./components/CustomerStore'));
+const DataAnalyticsDashboard = lazy(() => import('./components/DataAnalyticsDashboard'));
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -363,6 +364,26 @@ function App() {
           )}
 
           <button
+            onClick={() => setActiveTab('analytics')}
+            style={{
+              padding: '0.4rem 0.75rem',
+              borderRadius: '8px',
+              background: activeTab === 'analytics' ? '#7c3aed' : '#f8fafc',
+              color: activeTab === 'analytics' ? '#ffffff' : '#475569',
+              border: activeTab === 'analytics' ? '1px solid #7c3aed' : '1px solid #cbd5e1',
+              fontWeight: '700',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            <BarChart3 size={15} />
+            {lang === 'ar' ? 'التحليلات والذكاء' : 'Analytics'}
+          </button>
+
+          <button
             onClick={() => setActiveTab('orders')}
             style={{
               padding: '0.4rem 0.75rem',
@@ -634,6 +655,39 @@ function App() {
                       </button>
                     </div>
 
+                    {/* CHOICE 4: DATA ANALYTICS & AI INTELLIGENCE (DEEP PURPLE / INDIGO) */}
+                    <div
+                      className="glow-card-purple"
+                      onClick={() => setActiveTab('analytics')}
+                      style={{
+                        background: '#ffffff',
+                        border: '2px solid #7c3aed',
+                        borderRadius: '12px',
+                        padding: '2rem 1.75rem',
+                        boxShadow: '0 10px 30px rgba(124, 58, 237, 0.08)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <div>
+                        <div style={{ width: '54px', height: '54px', borderRadius: '10px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: '0 6px 16px rgba(124, 58, 237, 0.25)' }}>
+                          <BarChart3 size={26} />
+                        </div>
+                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                          {lang === 'ar' ? 'تحليلات البيانات والذكاء التجاري' : 'Data Analytics & AI Intelligence'}
+                        </h2>
+                        <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0.5rem 0 0 0', lineHeight: '1.5' }}>
+                          {lang === 'ar' ? 'لوحة تحليلات ذكية للمبيعات، استخراج القطع الأكثر طلباً، وتوليد أوامر شراء النواقص تلقائياً' : 'Sales performance, top selling OEM parts, and auto purchase reorder reports.'}
+                        </p>
+                      </div>
+
+                      <button style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f3e8ff', color: '#7c3aed', border: '1px solid #d8b4fe', cursor: 'pointer' }}>
+                        <BarChart3 size={18} /> {lang === 'ar' ? 'فتح لوحة التحليلات 📊🤖' : 'Open Analytics 📊🤖'}
+                      </button>
+                    </div>
+
                   </div>
                 </div>
               )}
@@ -643,6 +697,15 @@ function App() {
                   <RefreshCw className="spin" size={24} /> Loading...
                 </div>
               }>
+                {activeTab === 'analytics' && (
+                  <DataAnalyticsDashboard
+                    products={products}
+                    orders={orders}
+                    categories={categories}
+                    lang={lang}
+                  />
+                )}
+
                 {activeTab === 'import' && (
                   <StockImportPage
                     products={products}
