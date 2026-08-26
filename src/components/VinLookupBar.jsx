@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, X, Camera } from 'lucide-react';
 import QrScannerModal from './QrScannerModal';
 
-export default function VinLookupBar({ searchVal, onSearchChange, selectedModel, onModelChange, matchedCount, totalCount }) {
+export default function VinLookupBar({ searchVal, onSearchChange, selectedModel, onModelChange, matchedCount, totalCount, onDirectScanSuccess }) {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const models = [
@@ -21,6 +21,14 @@ export default function VinLookupBar({ searchVal, onSearchChange, selectedModel,
     onModelChange('all');
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && searchVal.trim()) {
+      if (onDirectScanSuccess) {
+        onDirectScanSuccess(searchVal.trim());
+      }
+    }
+  };
+
   return (
     <div style={{ background: '#ffffff', border: '2px solid #d97706', borderRadius: '16px', padding: '0.75rem 0.85rem', boxShadow: '0 4px 16px rgba(217, 119, 6, 0.1)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       
@@ -33,7 +41,8 @@ export default function VinLookupBar({ searchVal, onSearchChange, selectedModel,
           autoFocus
           value={searchVal}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="🔍 ابحث OEM، اسم القطعة (فحمات، صدام)، أو رقم الشاسي..."
+          onKeyDown={handleKeyDown}
+          placeholder="🔍 ابحث OEM، اسم القطعة (فحمات، صدام)، أو اضغط Enter لمسح السيريال..."
           style={{
             width: '100%',
             height: '46px',
@@ -81,6 +90,9 @@ export default function VinLookupBar({ searchVal, onSearchChange, selectedModel,
           onClose={() => setIsScannerOpen(false)}
           onScanSuccess={(code) => {
             onSearchChange(code);
+            if (onDirectScanSuccess) {
+              onDirectScanSuccess(code);
+            }
             setIsScannerOpen(false);
           }}
           title="مسح كود OEM أو باركود القطعة 📷"

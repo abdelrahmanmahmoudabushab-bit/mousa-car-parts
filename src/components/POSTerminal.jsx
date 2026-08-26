@@ -138,35 +138,30 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
     });
   }, [products]);
 
-  // Global keydown listener for physical barcode scanner guns in POSTerminal
+  // Global keydown listener for physical barcode scanner guns & barcode input in POSTerminal
   useEffect(() => {
     let buffer = '';
     let lastKeyTime = Date.now();
-    let firstKeyChar = '';
 
     const handleGlobalKeyDown = (e) => {
+      // Don't intercept if user is typing in regular textareas
+      if (['TEXTAREA'].includes(e.target?.tagName)) return;
+
       const currentTime = Date.now();
-      const isFast = (currentTime - lastKeyTime) < 50;
+      const isFast = (currentTime - lastKeyTime) < 150; // Flexible 150ms scanner gun threshold
       lastKeyTime = currentTime;
 
       if (e.key === 'Enter') {
-        if (buffer.trim().length > 2) {
+        if (buffer.trim().length >= 2) {
           e.preventDefault();
           handleDirectBarcodeScan(buffer.trim());
           buffer = '';
-          firstKeyChar = '';
         }
       } else if (e.key.length === 1) {
-        if (isFast) {
-          if (buffer.length > 0) {
-            buffer += e.key;
-          } else if (firstKeyChar) {
-            buffer = firstKeyChar + e.key;
-            firstKeyChar = '';
-          }
+        if (isFast || buffer.length === 0) {
+          buffer += e.key;
         } else {
-          firstKeyChar = e.key;
-          buffer = '';
+          buffer = e.key;
         }
       }
     };
@@ -251,6 +246,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
           searchVal={search}
           onSearchChange={(val) => handleFilterChange(setSearch, val)}
           onSearchSubmit={() => setCurrentPage(1)}
+          onDirectScanSuccess={handleDirectBarcodeScan}
           selectedModel={selectedModel}
           onModelChange={(val) => handleFilterChange(setSelectedModel, val)}
           selectedYear={selectedYear}
