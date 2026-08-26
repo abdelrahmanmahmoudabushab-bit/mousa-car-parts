@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Search, ShoppingCart, Trash2, Plus, Minus, MapPin, Car, Camera } from 'lucide-react';
 import VinLookupBar from './VinLookupBar';
 import QrScannerModal from './QrScannerModal';
+import ScannedPartModal from './ScannedPartModal';
 import { matchProductSearch, parseSmartSerialNumber, normalizeSearchCode } from '../utils/documentParser';
 
 export default function POSTerminal({ products, categories, onOpenPayment, lang }) {
@@ -13,6 +14,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
   const [currentPage, setCurrentPage] = useState(1);
   const [mobilePosTab, setMobilePosTab] = useState('catalog');
   const [isPosScannerOpen, setIsPosScannerOpen] = useState(false);
+  const [scannedPartData, setScannedPartData] = useState(null);
   const ITEMS_PER_PAGE = 40;
 
   // Reset to page 1 whenever filters change
@@ -58,7 +60,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
-  const addToCart = useCallback((product) => {
+  const addToCart = useCallback((product, qtyToAdd = 1) => {
     const availableStock = Number(product.quantity || 0);
     if (availableStock <= 0) {
       alert(`⚠️ ${lang === 'ar' ? 'عفواً، هذه القطعة غير متوفرة حالياً في المخزون (0 قطعة)!' : `Part ${product.oem} is currently Out of Stock!`}`);
@@ -68,16 +70,18 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       const currentCartQty = existing ? existing.qty : 0;
-      if (currentCartQty >= availableStock) {
+      const newQty = currentCartQty + qtyToAdd;
+      if (newQty > availableStock) {
         alert(`⚠️ ${lang === 'ar' ? `لا يمكن إضافة المزيد — الكمية المتوفرة في المخزون هي ${availableStock} قطعة فقط!` : `Cannot add more — only ${availableStock} unit(s) of ${product.oem} in stock.`}`);
         return prev;
       }
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+        return prev.map(item => item.id === product.id ? { ...item, qty: newQty, unitPrice: product.unitPrice || item.unitPrice } : item);
       } else {
-        return [...prev, { ...product, qty: 1 }];
+        return [...prev, { ...product, qty: qtyToAdd }];
       }
     });
+    setMobilePosTab('cart');
   }, [lang]);
 
   const updateQty = useCallback((id, delta) => {
@@ -122,13 +126,11 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
       );
     });
 
-    if (exactMatch) {
-      addToCart(exactMatch);
-      setMobilePosTab('cart');
-    } else {
-      setSearch(cleanSerial);
-    }
-  }, [products, addToCart]);
+    setScannedPartData({
+      product: exactMatch || null,
+      scannedCode: cleanSerial
+    });
+  }, [products]);
 
   // Global keydown listener for physical barcode scanner guns in POSTerminal
   useEffect(() => {
@@ -433,6 +435,23 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
             onClose={() => setIsPosScannerOpen(false)}
             onScanSuccess={handleDirectBarcodeScan}
             title="إضافة قطعة للفاتورة عبر مسح الباركود 📷"
+          />
+        )}
+
+        {scannedPartData && (
+          <ScannedPartModal
+            product={scannedPartData.product}
+            scannedCode={scannedPartData.scannedCode}
+            onClose={() => setScannedPartData(null)}
+            onAddToCart={(product, qty) => {
+              addToCart(product, qty);
+              setScannedPartData(null);
+            }}
+            onRegisterNewPart={(code) => {
+              setSearch(code);
+              setScannedPartData(null);
+            }}
+            lang={lang}
           />
         )}
 
