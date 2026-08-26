@@ -111,12 +111,21 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     };
   }, []);
 
-  const handleManualSubmit = (e) => {
-    e.preventDefault();
+  const handleManualSubmit = async (e) => {
+    if (e) e.preventDefault();
     if (!manualCode.trim()) return;
     const clean = parseSmartSerialNumber(manualCode.trim()) || manualCode.trim();
     playBeepSound();
-    onScanSuccess(clean);
+    if (onScanSuccess) {
+      onScanSuccess(clean);
+    }
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try {
+        await scannerRef.current.stop();
+      } catch (err) {
+        console.warn('Scanner stop error:', err);
+      }
+    }
     onClose();
   };
 

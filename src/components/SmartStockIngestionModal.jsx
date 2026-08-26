@@ -182,15 +182,18 @@ export default function SmartStockIngestionModal({ products, categories, token, 
   // Handle Saving New Part
   const handleConfirmNewPart = (e) => {
     e.preventDefault();
-    if (!newPart.oem || !newPart.unitPrice) {
-      alert('يرجى كتابة رقم القطعة OEM وسعر البيع!');
+    if (!newPart.oem) {
+      alert('يرجى كتابة رقم القطعة OEM!');
       return;
     }
 
+    const cost = Math.max(0, parseFloat(newPart.costPrice) || 0);
+    const unit = parseFloat(newPart.unitPrice) > 0 ? parseFloat(newPart.unitPrice) : (cost > 0 ? Math.round(cost * 1.5) : 25);
+
     onSaveProduct({
       ...newPart,
-      costPrice: Math.max(0, parseFloat(newPart.costPrice) || 0),
-      unitPrice: Math.max(0, parseFloat(newPart.unitPrice) || 0),
+      costPrice: cost,
+      unitPrice: unit,
       quantity: Math.max(1, parseInt(newPart.quantity, 10) || 1),
       minLevel: Math.max(0, parseInt(newPart.minLevel, 10) || 5),
     });
