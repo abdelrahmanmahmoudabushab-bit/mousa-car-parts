@@ -42,43 +42,93 @@ export function normalizeSearchCode(code) {
  * Smart Serial & OEM Part Number Extractor
  * Automatically extracts clean OEM codes, serial numbers, or VIN patterns from raw camera QR/barcode text
  */
+/**
+ * Ultra-Smart Serial & OEM Part Number Extractor
+ * Extracts clean OEM part numbers embedded anywhere inside complex raw text,
+ * long numbers, dates, batch tags, or noisy barcode streams.
+ */
 export function parseSmartSerialNumber(rawText) {
   if (!rawText) return '';
   let text = String(rawText).trim();
 
   // 1. Strip GS1 Data Matrix / Barcode envelope wrappers & control chars
-  // e.g. [)>]06 or [)>]12 or similar prefix tags
   text = text.replace(/^\[\)>\]\d*\s*/, '');
   text = text.replace(/[\u0000-\u001f\u007f-\u009f]/g, ' '); // Replace control characters with spaces
   text = text.trim();
 
-  // 2. Extract first token that looks like a serial/OEM
-  const tokens = text.split(/\s+/).filter(t => t.length >= 4);
+  // Helper to clean prefixes from a single candidate token
+  const cleanPrefix = (str) => {
+    let s = str.trim();
+    // Remove parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
+    s = s.replace(/^\((?:P|1P|S|Q)\)/i, '');
+    // Remove 1P, P, S prefixes before hyphenated OEM or long serials
+    if (/^1P[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(2);
+    else if (/^P[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(1);
+    else if (/^1P[A-Z0-9]{8,22}$/i.test(s)) s = s.substring(2);
+    else if (/^S[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(1);
+    else if (/^S[A-Z0-9]{8,22}$/i.test(s)) s = s.substring(1);
+    // Strip non-alphanumeric noise from both ends
+    return s.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
+  };
+
+  // 2. LAYER 1: Deep Regex Search for hyphenated OEM Patterns anywhere in the raw text
+  // e.g. EQEA-5402841, ST-6206109, EQEA-8403019/70, LC0-540211
+  const oemRegex = /([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{4,12}(?:\/\d+)?)/g;
+  const oemMatches = text.match(oemRegex);
+  if (oemMatches && oemMatches.length > 0) {
+    // Pick the most complete OEM match (preferring ones with letters + numbers)
+    const bestOem = oemMatches.find(m => /[A-Za-z]/.test(m) && /\d/.test(m)) || oemMatches[0];
+    return cleanPrefix(bestOem);
+  }
+
+  // 3. LAYER 2: Tokenize and score candidates if text contains multiple words/tokens
+  const tokens = text.split(/\s+/).filter(t => t.length >= 3);
   if (tokens.length > 0) {
-    const candidate = tokens.find(t => /[A-Za-z]/.test(t) && /\d/.test(t)) || tokens[0];
-    text = candidate;
+    let bestToken = '';
+    let maxScore = -100;
+
+    tokens.forEach(tok => {
+      let score = 0;
+      const cleanTok = tok.replace(/[^a-zA-Z0-9\/-]/g, '');
+
+      // Exclude pure numbers that look like dates (8 digits starting with 202x) or random timestamps
+      if (/^202[0-9]{5,10}$/.test(cleanTok)) {
+        score -= 50;
+      }
+      // Pure numbers (like batch numbers or quantities) get lower score
+      if (/^\d+$/.test(cleanTok)) {
+        score -= 20;
+      }
+      // Contains both letters AND numbers (classic part code)
+      if (/[A-Za-z]/.test(cleanTok) && /\d/.test(cleanTok)) {
+        score += 40;
+      }
+      // Matches known BYD OEM prefixes (EQEA, ST, BYD, LC0, etc.)
+      if (/(?:EQEA|ST|BYD|LC0|DP|ATTO|HAN|TANG)/i.test(cleanTok)) {
+        score += 50;
+      }
+      // Starts with 1P, P, S barcode tags
+      if (/^(?:1P|P|S|3S)/i.test(cleanTok)) {
+        score += 20;
+      }
+      // Reasonable length for a part number (5 to 20 chars)
+      if (cleanTok.length >= 5 && cleanTok.length <= 20) {
+        score += 15;
+      }
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestToken = tok;
+      }
+    });
+
+    if (bestToken) {
+      return cleanPrefix(bestToken);
+    }
   }
 
-  // 3. Strip common barcode prefixes (1P, P, S, 3S, etc. followed by OEM/Serial)
-  if (/^1P[A-Z]{2,8}[-\/]/i.test(text)) {
-    text = text.substring(2);
-  } else if (/^P[A-Z]{2,8}[-\/]/i.test(text)) {
-    text = text.substring(1);
-  } else if (/^1P[A-Z0-9]{8,22}$/i.test(text)) {
-    text = text.substring(2);
-  } else if (/^S[A-Z]{2,8}[-\/]/i.test(text)) {
-    text = text.substring(1);
-  } else if (/^S[A-Z0-9]{8,22}$/i.test(text)) {
-    text = text.substring(1);
-  }
-
-  // Clean parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
-  text = text.replace(/^\((?:P|1P|S|Q)\)/i, '');
-
-  // Strip non-alphanumeric noise from both ends (like brackets, trailing hyphens)
-  text = text.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
-
-  return text.toUpperCase();
+  // 4. FALLBACK: Return cleaned text
+  return cleanPrefix(text);
 }
 
 /**
