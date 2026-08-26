@@ -200,6 +200,40 @@ export default function DataAnalyticsDashboard({ products = [], orders = [], cat
       .slice(0, 5);
   }, [filteredOrders]);
 
+  // Export Low Stock Purchase Order CSV for Suppliers
+  const exportLowStockCSV = () => {
+    if (lowStockItems.length === 0) {
+      alert('لا توجد قطع منخفضة المخزون حالياً! جميع القطع متوفرة بكميات جيدة 👍');
+      return;
+    }
+
+    let csvContent = "\uFEFF"; // UTF-8 BOM for Arabic Excel
+    csvContent += "OEM Code,Part Name (Arabic),Vehicle Model,Current Stock,Min Level,Suggested Order Qty,Unit Cost ($)\n";
+
+    lowStockItems.forEach(item => {
+      const suggestedQty = Math.max(10, (Number(item.minLevel || 5) * 2) - Number(item.quantity || 0));
+      const row = [
+        `"${item.oem || ''}"`,
+        `"${item.arName || item.name || ''}"`,
+        `"${item.vehicleModel || ''}"`,
+        item.quantity || 0,
+        item.minLevel || 5,
+        suggestedQty,
+        item.costPrice || 0
+      ].join(",");
+      csvContent += row + "\n";
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mousa_low_stock_reorder_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div style={{ flex: 1, padding: '1.5rem', background: '#f4f6f9', fontFamily: "'Cairo', sans-serif", overflowY: 'auto' }}>
       
