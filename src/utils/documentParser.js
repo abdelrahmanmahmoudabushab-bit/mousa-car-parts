@@ -91,8 +91,8 @@ export function parseSmartSerialNumber(rawText) {
   };
 
   // 2. LAYER 1: Deep Regex Search for hyphenated/slashed Code Patterns anywhere in raw text
-  // e.g. EQEA-5402841, ST-6206109, 5402-841, EQEA-8403019/70, LC0-540211
-  const oemRegex = /([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{2,12}(?:\/\d+)?)/g;
+  // e.g. EQEA-5402841, ST-6206109, 5402-841, EQEA-8403019/70, LC0-540211, UNKNOWN-OEM-9999
+  const oemRegex = /([A-Za-z0-9]{2,8}(?:[-\/][A-Za-z0-9]{1,12})+)/g;
   const oemMatches = text.match(oemRegex);
   if (oemMatches && oemMatches.length > 0) {
     return cleanPrefix(oemMatches[0]);
