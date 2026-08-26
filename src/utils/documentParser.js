@@ -39,6 +39,22 @@ export function normalizeSearchCode(code) {
 }
 
 /**
+ * OCR Misprint & Typo Recovery Normalizer
+ * Auto-corrects ambiguous characters commonly swapped on damaged/scratched barcode stickers:
+ *   'O'/'o' -> '0', 'I'/'i'/'L'/'l' -> '1', 'S'/'s' -> '5', 'Z'/'z' -> '2', 'B'/'b' -> '8'
+ */
+export function normalizeOcrTypoCode(code) {
+  if (!code) return '';
+  const clean = normalizeSearchCode(code);
+  return clean
+    .replace(/[ol]/g, '0')
+    .replace(/[i]/g, '1')
+    .replace(/s/g, '5')
+    .replace(/z/g, '2')
+    .replace(/b/g, '8');
+}
+
+/**
  * Smart Serial & OEM Part Number Extractor
  * Automatically extracts clean OEM codes, serial numbers, or VIN patterns from raw camera QR/barcode text
  */
@@ -151,6 +167,7 @@ export function matchProductSearch(product, searchQuery) {
 
   const rawQ = searchQuery.trim().toLowerCase();
   const cleanCodeQ = normalizeSearchCode(searchQuery);
+  const typoCodeQ = normalizeOcrTypoCode(searchQuery);
   const arQ = normalizeArabic(searchQuery);
 
   const oemClean = normalizeSearchCode(product.oem);
@@ -158,9 +175,15 @@ export function matchProductSearch(product, searchQuery) {
   const vinClean = normalizeSearchCode(product.vinPattern);
   const modelClean = normalizeSearchCode(product.vehicleModel);
 
-  // Fast direct OEM / Code match (ignoring hyphens, spaces, slashes)
+  const oemTypo = normalizeOcrTypoCode(product.oem);
+  const skuTypo = normalizeOcrTypoCode(product.sku);
+
+  // Fast direct OEM / Code match (ignoring hyphens, spaces, slashes AND recovering OCR typos)
   if (cleanCodeQ && cleanCodeQ.length >= 2) {
-    if (oemClean.includes(cleanCodeQ) || skuClean.includes(cleanCodeQ) || vinClean.includes(cleanCodeQ)) {
+    if (
+      oemClean.includes(cleanCodeQ) || skuClean.includes(cleanCodeQ) || vinClean.includes(cleanCodeQ) ||
+      (typoCodeQ.length >= 4 && (oemTypo.includes(typoCodeQ) || skuTypo.includes(typoCodeQ)))
+    ) {
       return true;
     }
   }

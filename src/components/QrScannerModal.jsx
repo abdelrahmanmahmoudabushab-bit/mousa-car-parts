@@ -8,7 +8,18 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
   const [errorMessage, setErrorMessage] = useState('');
   const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(true);
+  const [isContinuous, setIsContinuous] = useState(false);
+  const [batchCount, setBatchCount] = useState(0);
+  const [lastScannedSerial, setLastScannedSerial] = useState('');
+
   const scannerRef = useRef(null);
+  const isContinuousRef = useRef(isContinuous);
+  const lastScannedTimeRef = useRef(0);
+  const lastScannedCodeRef = useRef('');
+
+  useEffect(() => {
+    isContinuousRef.current = isContinuous;
+  }, [isContinuous]);
 
   // Web Audio API beep sound for instant cashier feedback
   const playBeepSound = () => {
@@ -56,18 +67,34 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
       config,
       (decodedText) => {
         const cleanSerial = parseSmartSerialNumber(decodedText) || decodedText;
-        playBeepSound();
-        setScanResult(cleanSerial);
-        setIsScanning(false);
-        if (onScanSuccess) {
-          onScanSuccess(cleanSerial);
+        const now = Date.now();
+
+        if (isContinuousRef.current) {
+          if (cleanSerial === lastScannedCodeRef.current && (now - lastScannedTimeRef.current) < 1500) {
+            return; // Ignore duplicate scan within 1.5s
+          }
+          lastScannedCodeRef.current = cleanSerial;
+          lastScannedTimeRef.current = now;
+          playBeepSound();
+          setBatchCount(prev => prev + 1);
+          setLastScannedSerial(cleanSerial);
+          if (onScanSuccess) {
+            onScanSuccess(cleanSerial);
+          }
+        } else {
+          playBeepSound();
+          setScanResult(cleanSerial);
+          setIsScanning(false);
+          if (onScanSuccess) {
+            onScanSuccess(cleanSerial);
+          }
+          // Auto close after brief success confirmation
+          setTimeout(() => {
+            html5Qrcode.stop().catch(() => {}).finally(() => {
+              onClose();
+            });
+          }, 500);
         }
-        // Auto close after brief success confirmation
-        setTimeout(() => {
-          html5Qrcode.stop().catch(() => {}).finally(() => {
-            onClose();
-          });
-        }, 500);
       },
       (error) => {
         // Scanning errors are expected while frame searching
@@ -127,6 +154,38 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
           </button>
         </div>
 
+        {/* Continuous Scan Mode Toggle Sub-Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.45rem 0.75rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>
+            <span>🔄 وضع المسح المتتابع الباتش:</span>
+            {batchCount > 0 && (
+              <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '0.1rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800' }}>
+                {batchCount} ممسوح
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsContinuous(prev => !prev)}
+            style={{
+              padding: '0.3rem 0.75rem',
+              borderRadius: '8px',
+              border: isContinuous ? '1px solid #a7f3d0' : '1px solid #cbd5e1',
+              background: isContinuous ? '#ecfdf5' : '#ffffff',
+              color: isContinuous ? '#047857' : '#64748b',
+              fontWeight: '800',
+              fontSize: '0.78rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem'
+            }}
+          >
+            {isContinuous ? 'مفعل (مسح متواصل) 🟢' : 'تفعيل المسح المتتابع ⚪'}
+          </button>
+        </div>
+
         {/* Camera Container */}
         <div style={{ position: 'relative', width: '100%', background: '#000000', borderRadius: '18px', overflow: 'hidden', minHeight: '280px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           
@@ -141,8 +200,15 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
             </div>
           )}
 
-          {/* Success Overlay */}
-          {scanResult && (
+          {/* Continuous Scan Live Toast Banner */}
+          {isContinuous && lastScannedSerial && (
+            <div style={{ position: 'absolute', top: '12px', background: 'rgba(5, 150, 105, 0.95)', color: '#ffffff', padding: '0.45rem 1rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 4px 14px rgba(0,0,0,0.3)', zIndex: 15 }}>
+              <CheckCircle size={16} /> تم مسح: {lastScannedSerial} (إجمالي: {batchCount})
+            </div>
+          )}
+
+          {/* Success Overlay for Single Mode */}
+          {!isContinuous && scanResult && (
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(5, 150, 105, 0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#ffffff', gap: '0.5rem', zIndex: 10 }}>
               <CheckCircle size={56} />
               <div style={{ fontSize: '1.25rem', fontWeight: '900' }}>تم مسح الكود بنجاح!</div>
