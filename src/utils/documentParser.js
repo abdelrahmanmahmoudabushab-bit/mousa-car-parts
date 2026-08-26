@@ -78,13 +78,9 @@ export function parseSmartSerialNumber(rawText) {
   const cleanPrefix = (str) => {
     let s = str.trim();
     // Remove parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
-    s = s.replace(/^\((?:P|1P|S|Q)\)/i, '');
-    // Remove 1P, P, S prefixes before hyphenated OEM or long serials
-    if (/^1P[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(2);
-    else if (/^P[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(1);
-    else if (/^1P[A-Z0-9]{5,22}$/i.test(s)) s = s.substring(2);
-    else if (/^S[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(1);
-    else if (/^S[A-Z0-9]{5,22}$/i.test(s)) s = s.substring(1);
+    s = s.replace(/^\((?:P|1P|S|Q|3S)\)/i, '');
+    // Remove compound P1P, S1P, 1P, P, S, 3S, Q prefixes
+    s = s.replace(/^(?:P1P|S1P|1P|3S|P|S|Q)/i, '');
     // Strip non-alphanumeric noise from both ends
     return s.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
   };
@@ -184,6 +180,20 @@ export function matchProductSearch(product, searchQuery) {
       oemClean.includes(cleanCodeQ) || skuClean.includes(cleanCodeQ) || vinClean.includes(cleanCodeQ) ||
       (typoCodeQ.length >= 4 && (oemTypo.includes(typoCodeQ) || skuTypo.includes(typoCodeQ)))
     ) {
+      return true;
+    }
+  }
+
+  // Fuzzy OEM similarity match for heavily damaged sticker scans
+  if (cleanCodeQ.length >= 4 && oemClean.length >= 4) {
+    let matchCharCount = 0;
+    const minLen = Math.min(cleanCodeQ.length, oemClean.length);
+    for (let i = 0; i < minLen; i++) {
+      if (cleanCodeQ[i] === oemClean[i] || typoCodeQ[i] === oemTypo[i]) {
+        matchCharCount++;
+      }
+    }
+    if ((matchCharCount / Math.max(cleanCodeQ.length, oemClean.length)) >= 0.75) {
       return true;
     }
   }
