@@ -3,20 +3,30 @@ import { TrendingUp, Package, AlertTriangle, ShoppingCart, DollarSign, Award, Ca
 
 export default function DataAnalyticsDashboard({ products = [], orders = [], categories = [], lang = 'ar' }) {
   const [timeRange, setTimeRange] = useState('all'); // 'all', 'month', 'week'
+  const [activeDsTab, setActiveDsTab] = useState('overview'); // 'overview', 'forecast', 'pareto', 'affinity'
+
+  // Safe Array Wrappers
+  const safeOrders = useMemo(() => Array.isArray(orders) ? orders : [], [orders]);
+  const safeProducts = useMemo(() => Array.isArray(products) ? products : [], [products]);
+  const safeCategories = useMemo(() => Array.isArray(categories) ? categories : [], [categories]);
 
   // Filter orders by time range
   const filteredOrders = useMemo(() => {
-    if (timeRange === 'all') return orders;
+    if (timeRange === 'all') return safeOrders;
     const now = new Date();
     const cutoff = new Date();
     if (timeRange === 'month') cutoff.setDate(now.getDate() - 30);
     if (timeRange === 'week') cutoff.setDate(now.getDate() - 7);
-    return orders.filter(o => new Date(o.createdAt || o.date || 0) >= cutoff);
-  }, [orders, timeRange]);
+    return safeOrders.filter(o => {
+      if (!o) return false;
+      const d = new Date(o.createdAt || o.date || 0);
+      return !isNaN(d.getTime()) && d >= cutoff;
+    });
+  }, [safeOrders, timeRange]);
 
   // Total Sales Revenue
   const totalRevenue = useMemo(() => {
-    return filteredOrders.reduce((sum, o) => sum + (parseFloat(o.total || o.totalAmount || 0)), 0);
+    return filteredOrders.reduce((sum, o) => sum + (parseFloat(o?.total || o?.totalAmount || 0)), 0);
   }, [filteredOrders]);
 
   // Average Order Value
@@ -25,19 +35,19 @@ export default function DataAnalyticsDashboard({ products = [], orders = [], cat
   }, [totalRevenue, filteredOrders]);
 
   // Total Physical Stock Pieces & Unique SKUs
-  const totalSkuCount = products.length;
+  const totalSkuCount = safeProducts.length;
   const totalStockPieces = useMemo(() => {
-    return products.reduce((sum, p) => sum + (Number(p.quantity || 0)), 0);
-  }, [products]);
+    return safeProducts.reduce((sum, p) => sum + (Number(p?.quantity || 0)), 0);
+  }, [safeProducts]);
 
   // Low Stock & Out of Stock Items
   const lowStockItems = useMemo(() => {
-    return products.filter(p => Number(p.quantity || 0) <= Number(p.minLevel || 5));
-  }, [products]);
+    return safeProducts.filter(p => Number(p?.quantity || 0) <= Number(p?.minLevel || 5));
+  }, [safeProducts]);
 
   const outOfStockItems = useMemo(() => {
-    return products.filter(p => Number(p.quantity || 0) <= 0);
-  }, [products]);
+    return safeProducts.filter(p => Number(p?.quantity || 0) <= 0);
+  }, [safeProducts]);
 
   // Top Sold OEM Parts Analysis
   const topSellingParts = useMemo(() => {
@@ -85,9 +95,7 @@ export default function DataAnalyticsDashboard({ products = [], orders = [], cat
       }
     });
     return Object.entries(map).map(([category, revenue]) => ({ category, revenue })).sort((a, b) => b.revenue - a.revenue);
-  }, [filteredOrders, categories]);
-
-  const [activeDsTab, setActiveDsTab] = useState('overview'); // 'overview', 'forecast', 'pareto', 'affinity'
+  }, [filteredOrders, safeCategories]);
 
   // 1. DATA SCIENCE MODEL: ML 30-Day Demand Forecasting & Days-of-Stock Remaining (DSR)
   const mlDemandForecast = useMemo(() => {
@@ -115,8 +123,10 @@ export default function DataAnalyticsDashboard({ products = [], orders = [], cat
     });
 
     // Also include products that haven't sold yet
-    products.forEach(p => {
+    safeProducts.forEach(p => {
+      if (!p) return;
       const key = p.oem || p.name;
+      if (!key) return;
       if (!map[key]) {
         map[key] = {
           id: p.id,
@@ -148,7 +158,7 @@ export default function DataAnalyticsDashboard({ products = [], orders = [], cat
         isOut
       };
     }).sort((a, b) => b.forecastedDemand30 - a.forecastedDemand30);
-  }, [filteredOrders, products, timeRange]);
+  }, [filteredOrders, safeProducts, timeRange]);
 
   // 2. DATA SCIENCE MODEL: Pareto ABC Inventory 80/20 Classification
   const abcParetoAnalysis = useMemo(() => {

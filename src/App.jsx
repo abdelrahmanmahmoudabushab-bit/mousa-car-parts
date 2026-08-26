@@ -683,7 +683,7 @@ function App() {
                         </p>
                       </div>
 
-                      <button style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f3e8ff', color: '#7c3aed', border: '1px solid #d8b4fe', cursor: 'pointer' }}>
+                      <button onClick={(e) => { e.stopPropagation(); setActiveTab('analytics'); }} style={{ marginTop: '1.75rem', padding: '0.85rem', width: '100%', fontSize: '0.92rem', fontWeight: '800', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f3e8ff', color: '#7c3aed', border: '1px solid #d8b4fe', cursor: 'pointer' }}>
                         <BarChart3 size={18} /> {lang === 'ar' ? 'فتح لوحة التحليلات 📊🤖' : 'Open Analytics 📊🤖'}
                       </button>
                     </div>
