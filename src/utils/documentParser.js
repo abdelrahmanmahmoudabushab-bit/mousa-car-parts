@@ -44,31 +44,41 @@ export function normalizeSearchCode(code) {
  */
 export function parseSmartSerialNumber(rawText) {
   if (!rawText) return '';
-  const text = String(rawText).trim();
+  let text = String(rawText).trim();
 
-  // Pattern 1: Standard BYD OEM Code (e.g. EQEA-5402841, ST-6206109, EQEA-8403019/70)
-  const bydPattern = /\b([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{4,12}(?:\/\d+)?)\b/;
-  const bydMatch = text.match(bydPattern);
-  if (bydMatch) {
-    return bydMatch[1].toUpperCase();
+  // 1. Strip GS1 Data Matrix / Barcode envelope wrappers & control chars
+  // e.g. [)>]06 or [)>]12 or similar prefix tags
+  text = text.replace(/^\[\)>\]\d*\s*/, '');
+  text = text.replace(/[\u0000-\u001f\u007f-\u009f]/g, ' '); // Replace control characters with spaces
+  text = text.trim();
+
+  // 2. Extract first token that looks like a serial/OEM
+  const tokens = text.split(/\s+/).filter(t => t.length >= 4);
+  if (tokens.length > 0) {
+    const candidate = tokens.find(t => /[A-Za-z]/.test(t) && /\d/.test(t)) || tokens[0];
+    text = candidate;
   }
 
-  // Pattern 2: Serial after keywords like SN:, S/N:, OEM:, ITEM:, P/N:
-  const keywordPattern = /(?:SN|S\/N|OEM|PN|P\/N|ITEM|PART)[:\s-]*([A-Za-z0-9\/-]{4,20})/i;
-  const kwMatch = text.match(keywordPattern);
-  if (kwMatch) {
-    return kwMatch[1].toUpperCase();
+  // 3. Strip common barcode prefixes (1P, P, S, 3S, etc. followed by OEM/Serial)
+  if (/^1P[A-Z]{2,8}[-\/]/i.test(text)) {
+    text = text.substring(2);
+  } else if (/^P[A-Z]{2,8}[-\/]/i.test(text)) {
+    text = text.substring(1);
+  } else if (/^1P[A-Z0-9]{8,22}$/i.test(text)) {
+    text = text.substring(2);
+  } else if (/^S[A-Z]{2,8}[-\/]/i.test(text)) {
+    text = text.substring(1);
+  } else if (/^S[A-Z0-9]{8,22}$/i.test(text)) {
+    text = text.substring(1);
   }
 
-  // Pattern 3: Standalone alphanumeric serial string (5 to 22 characters)
-  const serialPattern = /\b([A-Za-z0-9]{5,22})\b/;
-  const serialMatch = text.match(serialPattern);
-  if (serialMatch) {
-    return serialMatch[1].toUpperCase();
-  }
+  // Clean parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
+  text = text.replace(/^\((?:P|1P|S|Q)\)/i, '');
 
-  // Fallback: Strip leading/trailing non-alphanumeric noise
-  return text.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
+  // Strip non-alphanumeric noise from both ends (like brackets, trailing hyphens)
+  text = text.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+
+  return text.toUpperCase();
 }
 
 /**
