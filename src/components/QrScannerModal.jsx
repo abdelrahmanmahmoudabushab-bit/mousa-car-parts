@@ -59,9 +59,17 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     scannerRef.current = html5Qrcode;
 
     const config = {
-      fps: 20, // Ultra-fast 20 FPS scanning
-      qrbox: { width: 300, height: 120 }, // Rectangular target for linear barcodes
-      aspectRatio: 1.0
+      fps: 25, // High performance 25 FPS phone camera scanner
+      qrbox: (viewfinderWidth, viewfinderHeight) => {
+        const minDim = Math.min(viewfinderWidth, viewfinderHeight);
+        const w = Math.floor(minDim * 0.88);
+        const h = Math.floor(minDim * 0.75);
+        return { width: Math.max(240, w), height: Math.max(200, h) };
+      },
+      aspectRatio: 1.0,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      }
     };
 
     html5Qrcode.start(
