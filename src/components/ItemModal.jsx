@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Camera } from 'lucide-react';
 import QrScannerModal from './QrScannerModal';
+import { parseSmartSerialNumber } from '../utils/documentParser';
 
 export default function ItemModal({ item, categories, onClose, onSave }) {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -40,6 +41,44 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
       });
     }
   }, [item, categories]);
+
+  // Global keydown listener for physical barcode scanners inside ItemModal
+  useEffect(() => {
+    let buffer = '';
+    let lastKeyTime = Date.now();
+    let firstKeyChar = '';
+
+    const handleGlobalKeyDown = (e) => {
+      const currentTime = Date.now();
+      const isFast = (currentTime - lastKeyTime) < 50;
+      lastKeyTime = currentTime;
+
+      if (e.key === 'Enter') {
+        if (buffer.trim().length > 2) {
+          e.preventDefault();
+          const parsed = parseSmartSerialNumber(buffer.trim()) || buffer.trim();
+          setFormData(prev => ({ ...prev, oem: parsed, sku: parsed }));
+          buffer = '';
+          firstKeyChar = '';
+        }
+      } else if (e.key.length === 1) {
+        if (isFast) {
+          if (buffer.length > 0) {
+            buffer += e.key;
+          } else if (firstKeyChar) {
+            buffer = firstKeyChar + e.key;
+            firstKeyChar = '';
+          }
+        } else {
+          firstKeyChar = e.key;
+          buffer = '';
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
