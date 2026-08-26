@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { Camera, X, RefreshCw, Volume2, CheckCircle, Keyboard } from 'lucide-react';
 import { parseSmartSerialNumber } from '../utils/documentParser';
 
-export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماسح الكاميرا الذكي · Smart Serial Scanner 📷' }) {
+export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماسح الباركود الخطي وسيريال القطعة 📷' }) {
   const [scanResult, setScanResult] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [manualCode, setManualCode] = useState('');
@@ -30,12 +30,24 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
 
   useEffect(() => {
     const scannerId = 'html5-qrcode-reader';
-    const html5Qrcode = new Html5Qrcode(scannerId);
+    const html5Qrcode = new Html5Qrcode(scannerId, {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.CODE_93,
+        Html5QrcodeSupportedFormats.CODABAR,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E
+      ]
+    });
     scannerRef.current = html5Qrcode;
 
     const config = {
       fps: 20, // Ultra-fast 20 FPS scanning
-      qrbox: { width: 270, height: 270 },
+      qrbox: { width: 300, height: 120 }, // Rectangular target for linear barcodes
       aspectRatio: 1.0
     };
 
@@ -96,7 +108,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
                 {title}
               </h2>
               <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>
-                وجه الكاميرا نحو باركود OEM أو كود QR الخاص بقطعة الغيار
+                وجه الكاميرا نحو الباركود الخطي (سيريال القطعة) - تم تعطيل مسح الـ QR لتفادي الأخطاء
               </span>
             </div>
           </div>
@@ -123,7 +135,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
           {/* Scan Target Overlay Line */}
           {isScanning && !errorMessage && (
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: '220px', height: '220px', border: '3px dashed #d97706', borderRadius: '20px', boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.45)', position: 'relative' }}>
+              <div style={{ width: '300px', height: '110px', border: '3px dashed #d97706', borderRadius: '12px', boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.45)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '50%', left: '10%', right: '10%', height: '2px', background: '#d97706', boxShadow: '0 0 8px #d97706', animation: 'pulse 1.2s infinite' }}></div>
               </div>
             </div>
