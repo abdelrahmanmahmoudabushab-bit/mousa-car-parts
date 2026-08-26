@@ -129,6 +129,64 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     onClose();
   };
 
+  // Instant Confirm & Capture Handler on Camera View
+  const handleCaptureFrame = async () => {
+    const candidateCode = scanResult || lastScannedSerial || manualCode.trim();
+    if (candidateCode) {
+      playBeepSound();
+      if (onScanSuccess) onScanSuccess(candidateCode);
+      if (scannerRef.current && scannerRef.current.isScanning) {
+        try { await scannerRef.current.stop(); } catch (e) {}
+      }
+      onClose();
+      return;
+    }
+
+    const videoEl = document.querySelector('#html5-qrcode-reader video');
+    if (videoEl && videoEl.videoWidth) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoEl.videoWidth;
+        canvas.height = videoEl.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(async (blob) => {
+          if (blob && scannerRef.current) {
+            const file = new File([blob], 'capture.png', { type: 'image/png' });
+            try {
+              const res = await scannerRef.current.scanFileV2(file, true);
+              if (res && res.decodedText) {
+                const clean = parseSmartSerialNumber(res.decodedText) || res.decodedText;
+                playBeepSound();
+                if (onScanSuccess) onScanSuccess(clean);
+                if (scannerRef.current.isScanning) {
+                  await scannerRef.current.stop();
+                }
+                onClose();
+                return;
+              }
+            } catch (err) {
+              console.warn('Frame scan error:', err);
+            }
+          }
+          if (scannerRef.current && scannerRef.current.isScanning) {
+            try { await scannerRef.current.stop(); } catch (e) {}
+          }
+          onClose();
+        }, 'image/png');
+        return;
+      } catch (err) {
+        console.warn('Canvas capture error:', err);
+      }
+    }
+
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try { await scannerRef.current.stop(); } catch (e) {}
+    }
+    onClose();
+  };
+
   return (
     <div className="modal-overlay" style={{ background: 'rgba(15, 23, 42, 0.85)', zIndex: 200 }}>
       <div className="modal-content" style={{ maxWidth: '480px', borderRadius: '24px', padding: '1.25rem', fontFamily: "'Cairo', sans-serif" }}>
@@ -144,7 +202,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
                 {title}
               </h2>
               <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>
-                وجه الكاميرا نحو الباركود الخطي (سيريال القطعة) - تم تعطيل مسح الـ QR لتفادي الأخطاء
+                وجه الكاميرا نحو الباركود الخطي واضغط تأكيد للمسح الفوري
               </span>
             </div>
           </div>
@@ -166,7 +224,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
         {/* Continuous Scan Mode Toggle Sub-Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '0.45rem 0.75rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>
-            <span>🔄 وضع المسح المتتابع الباتش:</span>
+            <span>🔄 وضع المسح المتتابع:</span>
             {batchCount > 0 && (
               <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '0.1rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800' }}>
                 {batchCount} ممسوح
@@ -191,7 +249,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
               gap: '0.3rem'
             }}
           >
-            {isContinuous ? 'مفعل (مسح متواصل) 🟢' : 'تفعيل المسح المتتابع ⚪'}
+            {isContinuous ? 'مفعل 🟢' : 'تفعيل المتتابع ⚪'}
           </button>
         </div>
 
@@ -227,6 +285,29 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
             </div>
           )}
         </div>
+
+        {/* 📷 BIG PROMINENT CONFIRM SCAN CAPTURE BUTTON */}
+        <button
+          type="button"
+          onClick={handleCaptureFrame}
+          className="btn-sand"
+          style={{
+            width: '100%',
+            height: '48px',
+            marginTop: '0.75rem',
+            borderRadius: '14px',
+            fontSize: '0.98rem',
+            fontWeight: '900',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 16px rgba(217, 119, 6, 0.25)',
+            cursor: 'pointer'
+          }}
+        >
+          <Camera size={20} /> تأكيد المسح وقراءة الكود 📷
+        </button>
 
         {/* Error Notice */}
         {errorMessage && (
