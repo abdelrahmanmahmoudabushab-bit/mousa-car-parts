@@ -5,7 +5,7 @@ import QrScannerModal from './QrScannerModal';
 import ScannedPartModal from './ScannedPartModal';
 import { matchProductSearch, parseSmartSerialNumber, normalizeSearchCode } from '../utils/documentParser';
 
-export default function POSTerminal({ products, categories, onOpenPayment, lang }) {
+export default function POSTerminal({ products, categories, onOpenPayment, onOpenAddItem, lang }) {
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('all');
   const [selectedModel, setSelectedModel] = useState('all');
@@ -109,11 +109,12 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
 
   const handleDirectBarcodeScan = useCallback((code) => {
     if (!code) return;
-    const cleanSerial = parseSmartSerialNumber(code) || String(code).trim();
+    const rawStr = String(code).trim();
+    const cleanSerial = parseSmartSerialNumber(rawStr) || rawStr;
     const cleanCode = normalizeSearchCode(cleanSerial);
 
-    // Smart Match: compare normalized serials ignoring hyphens, spaces, and slashes
-    const exactMatch = products.find(p => {
+    // 1. Try direct OEM/SKU/ID match
+    let match = products.find(p => {
       const oemClean = normalizeSearchCode(p.oem);
       const skuClean = normalizeSearchCode(p.sku);
       const idClean = normalizeSearchCode(p.id);
@@ -122,12 +123,17 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
         (cleanCode && oemClean === cleanCode) ||
         (cleanCode && skuClean === cleanCode) ||
         (cleanCode && idClean === cleanCode) ||
-        (cleanCode.length >= 5 && (oemClean.includes(cleanCode) || skuClean.includes(cleanCode)))
+        (cleanCode.length >= 4 && (oemClean.includes(cleanCode) || skuClean.includes(cleanCode)))
       );
     });
 
+    // 2. Fallback to matchProductSearch engine (supports OCR typo recovery & fuzzy OEM similarity)
+    if (!match) {
+      match = products.find(p => matchProductSearch(p, cleanSerial) || matchProductSearch(p, rawStr));
+    }
+
     setScannedPartData({
-      product: exactMatch || null,
+      product: match || null,
       scannedCode: cleanSerial
     });
   }, [products]);
@@ -448,8 +454,12 @@ export default function POSTerminal({ products, categories, onOpenPayment, lang 
               setScannedPartData(null);
             }}
             onRegisterNewPart={(code) => {
-              setSearch(code);
               setScannedPartData(null);
+              if (onOpenAddItem) {
+                onOpenAddItem({ oem: code, name: '', arName: '', unitPrice: 25, costPrice: 15, quantity: 10, vehicleModel: 'BYD Seagull' });
+              } else {
+                setSearch(code);
+              }
             }}
             lang={lang}
           />

@@ -43,6 +43,8 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     const scannerId = 'html5-qrcode-reader';
     const html5Qrcode = new Html5Qrcode(scannerId, {
       formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.DATA_MATRIX,
         Html5QrcodeSupportedFormats.CODE_128,
         Html5QrcodeSupportedFormats.CODE_39,
         Html5QrcodeSupportedFormats.CODE_93,

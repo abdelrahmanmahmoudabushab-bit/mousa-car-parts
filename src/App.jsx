@@ -745,6 +745,10 @@ function App() {
                     categories={categories}
                     lang={lang}
                     onOpenPayment={(data) => setPaymentData(data)}
+                    onOpenAddItem={(item) => {
+                      setEditingItem(item || null);
+                      setIsItemModalOpen(true);
+                    }}
                   />
                 )}
 
