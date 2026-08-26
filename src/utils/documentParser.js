@@ -43,9 +43,11 @@ export function normalizeSearchCode(code) {
  * Automatically extracts clean OEM codes, serial numbers, or VIN patterns from raw camera QR/barcode text
  */
 /**
- * Ultra-Smart Serial & OEM Part Number Extractor
- * Extracts clean OEM part numbers embedded anywhere inside complex raw text,
- * long numbers, dates, batch tags, or noisy barcode streams.
+ * Universal Serial & OEM Part Number Extractor
+ * Supports all 3 code types:
+ *   1. Mixed Alphanumeric (e.g. EQEA-5402841, ST-6206109)
+ *   2. Numeric Only / Just Numbers (e.g. 5402841, 840301970)
+ *   3. Alphabetic Only / All Letters (e.g. STEQEA, BYDDO)
  */
 export function parseSmartSerialNumber(rawText) {
   if (!rawText) return '';
@@ -56,32 +58,30 @@ export function parseSmartSerialNumber(rawText) {
   text = text.replace(/[\u0000-\u001f\u007f-\u009f]/g, ' '); // Replace control characters with spaces
   text = text.trim();
 
-  // Helper to clean prefixes from a single candidate token
+  // Helper to clean prefixes from a candidate token
   const cleanPrefix = (str) => {
     let s = str.trim();
     // Remove parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
     s = s.replace(/^\((?:P|1P|S|Q)\)/i, '');
     // Remove 1P, P, S prefixes before hyphenated OEM or long serials
-    if (/^1P[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(2);
-    else if (/^P[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(1);
-    else if (/^1P[A-Z0-9]{8,22}$/i.test(s)) s = s.substring(2);
-    else if (/^S[A-Z]{2,8}[-\/]/i.test(s)) s = s.substring(1);
-    else if (/^S[A-Z0-9]{8,22}$/i.test(s)) s = s.substring(1);
+    if (/^1P[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(2);
+    else if (/^P[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(1);
+    else if (/^1P[A-Z0-9]{5,22}$/i.test(s)) s = s.substring(2);
+    else if (/^S[A-Z0-9]{2,8}[-\/]/i.test(s)) s = s.substring(1);
+    else if (/^S[A-Z0-9]{5,22}$/i.test(s)) s = s.substring(1);
     // Strip non-alphanumeric noise from both ends
     return s.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
   };
 
-  // 2. LAYER 1: Deep Regex Search for hyphenated OEM Patterns anywhere in the raw text
-  // e.g. EQEA-5402841, ST-6206109, EQEA-8403019/70, LC0-540211
-  const oemRegex = /([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{4,12}(?:\/\d+)?)/g;
+  // 2. LAYER 1: Deep Regex Search for hyphenated/slashed Code Patterns anywhere in raw text
+  // e.g. EQEA-5402841, ST-6206109, 5402-841, EQEA-8403019/70, LC0-540211
+  const oemRegex = /([A-Za-z0-9]{2,8}[-\/][A-Za-z0-9]{2,12}(?:\/\d+)?)/g;
   const oemMatches = text.match(oemRegex);
   if (oemMatches && oemMatches.length > 0) {
-    // Pick the most complete OEM match (preferring ones with letters + numbers)
-    const bestOem = oemMatches.find(m => /[A-Za-z]/.test(m) && /\d/.test(m)) || oemMatches[0];
-    return cleanPrefix(bestOem);
+    return cleanPrefix(oemMatches[0]);
   }
 
-  // 3. LAYER 2: Tokenize and score candidates if text contains multiple words/tokens
+  // 3. LAYER 2: Tokenize and score candidates for ALL 3 Code Types
   const tokens = text.split(/\s+/).filter(t => t.length >= 3);
   if (tokens.length > 0) {
     let bestToken = '';
@@ -91,29 +91,41 @@ export function parseSmartSerialNumber(rawText) {
       let score = 0;
       const cleanTok = tok.replace(/[^a-zA-Z0-9\/-]/g, '');
 
-      // Exclude pure numbers that look like dates (8 digits starting with 202x) or random timestamps
+      // Check if it's a date timestamp (e.g. 20260826 or 20250101) -> penalize dates
       if (/^202[0-9]{5,10}$/.test(cleanTok)) {
-        score -= 50;
+        score -= 80;
       }
-      // Pure numbers (like batch numbers or quantities) get lower score
-      if (/^\d+$/.test(cleanTok)) {
-        score -= 20;
+      // Check if it's a common label word like "QTY", "DATE", "INVOICE", "PCS"
+      else if (/^(?:QTY|DATE|INVOICE|PCS|ITEM|NO|CODE)$/i.test(cleanTok)) {
+        score -= 80;
       }
-      // Contains both letters AND numbers (classic part code)
-      if (/[A-Za-z]/.test(cleanTok) && /\d/.test(cleanTok)) {
-        score += 40;
-      }
-      // Matches known BYD OEM prefixes (EQEA, ST, BYD, LC0, etc.)
-      if (/(?:EQEA|ST|BYD|LC0|DP|ATTO|HAN|TANG)/i.test(cleanTok)) {
-        score += 50;
-      }
-      // Starts with 1P, P, S barcode tags
-      if (/^(?:1P|P|S|3S)/i.test(cleanTok)) {
-        score += 20;
-      }
-      // Reasonable length for a part number (5 to 20 chars)
-      if (cleanTok.length >= 5 && cleanTok.length <= 20) {
-        score += 15;
+      else {
+        // Matches known BYD OEM prefixes (EQEA, ST, BYD, LC0, DP, etc.)
+        if (/(?:EQEA|ST|BYD|LC0|DP|ATTO|HAN|TANG)/i.test(cleanTok)) {
+          score += 60;
+        }
+        // Starts with barcode tags (1P, P, S, 3S)
+        if (/^(?:1P|P|S|3S)/i.test(cleanTok)) {
+          score += 40;
+        }
+
+        // Code Type 1: Mixed Alphanumeric (Letters + Digits)
+        if (/[A-Za-z]/.test(cleanTok) && /\d/.test(cleanTok)) {
+          score += 35;
+        }
+        // Code Type 2: Pure Numbers / Numeric Only (e.g. 5402841, 840301970)
+        else if (/^\d{4,16}$/.test(cleanTok)) {
+          score += 25;
+        }
+        // Code Type 3: Pure Letters / Alphabetic Only (e.g. STEQEA, BYDDO)
+        else if (/^[A-Za-z]{4,16}$/.test(cleanTok)) {
+          score += 25;
+        }
+
+        // Ideal code length (4 to 20 characters)
+        if (cleanTok.length >= 4 && cleanTok.length <= 20) {
+          score += 15;
+        }
       }
 
       if (score > maxScore) {
