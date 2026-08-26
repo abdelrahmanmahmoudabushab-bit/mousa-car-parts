@@ -6,6 +6,8 @@ import PaymentModal from './components/PaymentModal';
 import ReceiptModal from './components/ReceiptModal';
 import LoginScreen from './components/LoginScreen';
 import WaitingScreen from './components/WaitingScreen';
+import OfflineStatusBadge from './components/OfflineStatusBadge';
+import { cacheProductsLocally, getLocalProductsCache, queueOfflineOrder } from './utils/offlineStore';
 
 // Lazy-loaded heavy components for instant sub-30ms initial page load speed
 const OrdersLog = lazy(() => import('./components/OrdersLog'));
@@ -93,7 +95,7 @@ function App() {
     localStorage.removeItem('mousa_pos_user');
   };
 
-  // Fetch initial bootstrap data
+  // Fetch initial bootstrap data with offline cache fallback
   const fetchBootstrapData = async () => {
     try {
       setLoading(true);
@@ -101,12 +103,19 @@ function App() {
       const res = await fetch('/api/bootstrap');
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const data = await res.json();
-      setProducts(data.products || []);
+      const prods = data.products || [];
+      setProducts(prods);
       setCategories(data.categories || []);
       setOrders(data.orders || []);
+      cacheProductsLocally(prods);
     } catch (err) {
-      console.error('Error fetching bootstrap data:', err);
-      setBootstrapError('Cannot connect to server. Make sure the backend is running on port 5000.');
+      console.warn('Network offline or bootstrap error, loading local cache:', err);
+      const cachedProds = await getLocalProductsCache();
+      if (cachedProds && cachedProds.length > 0) {
+        setProducts(cachedProds);
+      } else {
+        setBootstrapError('تعذر الاتصال بالسيرفر ولا يوجد محتوى محلي مؤقت. يرجى التأكد من اتصال الشيكة.');
+      }
     } finally {
       setLoading(false);
     }
@@ -130,6 +139,7 @@ function App() {
       const data = await res.json();
       if (res.ok && data.products) {
         setProducts(data.products);
+        cacheProductsLocally(data.products);
         setIsItemModalOpen(false);
         setEditingItem(null);
       } else {
@@ -152,7 +162,10 @@ function App() {
         body: JSON.stringify({ productId, delta }),
       });
       const data = await res.json();
-      if (data.products) setProducts(data.products);
+      if (data.products) {
+        setProducts(data.products);
+        cacheProductsLocally(data.products);
+      }
     } catch (err) {
       console.error('Error adjusting stock:', err);
     }
@@ -169,6 +182,7 @@ function App() {
       const data = await res.json();
       if (res.ok && data.products) {
         setProducts(data.products);
+        cacheProductsLocally(data.products);
       } else {
         alert(data.error || 'Permission denied. Only Admins can delete parts.');
       }
@@ -180,21 +194,21 @@ function App() {
   // Complete POS Sale Checkout
   const handleCompleteSale = async (paymentDetails) => {
     if (!paymentData) return;
-    try {
-      const orderPayload = {
-        cashier: user?.name || 'Alex Counter',
-        customerName: 'Walk-in POS Customer',
-        customerPhone: 'N/A',
-        deliveryMethod: 'pickup',
-        items: paymentData.cart,
-        subtotal: paymentData.totals.subtotal,
-        tax: paymentData.totals.tax,
-        total: paymentData.totals.total,
-        totalAmount: paymentData.totals.total,
-        paymentMethod: paymentDetails.paymentMethod,
-        source: 'POS Counter'
-      };
+    const orderPayload = {
+      cashier: user?.name || 'Alex Counter',
+      customerName: 'Walk-in POS Customer',
+      customerPhone: 'N/A',
+      deliveryMethod: 'pickup',
+      items: paymentData.cart,
+      subtotal: paymentData.totals.subtotal,
+      tax: paymentData.totals.tax,
+      total: paymentData.totals.total,
+      totalAmount: paymentData.totals.total,
+      paymentMethod: paymentDetails.paymentMethod,
+      source: 'POS Counter'
+    };
 
+    try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 
@@ -207,14 +221,37 @@ function App() {
       const data = await res.json();
       if (res.ok && data.order) {
         setOrders(prev => [data.order, ...prev]);
-        if (data.products) setProducts(data.products);
+        if (data.products) {
+          setProducts(data.products);
+          cacheProductsLocally(data.products);
+        }
         setPaymentData(null);
         setActiveReceipt(data.order);
       } else {
         alert(data.error || 'Error recording checkout sale');
       }
     } catch (err) {
-      alert('Error recording checkout sale: ' + err.message);
+      // OFFLINE RESILIENCE FALLBACK!
+      console.warn('Network offline, queueing sale locally:', err);
+      const offlineOrder = await queueOfflineOrder(orderPayload);
+      
+      // Update local product inventory stock
+      setProducts(prev => {
+        const updated = prev.map(p => {
+          const cartItem = paymentData.cart.find(c => c.id === p.id);
+          if (cartItem) {
+            return { ...p, quantity: Math.max(0, (p.quantity || 0) - cartItem.qty) };
+          }
+          return p;
+        });
+        cacheProductsLocally(updated);
+        return updated;
+      });
+
+      setOrders(prev => [offlineOrder, ...prev]);
+      setPaymentData(null);
+      setActiveReceipt(offlineOrder);
+      alert('📡 تم تسجيل الفاتورة بنجاح في وضع الأوفلاين (تم الحفظ محلياً وسوف تتزامن تلقائياً فور إعادة الاتصال)!');
     }
   };
 
@@ -301,6 +338,8 @@ function App() {
 
         {/* Desktop Top Header Actions & Links */}
         <div className="top-header-actions desktop-only" style={{ alignItems: 'center', gap: '0.5rem' }}>
+          <OfflineStatusBadge token={token} />
+
           {activeTab !== 'portal' && (
             <button
               onClick={() => setActiveTab('portal')}
