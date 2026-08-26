@@ -73,65 +73,83 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
       }
     };
 
-    const startCamera = (cameraConfig) => {
-      html5Qrcode.start(
-        cameraConfig,
-        config,
-        (decodedText) => {
-          const cleanSerial = parseSmartSerialNumber(decodedText) || String(decodedText).trim();
-          const now = Date.now();
-
-          if (isContinuousRef.current) {
-            if (cleanSerial === lastScannedCodeRef.current && (now - lastScannedTimeRef.current) < 1500) {
-              return; // Ignore duplicate scan within 1.5s
+    const startCameraWithFallback = async () => {
+      try {
+        // Try starting with ideal rear environment camera first
+        await html5Qrcode.start({ facingMode: { ideal: 'environment' } }, config, onScan, onScanError);
+      } catch (err1) {
+        console.warn('Ideal facingMode failed, trying exact environment facingMode...', err1);
+        try {
+          await html5Qrcode.start({ facingMode: 'environment' }, config, onScan, onScanError);
+        } catch (err2) {
+          console.warn('Environment facingMode failed, enumerating system cameras...', err2);
+          try {
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras && cameras.length > 0) {
+              // Prefer back camera if available, otherwise pick first device
+              const backCam = cameras.find(c => /back|rear|environment|main/i.test(c.label)) || cameras[cameras.length - 1];
+              await html5Qrcode.start(backCam.id, config, onScan, onScanError);
+            } else {
+              throw new Error('No camera devices found');
             }
-            lastScannedCodeRef.current = cleanSerial;
-            lastScannedTimeRef.current = now;
-            playBeepSound();
-            setBatchCount(prev => prev + 1);
-            setLastScannedSerial(cleanSerial);
-            if (onScanSuccess) {
-              onScanSuccess(cleanSerial);
+          } catch (err3) {
+            console.error('All camera initialization attempts failed:', err3);
+            const isSecure = window.isSecureContext !== false;
+            if (!isSecure) {
+              setErrorMessage('⚠️ تنبيه: يرجى التوصيل عبر رابط HTTPS مشفر لتفعيل صلاحيات كاميرا الهاتف.');
+            } else {
+              setErrorMessage('تعذر الوصول إلى كاميرا الهاتف. يرجى التأكد من السماح لصلاحيات الكاميرا في المتصفح.');
             }
-          } else {
-            playBeepSound();
-            setScanResult(cleanSerial);
-            setIsScanning(false);
-            if (onScanSuccess) {
-              onScanSuccess(cleanSerial);
-            }
-            // Auto close after brief success confirmation
-            setTimeout(() => {
-              html5Qrcode.stop().catch(() => {}).finally(() => {
-                onClose();
-              });
-            }, 500);
-          }
-        },
-        (error) => {
-          // Scanning errors expected while searching video frames
-        }
-      ).catch(err => {
-        console.warn('Primary rear camera start failed, trying fallback camera constraints...', err);
-        // Fallback camera start for older iOS/Android devices
-        if (cameraConfig.facingMode) {
-          startCamera({ facingMode: 'environment' });
-        } else {
-          const isSecure = window.isSecureContext !== false;
-          if (!isSecure) {
-            setErrorMessage('⚠️ تنبيه: يرجى التوصيل عبر رابط HTTPS مشفر لتفعيل صلاحيات كاميرا الهاتف.');
-          } else {
-            setErrorMessage('تعذر تشغيل كاميرا الجهاز. يرجى التأكد من السماح لصلاحيات الكاميرا أو استخدام الإدخال اليدوي أدناه.');
           }
         }
-      });
+      }
     };
 
-    startCamera({ facingMode: { ideal: 'environment' } });
+    const onScan = (decodedText) => {
+      const cleanSerial = parseSmartSerialNumber(decodedText) || String(decodedText).trim();
+      const now = Date.now();
+
+      if (isContinuousRef.current) {
+        if (cleanSerial === lastScannedCodeRef.current && (now - lastScannedTimeRef.current) < 1500) {
+          return; // Ignore duplicate scan within 1.5s
+        }
+        lastScannedCodeRef.current = cleanSerial;
+        lastScannedTimeRef.current = now;
+        playBeepSound();
+        setBatchCount(prev => prev + 1);
+        setLastScannedSerial(cleanSerial);
+        if (onScanSuccess) {
+          onScanSuccess(cleanSerial);
+        }
+      } else {
+        playBeepSound();
+        setScanResult(cleanSerial);
+        setIsScanning(false);
+        if (onScanSuccess) {
+          onScanSuccess(cleanSerial);
+        }
+        // Auto close after brief success confirmation
+        setTimeout(() => {
+          html5Qrcode.stop().catch(() => {}).finally(() => {
+            onClose();
+          });
+        }, 500);
+      }
+    };
+
+    const onScanError = () => {
+      // Searching video frames for barcode
+    };
+
+    startCameraWithFallback();
 
     return () => {
-      if (scannerRef.current && scannerRef.current.isScanning) {
-        scannerRef.current.stop().catch(() => {});
+      if (scannerRef.current) {
+        try {
+          if (scannerRef.current.isScanning) {
+            scannerRef.current.stop().catch(() => {});
+          }
+        } catch (e) {}
       }
     };
   }, []);
