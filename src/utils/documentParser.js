@@ -79,8 +79,13 @@ export function parseSmartSerialNumber(rawText) {
     let s = str.trim();
     // Remove parentheses wrappers e.g. (P)EQEA-5402841 -> EQEA-5402841
     s = s.replace(/^\((?:P|1P|S|Q|3S)\)/i, '');
-    // Remove compound P1P, S1P, 1P, P, S, 3S, Q prefixes
-    s = s.replace(/^(?:P1P|S1P|1P|3S|P|S|Q)/i, '');
+    // Remove compound multi-char prefixes first (order matters — longest match first)
+    s = s.replace(/^(?:P1P|S1P|1P|3S)/i, '');
+    // Only strip single P/S/Q prefix when followed by a digit or a known BYD OEM prefix
+    // This prevents stripping the S from legitimate codes like "STEQEA"
+    if (/^[PSQ](?:\d|EQEA|BYD|LC0|ST\d)/i.test(s)) {
+      s = s.substring(1);
+    }
     // Strip non-alphanumeric noise from both ends
     return s.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toUpperCase();
   };
@@ -223,8 +228,20 @@ export function matchProductSearch(product, searchQuery) {
     const cleanTok = normalizeSearchCode(token);
     const arTok = normalizeArabic(token);
 
-    if (cleanTok && cleanTok.length >= 2 && (oemClean.includes(cleanTok) || skuClean.includes(cleanTok) || modelClean.includes(cleanTok))) {
+    // Direct OEM/SKU match — exact or contains
+    if (cleanTok && cleanTok.length >= 2 && (oemClean.includes(cleanTok) || skuClean.includes(cleanTok))) {
       return true;
+    }
+
+    // Vehicle model match — only if the token is NOT a pure-letter OEM code candidate
+    // This prevents "byddo" matching "byddolphin" in the model field
+    if (cleanTok && cleanTok.length >= 2 && modelClean.includes(cleanTok)) {
+      // If the query looks like an OEM code (matches one product's OEM exactly), skip model match
+      const isExactOemCode = oemClean === cleanTok;
+      if (!isExactOemCode && modelClean === cleanTok) return true; // exact model match OK
+      if (!isExactOemCode && cleanTok.length <= 4) return true; // short tokens are OK
+      // For longer tokens, only match model if it's an exact match or the token has digits
+      if (/\d/.test(cleanTok) || modelClean === cleanTok) return true;
     }
 
     if (arTok && normalizedComposite.includes(arTok)) {
