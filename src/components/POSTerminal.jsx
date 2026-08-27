@@ -107,7 +107,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
     setCart(prev => prev.filter(item => item.id !== id));
   }, []);
 
-  const handleDirectBarcodeScan = useCallback((code) => {
+  const handleDirectBarcodeScan = useCallback(async (code) => {
     if (!code) return;
     const rawStr = String(code).trim();
     const cleanSerial = parseSmartSerialNumber(rawStr) || rawStr;
@@ -133,6 +133,21 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
     // 2. Fallback to matchProductSearch engine (supports OCR typo recovery & fuzzy OEM similarity)
     if (!match) {
       match = products.find(p => matchProductSearch(p, cleanSerial) || matchProductSearch(p, rawStr));
+    }
+
+    // 3. Fallback to direct live backend server database query
+    if (!match) {
+      try {
+        const res = await fetch(`/api/products/scan?code=${encodeURIComponent(cleanSerial)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.found && data.product) {
+            match = data.product;
+          }
+        }
+      } catch (err) {
+        console.warn('Live server barcode lookup offline, using local state:', err);
+      }
     }
 
     if (match) {

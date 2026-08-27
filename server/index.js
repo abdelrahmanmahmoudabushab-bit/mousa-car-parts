@@ -8,6 +8,7 @@ import { translateCnToAr } from './translator.js';
 import { db, verifyPassword } from './db.js';
 import { signJwt, verifyJwt, authenticateToken, requireRole } from './auth.js';
 import { isSupabaseConfigured, getSupabaseProducts, getSupabaseCategories, saveSupabaseOrder, syncLocalAndSupabaseCloud } from './supabase.js';
+import { parseSmartSerialNumber, normalizeSearchCode, matchProductSearch } from '../src/utils/documentParser.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -176,6 +177,40 @@ app.get('/api/products/vin-lookup', (req, res) => {
   const { vin } = req.query;
   const matches = db.findProductsByVin(vin);
   res.json({ success: true, count: matches.length, products: matches });
+});
+
+// GET Live Direct Barcode Scanner Lookup from Database / Server
+app.get('/api/products/scan', (req, res) => {
+  const { code } = req.query;
+  if (!code) return res.status(400).json({ error: 'Barcode or serial code parameter required' });
+
+  const cleanSerial = parseSmartSerialNumber(code) || String(code).trim();
+  const cleanCode = normalizeSearchCode(cleanSerial);
+
+  const products = db.getProducts();
+  let match = products.find(p => {
+    const oemClean = normalizeSearchCode(p.oem);
+    const skuClean = normalizeSearchCode(p.sku);
+    const idClean = normalizeSearchCode(p.id);
+
+    return (
+      (cleanCode && oemClean === cleanCode) ||
+      (cleanCode && skuClean === cleanCode) ||
+      (cleanCode && idClean === cleanCode) ||
+      (cleanCode.length >= 4 && (oemClean.includes(cleanCode) || skuClean.includes(cleanCode)))
+    );
+  });
+
+  if (!match) {
+    match = products.find(p => matchProductSearch(p, cleanSerial) || matchProductSearch(p, code));
+  }
+
+  res.json({
+    success: true,
+    found: Boolean(match),
+    product: match || null,
+    scannedCode: cleanSerial
+  });
 });
 
 // POST Save or Edit Product (Manager or Admin)
