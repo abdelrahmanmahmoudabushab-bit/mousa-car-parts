@@ -67,7 +67,7 @@ export default function SmartStockIngestionModal({ products, categories, token, 
         (normalized && oemNorm === normalized) ||
         (normalized && skuNorm === normalized) ||
         (normalized && idNorm === normalized) ||
-        (normalized.length >= 5 && (oemNorm.includes(normalized) || skuNorm.includes(normalized)))
+        (normalized.length >= 4 && (oemNorm.includes(normalized) || skuNorm.includes(normalized)))
       );
     });
 

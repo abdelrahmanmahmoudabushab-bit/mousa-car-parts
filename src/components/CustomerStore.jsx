@@ -210,7 +210,7 @@ export default function CustomerStore({ products = [], lang = 'en', onPlaceOrder
           <div>
             <div style={{ display: 'flex', gap: '0.5rem', background: '#ffffff', border: '2px solid #2563eb', borderRadius: '14px', padding: '0.35rem', boxShadow: '0 6px 20px rgba(37, 99, 235, 0.1)' }}>
               <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <Search size={18} style={{ position: lang === 'ar' ? 'right' : 'left', [lang === 'ar' ? 'right' : 'left']: '0.85rem', color: '#2563eb' }} />
+                <Search size={18} style={{ position: 'absolute', [lang === 'ar' ? 'right' : 'left']: '0.85rem', color: '#2563eb' }} />
                 <input
                   type="text"
                   value={searchVal}

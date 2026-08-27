@@ -50,28 +50,21 @@ export default function ItemModal({ item, categories, onClose, onSave }) {
 
     const handleGlobalKeyDown = (e) => {
       const currentTime = Date.now();
-      const isFast = (currentTime - lastKeyTime) < 50;
+      const isFast = (currentTime - lastKeyTime) < 150;
       lastKeyTime = currentTime;
 
       if (e.key === 'Enter') {
-        if (buffer.trim().length > 2) {
+        if (buffer.trim().length >= 2) {
           e.preventDefault();
           const parsed = parseSmartSerialNumber(buffer.trim()) || buffer.trim();
           setFormData(prev => ({ ...prev, oem: parsed, sku: parsed }));
           buffer = '';
-          firstKeyChar = '';
         }
       } else if (e.key.length === 1) {
-        if (isFast) {
-          if (buffer.length > 0) {
-            buffer += e.key;
-          } else if (firstKeyChar) {
-            buffer = firstKeyChar + e.key;
-            firstKeyChar = '';
-          }
+        if (isFast || buffer.length === 0) {
+          buffer += e.key;
         } else {
-          firstKeyChar = e.key;
-          buffer = '';
+          buffer = e.key;
         }
       }
     };
