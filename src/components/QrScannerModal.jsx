@@ -60,46 +60,33 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     scannerRef.current = html5Qrcode;
 
     const config = {
-      fps: 25, // High performance 25 FPS phone camera scanner
-      qrbox: (viewfinderWidth, viewfinderHeight) => {
-        const minDim = Math.min(viewfinderWidth, viewfinderHeight);
-        const w = Math.floor(minDim * 0.88);
-        const h = Math.floor(minDim * 0.75);
-        return { width: Math.max(240, w), height: Math.max(200, h) };
-      },
-      aspectRatio: 1.0,
-      experimentalFeatures: {
-        useBarCodeDetectorIfSupported: true
-      }
+      fps: 20,
+      qrbox: { width: 260, height: 180 },
+      aspectRatio: 1.0
     };
 
     const startCameraWithFallback = async () => {
       try {
-        // Try starting with ideal rear environment camera first
-        await html5Qrcode.start({ facingMode: { ideal: 'environment' } }, config, onScan, onScanError);
+        // Enumerate system cameras first for maximum device reliability
+        const cameras = await Html5Qrcode.getCameras().catch(() => []);
+        if (cameras && cameras.length > 0) {
+          const backCam = cameras.find(c => /back|rear|environment|main|0/i.test(c.label)) || cameras[cameras.length - 1];
+          await html5Qrcode.start(backCam.id, config, onScan, onScanError);
+        } else {
+          // Fallback to facingMode constraint
+          await html5Qrcode.start({ facingMode: 'environment' }, config, onScan, onScanError);
+        }
       } catch (err1) {
-        console.warn('Ideal facingMode failed, trying exact environment facingMode...', err1);
+        console.warn('Primary camera start failed, trying simple facingMode...', err1);
         try {
           await html5Qrcode.start({ facingMode: 'environment' }, config, onScan, onScanError);
         } catch (err2) {
-          console.warn('Environment facingMode failed, enumerating system cameras...', err2);
-          try {
-            const cameras = await Html5Qrcode.getCameras();
-            if (cameras && cameras.length > 0) {
-              // Prefer back camera if available, otherwise pick first device
-              const backCam = cameras.find(c => /back|rear|environment|main/i.test(c.label)) || cameras[cameras.length - 1];
-              await html5Qrcode.start(backCam.id, config, onScan, onScanError);
-            } else {
-              throw new Error('No camera devices found');
-            }
-          } catch (err3) {
-            console.error('All camera initialization attempts failed:', err3);
-            const isSecure = window.isSecureContext !== false;
-            if (!isSecure) {
-              setErrorMessage('⚠️ تنبيه: يرجى التوصيل عبر رابط HTTPS مشفر لتفعيل صلاحيات كاميرا الهاتف.');
-            } else {
-              setErrorMessage('تعذر الوصول إلى كاميرا الهاتف. يرجى التأكد من السماح لصلاحيات الكاميرا في المتصفح.');
-            }
+          console.error('Camera initialization failed:', err2);
+          const isSecure = window.isSecureContext !== false;
+          if (!isSecure) {
+            setErrorMessage('⚠️ تنبيه: يرجى التوصيل عبر رابط HTTPS مشفر لتفعيل صلاحيات كاميرا الهاتف.');
+          } else {
+            setErrorMessage('تعذر الوصول إلى كاميرا الهاتف. يرجى التأكد من السماح لصلاحيات الكاميرا في المتصفح.');
           }
         }
       }

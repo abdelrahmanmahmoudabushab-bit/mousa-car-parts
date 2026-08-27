@@ -895,10 +895,45 @@ html, body {
     border-color: #059669 !important;
     background: #ecfdf5 !important;
   }
-  
+
   .glow-card-amber:active {
     border-color: #d97706 !important;
     background: #fffbeb !important;
   }
+}
+
+/* HTML5 Camera Scanner Black Screen Prevention Styling */
+#html5-qrcode-reader {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 280px !important;
+  border: none !important;
+  background: #000000 !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  position: relative !important;
+}
+
+#html5-qrcode-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 280px !important;
+  max-height: 360px !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+  display: block !important;
+}
+
+#html5-qrcode-reader__scan_region {
+  background: transparent !important;
+  border: none !important;
+}
+
+#html5-qrcode-reader__dashboard {
+  display: none !important;
+}
+
+#html5-qrcode-reader canvas {
+  display: none !important;
 }
 

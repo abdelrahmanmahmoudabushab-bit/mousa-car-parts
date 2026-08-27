@@ -135,11 +135,32 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
       match = products.find(p => matchProductSearch(p, cleanSerial) || matchProductSearch(p, rawStr));
     }
 
-    setScannedPartData({
-      product: match || null,
-      scannedCode: cleanSerial
-    });
-  }, [products]);
+    if (match) {
+      // Part IS in inventory -> Open rich details card showing Name, Price, Cost, Stock Count, Model & Qty selector!
+      setScannedPartData({
+        product: match,
+        scannedCode: cleanSerial
+      });
+    } else {
+      // Part is NOT in inventory -> Automatically launch Add Part page pre-filled with scanned OEM!
+      if (onOpenAddItem) {
+        onOpenAddItem({
+          oem: cleanSerial,
+          name: '',
+          arName: '',
+          unitPrice: 25,
+          costPrice: 15,
+          quantity: 10,
+          vehicleModel: 'BYD Seagull'
+        });
+      } else {
+        setScannedPartData({
+          product: null,
+          scannedCode: cleanSerial
+        });
+      }
+    }
+  }, [products, onOpenAddItem]);
 
   // Global keydown listener for physical barcode scanner guns & barcode input in POSTerminal
   useEffect(() => {
