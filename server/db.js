@@ -219,7 +219,14 @@ class RelationalDatabase {
   }
 
   save() {
-    fs.writeFileSync(DB_FILE, JSON.stringify(this.tables, null, 2));
+    try {
+      const tempFile = `${DB_FILE}.tmp`;
+      fs.writeFileSync(tempFile, JSON.stringify(this.tables, null, 2), 'utf8');
+      fs.renameSync(tempFile, DB_FILE);
+    } catch (err) {
+      console.error('Atomic file write failed, executing fallback sync write:', err.message);
+      fs.writeFileSync(DB_FILE, JSON.stringify(this.tables, null, 2), 'utf8');
+    }
   }
 
   // Clear All Inventory & Orders (Safety Backup First)
