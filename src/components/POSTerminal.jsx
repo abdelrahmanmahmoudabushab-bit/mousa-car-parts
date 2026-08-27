@@ -107,7 +107,7 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
     setCart(prev => prev.filter(item => item.id !== id));
   }, []);
 
-  const handleDirectBarcodeScan = useCallback(async (code) => {
+  const handleDirectBarcodeScan = useCallback((code) => {
     if (!code) return;
     const rawStr = String(code).trim();
     const cleanSerial = parseSmartSerialNumber(rawStr) || rawStr;
@@ -135,47 +135,27 @@ export default function POSTerminal({ products, categories, onOpenPayment, onOpe
       match = products.find(p => matchProductSearch(p, cleanSerial) || matchProductSearch(p, rawStr));
     }
 
-    // 3. Fallback to direct live backend server database query
-    if (!match) {
-      try {
-        const res = await fetch(`/api/products/scan?code=${encodeURIComponent(cleanSerial)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.found && data.product) {
-            match = data.product;
-          }
-        }
-      } catch (err) {
-        console.warn('Live server barcode lookup offline, using local state:', err);
-      }
-    }
+    // ALWAYS open ScannedPartModal details card immediately!
+    setScannedPartData({
+      product: match || null,
+      scannedCode: cleanSerial
+    });
 
-    if (match) {
-      // Part IS in inventory -> Open rich details card showing Name, Price, Cost, Stock Count, Model & Qty selector!
-      setScannedPartData({
-        product: match,
-        scannedCode: cleanSerial
-      });
-    } else {
-      // Part is NOT in inventory -> Automatically launch Add Part page pre-filled with scanned OEM!
-      if (onOpenAddItem) {
-        onOpenAddItem({
-          oem: cleanSerial,
-          name: '',
-          arName: '',
-          unitPrice: 25,
-          costPrice: 15,
-          quantity: 10,
-          vehicleModel: 'BYD Seagull'
-        });
-      } else {
-        setScannedPartData({
-          product: null,
-          scannedCode: cleanSerial
-        });
-      }
+    // 3. Asynchronous background server DB lookup fallback if missing in local state
+    if (!match) {
+      fetch(`/api/products/scan?code=${encodeURIComponent(cleanSerial)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.found && data.product) {
+            setScannedPartData({
+              product: data.product,
+              scannedCode: cleanSerial
+            });
+          }
+        })
+        .catch(err => console.warn('Background server scan lookup offline:', err));
     }
-  }, [products, onOpenAddItem]);
+  }, [products]);
 
   // Global keydown listener for physical barcode scanner guns & barcode input in POSTerminal
   useEffect(() => {

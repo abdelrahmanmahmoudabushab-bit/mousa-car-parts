@@ -60,9 +60,18 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
     scannerRef.current = html5Qrcode;
 
     const config = {
-      fps: 20,
-      qrbox: { width: 260, height: 180 },
-      aspectRatio: 1.0
+      fps: 25,
+      qrbox: (viewfinderWidth, viewfinderHeight) => {
+        const w = Math.floor(viewfinderWidth * 0.92);
+        const h = Math.floor(viewfinderHeight * 0.82);
+        return { width: Math.max(240, w), height: Math.max(180, h) };
+      },
+      aspectRatio: 1.0,
+      videoConstraints: {
+        width: { ideal: 1920, min: 1280 },
+        height: { ideal: 1080, min: 720 },
+        facingMode: { ideal: 'environment' }
+      }
     };
 
     const startCameraWithFallback = async () => {
@@ -74,7 +83,7 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
           await html5Qrcode.start(backCam.id, config, onScan, onScanError);
         } else {
           // Fallback to facingMode constraint
-          await html5Qrcode.start({ facingMode: 'environment' }, config, onScan, onScanError);
+          await html5Qrcode.start({ facingMode: { ideal: 'environment' } }, config, onScan, onScanError);
         }
       } catch (err1) {
         console.warn('Primary camera start failed, trying simple facingMode...', err1);
@@ -115,12 +124,15 @@ export default function QrScannerModal({ onClose, onScanSuccess, title = 'ماس
         if (onScanSuccess) {
           onScanSuccess(cleanSerial);
         }
-        // Auto close after brief success confirmation
-        setTimeout(() => {
-          html5Qrcode.stop().catch(() => {}).finally(() => {
+        if (scannerRef.current) {
+          scannerRef.current.stop().then(() => {
+            onClose();
+          }).catch(() => {
             onClose();
           });
-        }, 500);
+        } else {
+          onClose();
+        }
       }
     };
 
